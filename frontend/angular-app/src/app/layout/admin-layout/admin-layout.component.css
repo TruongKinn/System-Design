@@ -20,8 +20,18 @@
   z-index: 1000 !important;
   display: flex !important;
   flex-direction: column !important;
+  width: 260px !important;
+  min-width: 260px !important;
+  max-width: 260px !important;
   overflow: hidden;
   transition: all 0.3s ease !important;
+}
+
+/* Collapsed state - ng-zorro adds .ant-layout-sider-collapsed class automatically */
+.admin-sider.ant-layout-sider-collapsed {
+  width: 72px !important;
+  min-width: 72px !important;
+  max-width: 72px !important;
 }
 
 .admin-sider :deep(.ant-layout-sider-children) {
@@ -76,6 +86,12 @@
   letter-spacing: 1.5px;
 }
 
+/* Hide default ng-zorro sider trigger (causes gap at top-right of sider) */
+.admin-sider :deep(.ant-layout-sider-trigger),
+.admin-sider :deep(.ant-layout-sider-zero-width-trigger) {
+  display: none !important;
+}
+
 /* Menu Container */
 .menu-container {
   flex: 1;
@@ -98,6 +114,7 @@
   text-transform: uppercase;
   letter-spacing: 1.2px;
   pointer-events: none;
+  white-space: nowrap;
 }
 
 .menu-item-icon {
@@ -182,11 +199,20 @@
 .toggle-bar-icon {
   font-size: 1.1rem;
   color: var(--primary);
+  flex-shrink: 0;
 }
 
 .toggle-bar-text {
   font-size: 0.85rem;
   font-weight: 600;
+  white-space: nowrap;
+  overflow: hidden;
+}
+
+/* Collapsed toggle bar - center icon */
+.sider-toggle-bar.collapsed {
+  justify-content: center;
+  padding: 14px 12px;
 }
 
 /* Sider bottom service health */
@@ -232,6 +258,11 @@
   margin-left: 260px;
   transition: margin-left 0.3s ease;
   background: var(--bg-main) !important;
+}
+
+/* Sidebar collapsed state - adjust main content margin */
+.main-layout.sidebar-collapsed {
+  margin-left: 72px !important;
 }
 
 .admin-header {

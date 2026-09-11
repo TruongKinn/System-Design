@@ -2,6 +2,25 @@ import { Component, OnInit } from '@angular/core';
 import { Router } from '@angular/router';
 import { AuthService, AuthUser } from '../../core/services/auth.service';
 
+export interface MenuBadge {
+  count: number;
+  color: string;
+}
+
+export interface MenuItem {
+  key: string;
+  icon: string;
+  label: string;
+  route?: string;
+  badge?: MenuBadge | null;
+  children?: MenuItem[];
+}
+
+export interface MenuGroup {
+  title: string;
+  items: MenuItem[];
+}
+
 @Component({
   selector: 'app-admin-layout',
   templateUrl: './admin-layout.component.html',
@@ -15,7 +34,7 @@ export class AdminLayoutComponent implements OnInit {
   notificationCount = 3;
 
   // MetisMenu Style Accordion Items
-  menuGroups = [
+  menuGroups: MenuGroup[] = [
     {
       title: 'CHÍNH',
       items: [

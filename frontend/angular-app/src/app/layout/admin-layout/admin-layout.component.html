@@ -32,7 +32,7 @@
               nz-menu-item
               [routerLink]="item.route"
               routerLinkActive="ant-menu-item-selected"
-              (click)="navigateTo(item.route, item.label)"
+              (click)="navigateTo(item.route!, item.label)"
               nz-tooltip
               [nzTooltipTitle]="isCollapsed ? item.label : ''"
               nzTooltipPlacement="right">
@@ -40,8 +40,8 @@
               <span class="menu-item-text" *ngIf="!isCollapsed">{{ item.label }}</span>
               <nz-badge
                 *ngIf="item.badge && !isCollapsed"
-                [nzCount]="item.badge.count"
-                [nzStyle]="{ backgroundColor: item.badge.color }"
+                [nzCount]="item.badge!.count"
+                [nzStyle]="{ backgroundColor: item.badge!.color }"
                 style="margin-left: auto;">
               </nz-badge>
             </li>
@@ -59,13 +59,13 @@
                   nz-menu-item
                   [routerLink]="child.route"
                   routerLinkActive="ant-menu-item-selected"
-                  (click)="navigateTo(child.route, child.label)">
+                  (click)="navigateTo(child.route!, child.label)">
                   <span nz-icon [nzType]="child.icon" nzTheme="outline" class="menu-item-icon"></span>
                   <span>{{ child.label }}</span>
                   <nz-badge
                     *ngIf="child.badge"
-                    [nzCount]="child.badge.count"
-                    [nzStyle]="{ backgroundColor: child.badge.color }"
+                    [nzCount]="child.badge!.count"
+                    [nzStyle]="{ backgroundColor: child.badge!.color }"
                     style="margin-left: auto;">
                   </nz-badge>
                 </li>
@@ -77,7 +77,7 @@
     </div>
 
     <!-- MetisMenu Style Collapse / Expand Toggle Bar -->
-    <div class="sider-toggle-bar" (click)="toggleCollapse()" nz-tooltip [nzTooltipTitle]="isCollapsed ? 'Mở rộng Sidebar' : 'Thu gọn Sidebar'">
+    <div class="sider-toggle-bar" [class.collapsed]="isCollapsed" (click)="toggleCollapse()" nz-tooltip [nzTooltipTitle]="isCollapsed ? 'Mở rộng Sidebar' : 'Thu gọn Sidebar'">
       <span nz-icon [nzType]="isCollapsed ? 'menu-unfold' : 'menu-fold'" nzTheme="outline" class="toggle-bar-icon"></span>
       <span class="toggle-bar-text" *ngIf="!isCollapsed">Thu gọn Sidebar</span>
     </div>
@@ -106,7 +106,7 @@
   </nz-sider>
 
   <!-- MAIN LAYOUT -->
-  <nz-layout class="main-layout">
+  <nz-layout class="main-layout" [class.sidebar-collapsed]="isCollapsed">
 
     <!-- HEADER -->
     <nz-header class="admin-header">
