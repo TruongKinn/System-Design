@@ -1,0 +1,48 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: export-service
+  namespace: dataflow-platform
+  labels:
+    app: export-service
+spec:
+  replicas: 4
+  selector:
+    matchLabels:
+      app: export-service
+  template:
+    metadata:
+      labels:
+        app: export-service
+    spec:
+      containers:
+        - name: export-service
+          image: dataflow/export-service:1.0.0
+          imagePullPolicy: IfNotPresent
+          ports:
+            - containerPort: 8083
+          envFrom:
+            - configMapRef:
+                name: dataflow-config
+            - secretRef:
+                name: dataflow-secret
+          resources:
+            requests:
+              memory: "512Mi"
+              cpu: "500m"
+            limits:
+              memory: "1024Mi"
+              cpu: "1000m"
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: export-service
+  namespace: dataflow-platform
+spec:
+  selector:
+    app: export-service
+  ports:
+    - port: 8083
+      targetPort: 8083
+  type: ClusterIP

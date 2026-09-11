@@ -1,0 +1,119 @@
+.imports-container {
+  padding: 0 4px;
+}
+
+.page-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 24px;
+}
+
+.header-title h2 {
+  color: #f8fafc;
+  font-size: 20px;
+  font-weight: 700;
+  margin: 0;
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+
+.header-title .subtitle {
+  color: #94a3b8;
+  font-size: 13px;
+  margin: 4px 0 0 0;
+}
+
+.upload-card {
+  background: rgba(30, 41, 59, 0.8) !important;
+  border-radius: 12px !important;
+  border: 1px dashed rgba(99, 102, 241, 0.4) !important;
+  margin-bottom: 24px;
+}
+
+::ng-deep .ant-upload.ant-upload-drag {
+  background: rgba(15, 23, 42, 0.5) !important;
+  border: 2px dashed rgba(99, 102, 241, 0.3) !important;
+  border-radius: 10px !important;
+  padding: 24px 0;
+  transition: all 0.3s ease;
+}
+
+::ng-deep .ant-upload.ant-upload-drag:hover {
+  border-color: #6366f1 !important;
+  background: rgba(99, 102, 241, 0.05) !important;
+}
+
+.upload-icon {
+  font-size: 48px;
+  color: #6366f1;
+}
+
+.ant-upload-text {
+  color: #f1f5f9 !important;
+  font-size: 16px !important;
+  font-weight: 600;
+}
+
+.ant-upload-hint {
+  color: #94a3b8 !important;
+  font-size: 13px !important;
+}
+
+.ant-upload-hint code {
+  color: #38bdf8;
+  background: #0f172a;
+  padding: 2px 6px;
+  border-radius: 4px;
+}
+
+.table-card {
+  background: rgba(30, 41, 59, 0.8) !important;
+  border-radius: 12px !important;
+  border: 1px solid rgba(255, 255, 255, 0.08) !important;
+}
+
+.card-inside-title {
+  color: #f8fafc;
+  font-size: 16px;
+  font-weight: 600;
+  margin-bottom: 16px;
+}
+
+.batch-id {
+  background: #0f172a;
+  color: #38bdf8;
+  padding: 2px 6px;
+  border-radius: 4px;
+  font-family: 'JetBrains Mono', monospace;
+  font-size: 12px;
+}
+
+.btn-refresh {
+  background: rgba(51, 65, 85, 0.6) !important;
+  border: 1px solid rgba(255, 255, 255, 0.1) !important;
+  color: #cbd5e1 !important;
+  border-radius: 8px !important;
+}
+
+.text-green { color: #34d399; }
+.text-rose { color: #f43f5e; }
+.text-indigo { color: #818cf8; }
+
+::ng-deep .ant-table {
+  background: transparent !important;
+  color: #cbd5e1 !important;
+}
+
+::ng-deep .ant-table-thead > tr > th {
+  background: #0f172a !important;
+  color: #94a3b8 !important;
+  border-bottom: 1px solid rgba(255, 255, 255, 0.08) !important;
+  font-size: 12px;
+  text-transform: uppercase;
+}
+
+::ng-deep .ant-table-tbody > tr > td {
+  border-bottom: 1px solid rgba(255, 255, 255, 0.05) !important;
+}

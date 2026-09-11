@@ -1,0 +1,64 @@
+<div class="rbac-container">
+  <!-- Page Header -->
+  <div class="page-header">
+    <div class="header-title">
+      <h2><span nz-icon nzType="safety-certificate" nzTheme="outline"></span> Quản lý Vai trò & Phân quyền Chi tiết (RBAC Matrix)</h2>
+      <p class="subtitle">Cấu hình các quyền thao tác granular (Fine-grained access control) cho từng nhóm vai trò trong DataFlow Platform</p>
+    </div>
+    <div class="header-actions">
+      <button nz-button nzType="default" (click)="loadRoles()" class="btn-refresh">
+        <span nz-icon nzType="reload"></span> Làm mới
+      </button>
+    </div>
+  </div>
+
+  <!-- Roles Cards Grid -->
+  <div class="roles-grid">
+    <div class="role-card" *ngFor="let role of roles">
+      <div class="role-card-header">
+        <div class="role-title-box">
+          <span nz-icon nzType="shield" class="shield-icon"></span>
+          <span class="role-name">{{ role.roleName }}</span>
+        </div>
+        <nz-tag nzColor="blue">{{ role.userCount }} Người dùng</nz-tag>
+      </div>
+
+      <p class="role-desc">{{ role.description }}</p>
+
+      <div class="permissions-list">
+        <span class="perm-title">Danh sách quyền active:</span>
+        <div class="tags-wrapper">
+          <nz-tag *ngFor="let p of role.permissions" nzColor="purple" class="perm-tag">{{ p }}</nz-tag>
+        </div>
+      </div>
+
+      <div class="card-action">
+        <button nz-button nzType="primary" nzBlock (click)="openEditModal(role)" class="btn-edit-perm">
+          <span nz-icon nzType="setting"></span> Chỉnh sửa Ma trận Phân quyền
+        </button>
+      </div>
+    </div>
+  </div>
+
+  <!-- Edit Permissions Matrix Modal -->
+  <nz-modal [(nzVisible)]="isModalVisible" 
+            [nzTitle]="'Cấu hình Ma trận Quyền hạn - ' + (selectedRole?.roleName || '')" 
+            (nzOnOk)="handleSavePermissions()" 
+            (nzOnCancel)="isModalVisible = false"
+            [nzOkText]="'Cập nhật Quyền hạn'"
+            [nzCancelText]="'Hủy bỏ'"
+            nzWidth="650px">
+    <ng-container *nzModalContent>
+      <div class="permission-matrix-box">
+        <p class="text-slate-400 text-sm mb-4">Tích chọn các quyền hạn áp dụng cho nhóm vai trò này:</p>
+        <div class="perm-item-row" *ngFor="let perm of allPermissions" (click)="togglePermission(perm.key)">
+          <div class="perm-info">
+            <span class="perm-label">{{ perm.label }}</span>
+            <code class="perm-key">{{ perm.key }}</code>
+          </div>
+          <label nz-checkbox [ngModel]="hasPermission(perm.key)" (click)="$event.stopPropagation()"></label>
+        </div>
+      </div>
+    </ng-container>
+  </nz-modal>
+</div>

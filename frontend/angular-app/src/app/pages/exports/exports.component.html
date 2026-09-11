@@ -1,0 +1,135 @@
+<div class="exports-container">
+  <!-- Page Header -->
+  <div class="page-header">
+    <div class="header-title">
+      <h2><span nz-icon nzType="export" nzTheme="outline"></span> Quản lý Tác vụ Xuất Dữ Liệu Lớn (Big Data Export)</h2>
+      <p class="subtitle">Khởi tạo và giám sát tiến độ xuất dữ liệu 1M+ dòng không gây gián đoạn hệ thống (Async Batch Service)</p>
+    </div>
+    <div class="header-actions">
+      <button nz-button nzType="default" (click)="loadExports()" class="btn-refresh">
+        <span nz-icon nzType="reload"></span> Làm mới
+      </button>
+      <button nz-button nzType="primary" (click)="openCreateModal()" class="btn-create">
+        <span nz-icon nzType="file-add"></span> Yêu cầu Export Mới
+      </button>
+    </div>
+  </div>
+
+  <!-- Cards View for Active Processing Exports -->
+  <div class="active-processing-section" *ngIf="exportJobs.length > 0">
+    <h3 class="section-title"><span nz-icon nzType="sync" [nzSpin]="true"></span> Tiến độ Export đang xử lý Real-time</h3>
+    <div class="processing-grid">
+      <ng-container *ngFor="let job of exportJobs">
+        <div class="processing-card" *ngIf="job.status === 'PROCESSING' || job.status === 'PENDING'">
+          <div class="card-header-row">
+            <span class="job-id font-mono">{{ job.id }}</span>
+            <nz-tag [nzColor]="getTypeTagColor(job.exportType)">{{ job.exportType }}</nz-tag>
+          </div>
+          <div class="job-title">{{ job.title }}</div>
+          
+          <div class="progress-block">
+            <div class="progress-info font-mono">
+              <span>{{ job.processedRecords | number }} / {{ job.totalRecords | number }} dòng</span>
+              <span>{{ job.progressPercentage }}%</span>
+            </div>
+            <nz-progress [nzPercent]="job.progressPercentage" [nzStatus]="job.status === 'PROCESSING' ? 'active' : 'normal'" [nzStrokeColor]="{ '0%': '#10b981', '100%': '#6366f1' }"></nz-progress>
+          </div>
+
+          <div class="card-footer-row">
+            <span class="created-at"><span nz-icon nzType="clock-circle"></span> {{ job.createdAt }}</span>
+            <button nz-button nzType="text" nzDanger nzSize="small" (click)="cancelExport(job.id)">Hủy bỏ</button>
+          </div>
+        </div>
+      </ng-container>
+    </div>
+  </div>
+
+  <!-- Main History Table Card -->
+  <nz-card class="table-card" [nzBordered]="false">
+    <h3 class="card-inside-title">Lịch sử và Kho Tải File (MinIO Bucket Storage)</h3>
+    <nz-table #exportTable [nzData]="exportJobs" [nzLoading]="loading" [nzPageSize]="10">
+      <thead>
+        <tr>
+          <th>Mã Tác vụ</th>
+          <th>Tên Báo cáo Export</th>
+          <th>Định dạng</th>
+          <th>Tổng số Dòng</th>
+          <th>Dung lượng</th>
+          <th>Trạng thái</th>
+          <th>Người yêu cầu</th>
+          <th>Thời gian Hoàn tất</th>
+          <th>Hành động</th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr *ngFor="let job of exportTable.data">
+          <td><code class="job-id-code">{{ job.id }}</code></td>
+          <td class="font-medium text-slate-200">{{ job.title }}</td>
+          <td>
+            <nz-tag [nzColor]="getTypeTagColor(job.exportType)">{{ job.exportType }}</nz-tag>
+          </td>
+          <td>{{ job.totalRecords | number }} dòng</td>
+          <td>{{ job.fileSizeMb ? (job.fileSizeMb + ' MB') : '-' }}</td>
+          <td>
+            <nz-tag [nzColor]="job.status === 'COMPLETED' ? 'success' : (job.status === 'PROCESSING' ? 'processing' : (job.status === 'PENDING' ? 'warning' : 'error'))">
+              {{ job.status }}
+            </nz-tag>
+          </td>
+          <td>{{ job.requestedBy }}</td>
+          <td>{{ job.completedAt || '-' }}</td>
+          <td>
+            <button *ngIf="job.status === 'COMPLETED'" 
+                    nz-button 
+                    nzType="primary" 
+                    nzSize="small" 
+                    (click)="downloadFile(job.downloadUrl)" 
+                    class="btn-download">
+              <span nz-icon nzType="download"></span> Tải File
+            </button>
+            <span *ngIf="job.status !== 'COMPLETED'" class="text-slate-500 text-xs">-</span>
+          </td>
+        </tr>
+      </tbody>
+    </nz-table>
+  </nz-card>
+
+  <!-- Modal Tạo Export Mới -->
+  <nz-modal [(nzVisible)]="isModalVisible" 
+            nzTitle="Tạo yêu cầu Xuất dữ liệu hàng loạt (Big Data Export)" 
+            (nzOnOk)="handleCreate()" 
+            (nzOnCancel)="isModalVisible = false"
+            [nzOkText]="'Bắt đầu Export'"
+            [nzCancelText]="'Hủy bỏ'">
+    <ng-container *nzModalContent>
+      <form nz-form nzLayout="vertical">
+        <nz-form-item>
+          <nz-form-label nzRequired>Tên báo cáo / Mô tả</nz-form-label>
+          <nz-form-control>
+            <input nz-input [(ngModel)]="exportTitle" name="exportTitle" placeholder="vd: Export danh sách người dùng active năm 2026" />
+          </nz-form-control>
+        </nz-form-item>
+
+        <nz-form-item>
+          <nz-form-label nzRequired>Định dạng File xuất</nz-form-label>
+          <nz-form-control>
+            <nz-select [(ngModel)]="exportType" name="exportType">
+              <nz-option nzValue="CSV" nzLabel="CSV (Tốc độ cao nhất, 1M+ dòng)"></nz-option>
+              <nz-option nzValue="EXCEL" nzLabel="XLSX Excel (Đã format cột, max 500k dòng)"></nz-option>
+              <nz-option nzValue="PARQUET" nzLabel="Apache Parquet (Tối ưu Big Data/Data Lake)"></nz-option>
+              <nz-option nzValue="JSON" nzLabel="JSON ND-JSON (Định dạng phẳng)"></nz-option>
+            </nz-select>
+          </nz-form-control>
+        </nz-form-item>
+
+        <nz-form-item>
+          <nz-form-label>Ước tính quy mô dữ liệu</nz-form-label>
+          <nz-form-control extra="Tác vụ sẽ chạy bất đồng bộ dưới background thông qua Kafka Event-driven architecture">
+            <nz-input-group nzAddOnAfter="dòng">
+              <input nz-input type="number" [(ngModel)]="recordCountEstimate" name="recordCountEstimate" readonly />
+            </nz-input-group>
+          </nz-form-control>
+        </nz-form-item>
+      </form>
+    </ng-container>
+  </nz-modal>
+</div>

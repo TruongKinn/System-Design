@@ -1,0 +1,50 @@
+server:
+  port: 8080
+
+spring:
+  application:
+    name: api-gateway
+  cloud:
+    gateway:
+      routes:
+        # Auth Service Routes (Public login & register)
+        - id: auth-service-public
+          uri: ${AUTH_SERVICE_URI:http://localhost:8081}
+          predicates:
+            - Path=/api/auth/login, /api/auth/register, /api/auth/refresh
+
+        # Auth Service Secured User Info
+        - id: auth-service-secured
+          uri: ${AUTH_SERVICE_URI:http://localhost:8081}
+          predicates:
+            - Path=/api/auth/me, /api/users/**
+          filters:
+            - JwtAuthenticationFilter
+
+        # Job Service Routes
+        - id: job-service
+          uri: ${JOB_SERVICE_URI:http://localhost:8082}
+          predicates:
+            - Path=/api/jobs/**
+          filters:
+            - JwtAuthenticationFilter
+
+        # Export Service Routes
+        - id: export-service
+          uri: ${EXPORT_SERVICE_URI:http://localhost:8083}
+          predicates:
+            - Path=/api/exports/**
+          filters:
+            - JwtAuthenticationFilter
+
+        # Import Service Routes
+        - id: import-service
+          uri: ${IMPORT_SERVICE_URI:http://localhost:8084}
+          predicates:
+            - Path=/api/imports/**
+          filters:
+            - JwtAuthenticationFilter
+
+app:
+  jwt:
+    secret: ${JWT_SECRET:DataFlowPlatformSuperSecretKeyForJWTAuthTokenGeneration2026!}

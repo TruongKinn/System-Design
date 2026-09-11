@@ -1,0 +1,191 @@
+<div class="dashboard-page">
+
+  <!-- Stats Cards Row -->
+  <div class="stats-grid">
+    <div class="stat-card" *ngFor="let stat of stats">
+      <div class="stat-icon" [style.background]="'rgba(' + stat.color + ', 0.1)'">
+        <span nz-icon [nzType]="stat.icon" nzTheme="outline" [style.color]="stat.color"></span>
+      </div>
+      <div class="stat-info">
+        <div class="stat-label">{{ stat.label }}</div>
+        <div class="stat-value" [style.color]="stat.color">{{ formatNumber(stat.value) }}</div>
+        <div class="stat-suffix">{{ stat.suffix }}</div>
+      </div>
+      <div class="stat-trend positive">
+        <span nz-icon nzType="rise" nzTheme="outline"></span>
+        +{{ stat.trend }}%
+      </div>
+    </div>
+  </div>
+
+  <!-- Main Grid: Services + Activity -->
+  <div class="dashboard-grid">
+
+    <!-- Left: Microservices Health Monitor -->
+    <nz-card class="services-card" nzTitle="🏗️ Microservices Health Monitor">
+      <ng-template #servicesExtra>
+        <nz-badge nzStatus="processing" nzText="Live Monitoring"></nz-badge>
+      </ng-template>
+      <nz-card [nzExtra]="servicesExtra">
+        <div class="service-list">
+          <div class="service-item" *ngFor="let service of services">
+            <div class="service-header">
+              <div class="service-name-row">
+                <span class="status-dot" [style.background]="getStatusColor(service.status)"></span>
+                <strong>{{ service.name }}</strong>
+                <nz-tag [nzColor]="service.status === 'online' ? 'green' : 'orange'" class="port-tag">
+                  :{{ service.port }}
+                </nz-tag>
+              </div>
+              <span class="request-count">{{ service.requests }} req/s</span>
+            </div>
+
+            <div class="service-metrics">
+              <div class="metric">
+                <span class="metric-label">CPU</span>
+                <nz-progress
+                  [nzPercent]="service.cpu | number:'1.0-0'"
+                  nzSize="small"
+                  [nzStrokeColor]="getCpuColor(service.cpu)"
+                  [nzShowInfo]="true"
+                  style="flex: 1;">
+                </nz-progress>
+              </div>
+              <div class="metric">
+                <span class="metric-label">MEM</span>
+                <nz-progress
+                  [nzPercent]="service.memory"
+                  nzSize="small"
+                  nzStrokeColor="#6366f1"
+                  [nzShowInfo]="true"
+                  style="flex: 1;">
+                </nz-progress>
+              </div>
+            </div>
+          </div>
+        </div>
+      </nz-card>
+    </nz-card>
+
+    <!-- Right: Activity Timeline -->
+    <nz-card class="activity-card" nzTitle="📜 Activity Log Realtime">
+      <nz-timeline>
+        <nz-timeline-item
+          *ngFor="let activity of activities"
+          [nzColor]="activity.type === 'success' ? 'green' : activity.type === 'warning' ? 'orange' : 'blue'">
+          <div class="activity-item">
+            <span class="activity-time">{{ activity.time }}</span>
+            <p class="activity-event">{{ activity.event }}</p>
+          </div>
+        </nz-timeline-item>
+      </nz-timeline>
+    </nz-card>
+  </div>
+
+  <!-- Bottom: Kafka Topics Table -->
+  <nz-card class="kafka-card" nzTitle="⚡ Apache Kafka Topics Monitor">
+    <table class="kafka-table">
+      <thead>
+        <tr>
+          <th>Topic Name</th>
+          <th>Partitions</th>
+          <th>Messages Produced</th>
+          <th>Consumer Lag</th>
+          <th>Status</th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr *ngFor="let topic of kafkaTopics">
+          <td><code class="topic-name">{{ topic.name }}</code></td>
+          <td>{{ topic.partitions }}</td>
+          <td>{{ topic.messages | number }}</td>
+          <td>
+            <nz-tag [nzColor]="topic.lag === 0 ? 'green' : topic.lag > 100 ? 'red' : 'orange'">
+              {{ topic.lag }} msgs
+            </nz-tag>
+          </td>
+          <td>
+            <nz-tag [nzColor]="topic.lag === 0 ? 'green' : 'orange'">
+              {{ topic.lag === 0 ? '✓ Caught Up' : '⚠ Processing' }}
+            </nz-tag>
+          </td>
+        </tr>
+      </tbody>
+    </table>
+  </nz-card>
+
+  <!-- Architecture Diagram -->
+  <nz-card class="arch-card" nzTitle="🏛️ Kiến trúc Hệ thống DataFlow Platform">
+    <div class="arch-diagram">
+      <div class="arch-layer">
+        <div class="arch-label">Client Layer</div>
+        <div class="arch-nodes">
+          <div class="arch-node angular">
+            <span>Angular 17</span>
+            <small>Ant Design UI</small>
+          </div>
+        </div>
+      </div>
+
+      <div class="arch-arrow">↓ HTTPS</div>
+
+      <div class="arch-layer">
+        <div class="arch-label">Gateway Layer</div>
+        <div class="arch-nodes">
+          <div class="arch-node gateway">
+            <span>API Gateway</span>
+            <small>Spring Cloud :8080</small>
+          </div>
+        </div>
+      </div>
+
+      <div class="arch-arrow">↓ Internal gRPC / HTTP</div>
+
+      <div class="arch-layer">
+        <div class="arch-label">Service Layer</div>
+        <div class="arch-nodes">
+          <div class="arch-node auth">
+            <span>Auth Service</span>
+            <small>JWT RBAC :8081</small>
+          </div>
+          <div class="arch-node job">
+            <span>Job Service</span>
+            <small>Redis Lock :8082</small>
+          </div>
+          <div class="arch-node export">
+            <span>Export Service</span>
+            <small>Kafka Worker :8083</small>
+          </div>
+          <div class="arch-node import">
+            <span>Import Service</span>
+            <small>SAX Streaming :8084</small>
+          </div>
+        </div>
+      </div>
+
+      <div class="arch-arrow">↓ Data & Messaging Layer</div>
+
+      <div class="arch-layer">
+        <div class="arch-label">Infrastructure Layer</div>
+        <div class="arch-nodes">
+          <div class="arch-node mysql">
+            <span>MySQL 8.0</span>
+            <small>Primary DB :3306</small>
+          </div>
+          <div class="arch-node redis">
+            <span>Redis 7</span>
+            <small>Lock + Cache :6379</small>
+          </div>
+          <div class="arch-node kafka">
+            <span>Apache Kafka</span>
+            <small>Async Events :9092</small>
+          </div>
+          <div class="arch-node minio">
+            <span>MinIO S3</span>
+            <small>File Storage :9000</small>
+          </div>
+        </div>
+      </div>
+    </div>
+  </nz-card>
+</div>

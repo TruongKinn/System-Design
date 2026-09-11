@@ -1,0 +1,22 @@
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: dataflow-config
+  namespace: dataflow-platform
+data:
+  MYSQL_HOST: "dataflow-mysql"
+  MYSQL_PORT: "3306"
+  REDIS_HOST: "dataflow-redis"
+  REDIS_PORT: "6379"
+  KAFKA_BOOTSTRAP_SERVERS: "dataflow-kafka:9092"
+  MINIO_ENDPOINT: "http://dataflow-minio:9000"
+---
+apiVersion: v1
+kind: Secret
+metadata:
+  name: dataflow-secret
+  namespace: dataflow-platform
+type: Opaque
+stringData:
+  MYSQL_ROOT_PASSWORD: "rootpassword"
+  JWT_SECRET: "DataFlowPlatformSuperSecretKeyForJWTAuthTokenGeneration2026!"

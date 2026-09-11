@@ -1,0 +1,111 @@
+<div class="users-container">
+  <!-- Page Header -->
+  <div class="page-header">
+    <div class="header-title">
+      <h2><span nz-icon nzType="team" nzTheme="outline"></span> Quản lý Người dùng & Tài khoản Hệ thống</h2>
+      <p class="subtitle">Quản lý tài khoản truy cập, phân quyền theo vai trò (RBAC) và nhật ký đăng nhập</p>
+    </div>
+    <div class="header-actions">
+      <button nz-button nzType="default" (click)="loadUsers()" class="btn-refresh">
+        <span nz-icon nzType="reload"></span> Làm mới
+      </button>
+      <button nz-button nzType="primary" (click)="openCreateModal()" class="btn-create">
+        <span nz-icon nzType="user-add"></span> Thêm Người dùng Mới
+      </button>
+    </div>
+  </div>
+
+  <!-- Users Table Card -->
+  <nz-card class="table-card" [nzBordered]="false">
+    <nz-table #userTable [nzData]="users" [nzLoading]="loading" [nzPageSize]="10">
+      <thead>
+        <tr>
+          <th>Người dùng</th>
+          <th>Tên Đăng nhập</th>
+          <th>Email</th>
+          <th>Vai trò (Roles)</th>
+          <th>Trạng thái</th>
+          <th>Đăng nhập cuối</th>
+          <th>Ngày tạo</th>
+          <th>Hành động</th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr *ngFor="let u of userTable.data">
+          <td>
+            <div class="user-avatar-cell">
+              <nz-avatar [nzText]="u.fullName.substring(0, 1)" style="background-color: #6366f1;"></nz-avatar>
+              <div class="user-name-box">
+                <span class="user-fullname">{{ u.fullName }}</span>
+              </div>
+            </div>
+          </td>
+          <td><code class="username-code">{{ u.username }}</code></td>
+          <td>{{ u.email }}</td>
+          <td>
+            <nz-tag *ngFor="let role of u.roles" [nzColor]="getRoleTagColor(role)">{{ role }}</nz-tag>
+          </td>
+          <td>
+            <nz-badge [nzStatus]="u.status === 'ACTIVE' ? 'success' : 'error'" [nzText]="u.status"></nz-badge>
+          </td>
+          <td>{{ u.lastLoginAt || 'Chưa đăng nhập' }}</td>
+          <td>{{ u.createdAt }}</td>
+          <td>
+            <button nz-button 
+                    [nzType]="u.status === 'ACTIVE' ? 'dashed' : 'primary'" 
+                    nzSize="small" 
+                    [nzDanger]="u.status === 'ACTIVE'"
+                    (click)="toggleStatus(u)">
+              <span nz-icon [nzType]="u.status === 'ACTIVE' ? 'lock' : 'unlock'"></span>
+              {{ u.status === 'ACTIVE' ? 'Khóa TK' : 'Mở khóa' }}
+            </button>
+          </td>
+        </tr>
+      </tbody>
+    </nz-table>
+  </nz-card>
+
+  <!-- Create User Modal -->
+  <nz-modal [(nzVisible)]="isModalVisible" 
+            nzTitle="Thêm người dùng mới vào DataFlow Platform" 
+            (nzOnOk)="handleCreate()" 
+            (nzOnCancel)="isModalVisible = false"
+            [nzOkText]="'Tạo Tài Khoản'"
+            [nzCancelText]="'Hủy bỏ'">
+    <ng-container *nzModalContent>
+      <form nz-form nzLayout="vertical">
+        <nz-form-item>
+          <nz-form-label nzRequired>Tên đăng nhập (Username)</nz-form-label>
+          <nz-form-control>
+            <input nz-input [(ngModel)]="username" name="username" placeholder="vd: operator02" />
+          </nz-form-control>
+        </nz-form-item>
+
+        <nz-form-item>
+          <nz-form-label nzRequired>Họ và tên</nz-form-label>
+          <nz-form-control>
+            <input nz-input [(ngModel)]="fullName" name="fullName" placeholder="vd: Nguyễn Văn Vận Hành" />
+          </nz-form-control>
+        </nz-form-item>
+
+        <nz-form-item>
+          <nz-form-label nzRequired>Email</nz-form-label>
+          <nz-form-control>
+            <input nz-input type="email" [(ngModel)]="email" name="email" placeholder="operator02@dataflow.io" />
+          </nz-form-control>
+        </nz-form-item>
+
+        <nz-form-item>
+          <nz-form-label nzRequired>Gán vai trò hệ thống</nz-form-label>
+          <nz-form-control>
+            <nz-select [(ngModel)]="selectedRoles" name="selectedRoles" nzMode="multiple" placeholder="Chọn các vai trò">
+              <nz-option nzValue="ROLE_ADMIN" nzLabel="ROLE_ADMIN - Quản trị viên cao cấp"></nz-option>
+              <nz-option nzValue="ROLE_OPERATOR" nzLabel="ROLE_OPERATOR - Nhân viên vận hành tác vụ"></nz-option>
+              <nz-option nzValue="ROLE_VIEWER" nzLabel="ROLE_VIEWER - Chỉ xem báo cáo"></nz-option>
+            </nz-select>
+          </nz-form-control>
+        </nz-form-item>
+      </form>
+    </ng-container>
+  </nz-modal>
+</div>

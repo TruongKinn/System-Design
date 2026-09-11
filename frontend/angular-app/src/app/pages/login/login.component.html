@@ -1,0 +1,196 @@
+<div class="login-page">
+  <!-- Background Animated Particles -->
+  <div class="particles">
+    <div class="particle" *ngFor="let p of [1,2,3,4,5,6,7,8]"></div>
+  </div>
+
+  <!-- Grid Lines -->
+  <div class="grid-overlay"></div>
+
+  <div class="login-container">
+    <!-- Left Panel: Branding -->
+    <div class="login-branding">
+      <div class="brand-logo">
+        <div class="logo-icon">
+          <span>DF</span>
+        </div>
+        <div class="logo-text">
+          <h1>DataFlow</h1>
+          <span>Enterprise Platform</span>
+        </div>
+      </div>
+
+      <div class="brand-description">
+        <h2>Hệ thống Quản lý Dữ liệu Doanh nghiệp</h2>
+        <p>Enterprise Job Scheduling & Big Data Processing Platform được thiết kế theo kiến trúc Microservices với hiệu suất cao.</p>
+      </div>
+
+      <div class="brand-features">
+        <div class="feature-item">
+          <span class="feature-icon">⚡</span>
+          <div>
+            <strong>1,000,000+ Records</strong>
+            <p>Xuất dữ liệu qua Kafka Async</p>
+          </div>
+        </div>
+        <div class="feature-item">
+          <span class="feature-icon">🔐</span>
+          <div>
+            <strong>JWT + RBAC Security</strong>
+            <p>Phân quyền chi tiết theo Permission</p>
+          </div>
+        </div>
+        <div class="feature-item">
+          <span class="feature-icon">🏗️</span>
+          <div>
+            <strong>5 Microservices</strong>
+            <p>Spring Cloud Gateway, Auth, Job, Export, Import</p>
+          </div>
+        </div>
+        <div class="feature-item">
+          <span class="feature-icon">🔒</span>
+          <div>
+            <strong>Redis Distributed Lock</strong>
+            <p>Redisson Safe Lock Engine</p>
+          </div>
+        </div>
+      </div>
+
+      <div class="tech-badges">
+        <span class="tech-badge">Spring Boot 3</span>
+        <span class="tech-badge">Apache Kafka</span>
+        <span class="tech-badge">Redis 7</span>
+        <span class="tech-badge">MinIO S3</span>
+        <span class="tech-badge">Angular 17</span>
+        <span class="tech-badge">Ant Design</span>
+      </div>
+    </div>
+
+    <!-- Right Panel: Login Form -->
+    <div class="login-form-panel">
+      <div class="login-card">
+        <div class="login-card-header">
+          <div class="card-logo">
+            <span>BS</span>
+          </div>
+          <h3>BabySystem Admin Portal</h3>
+          <p>Đăng nhập vào hệ thống quản trị</p>
+        </div>
+
+        <nz-alert
+          *ngIf="false"
+          nzType="info"
+          nzMessage="Demo Mode: Nhập bất kỳ tài khoản nào để trải nghiệm"
+          [nzShowIcon]="true"
+          style="margin-bottom: 20px;">
+        </nz-alert>
+
+        <form nz-form [formGroup]="loginForm" (ngSubmit)="onSubmit()">
+          <nz-form-item>
+            <nz-form-label [nzSpan]="24" nzFor="username">
+              <span class="form-label-text">Tên đăng nhập</span>
+            </nz-form-label>
+            <nz-form-control [nzSpan]="24" nzErrorTip="Vui lòng nhập tên đăng nhập (tối thiểu 3 ký tự)">
+              <nz-input-group [nzPrefix]="prefixUser" nzSize="large">
+                <input
+                  type="text"
+                  nz-input
+                  formControlName="username"
+                  id="username"
+                  placeholder="Nhập tên đăng nhập..."
+                  autocomplete="username"/>
+              </nz-input-group>
+              <ng-template #prefixUser>
+                <span nz-icon nzType="user" nzTheme="outline"></span>
+              </ng-template>
+            </nz-form-control>
+          </nz-form-item>
+
+          <nz-form-item>
+            <nz-form-label [nzSpan]="24" nzFor="password">
+              <span class="form-label-text">Mật khẩu</span>
+            </nz-form-label>
+            <nz-form-control [nzSpan]="24" nzErrorTip="Vui lòng nhập mật khẩu (tối thiểu 6 ký tự)">
+              <nz-input-group
+                [nzPrefix]="prefixLock"
+                [nzSuffix]="suffixEye"
+                nzSize="large">
+                <input
+                  [type]="passwordVisible ? 'text' : 'password'"
+                  nz-input
+                  formControlName="password"
+                  id="password"
+                  placeholder="Nhập mật khẩu..."
+                  autocomplete="current-password"/>
+              </nz-input-group>
+              <ng-template #prefixLock>
+                <span nz-icon nzType="lock" nzTheme="outline"></span>
+              </ng-template>
+              <ng-template #suffixEye>
+                <span
+                  nz-icon
+                  [nzType]="passwordVisible ? 'eye-invisible' : 'eye'"
+                  nzTheme="outline"
+                  (click)="passwordVisible = !passwordVisible"
+                  style="cursor: pointer; color: #94a3b8;"></span>
+              </ng-template>
+            </nz-form-control>
+          </nz-form-item>
+
+          <div class="form-options">
+            <label nz-checkbox formControlName="rememberMe">
+              <span style="color: #94a3b8; font-size: 0.875rem;">Ghi nhớ đăng nhập</span>
+            </label>
+            <a href="#" class="forgot-link">Quên mật khẩu?</a>
+          </div>
+
+          <button
+            nz-button
+            nzType="primary"
+            nzSize="large"
+            [nzLoading]="isLoading"
+            type="submit"
+            id="btn-login"
+            class="login-btn">
+            <span nz-icon nzType="login" nzTheme="outline" *ngIf="!isLoading"></span>
+            {{ isLoading ? 'Đang xác thực...' : 'Đăng nhập' }}
+          </button>
+        </form>
+
+        <nz-divider nzText="Hoặc đăng nhập Demo"></nz-divider>
+
+        <div class="demo-credentials">
+          <div class="demo-item" (click)="loginForm.patchValue({username: 'admin', password: 'Admin@123'})">
+            <span nz-icon nzType="crown" nzTheme="outline" style="color: #6366f1;"></span>
+            <div>
+              <strong>Admin</strong>
+              <p>admin / Admin@123 — Toàn quyền hệ thống</p>
+            </div>
+          </div>
+          <div class="demo-item" (click)="loginForm.patchValue({username: 'operator', password: 'Oper@123'})">
+            <span nz-icon nzType="tool" nzTheme="outline" style="color: #06b6d4;"></span>
+            <div>
+              <strong>Operator</strong>
+              <p>operator / Oper@123 — Chạy Jobs</p>
+            </div>
+          </div>
+        </div>
+
+        <div class="login-footer">
+          <div class="service-status">
+            <span class="status-dot active"></span>
+            <span>API Gateway: localhost:8080</span>
+          </div>
+          <div class="service-status">
+            <span class="status-dot active"></span>
+            <span>Auth Service: localhost:8081</span>
+          </div>
+        </div>
+      </div>
+
+      <div class="login-copyright">
+        © 2026 DataFlow Platform v1.0 — BabySystem Enterprise
+      </div>
+    </div>
+  </div>
+</div>

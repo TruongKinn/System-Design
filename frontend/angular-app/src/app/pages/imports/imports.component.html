@@ -1,0 +1,70 @@
+<div class="imports-container">
+  <!-- Page Header -->
+  <div class="page-header">
+    <div class="header-title">
+      <h2><span nz-icon nzType="import" nzTheme="outline"></span> Nhập Dữ Liệu Hàng Loạt (Batch Data Ingestion)</h2>
+      <p class="subtitle">Tải lên file dữ liệu CSV, Excel, Parquet để thực hiện nạp dữ liệu số lượng lớn với cơ chế Batch Insert & Validation</p>
+    </div>
+    <div class="header-actions">
+      <button nz-button nzType="default" (click)="loadBatches()" class="btn-refresh">
+        <span nz-icon nzType="reload"></span> Làm mới
+      </button>
+    </div>
+  </div>
+
+  <!-- Drag and Drop Upload Card -->
+  <nz-card class="upload-card" [nzBordered]="false">
+    <nz-upload
+      nzType="drag"
+      [nzMultiple]="true"
+      [nzBeforeUpload]="beforeUpload"
+      [nzDisabled]="uploading">
+      <p class="ant-upload-drag-icon">
+        <span nz-icon nzType="inbox" class="upload-icon"></span>
+      </p>
+      <p class="ant-upload-text">Kéo thả file vào đây hoặc nhấp để chọn file từ máy tính</p>
+      <p class="ant-upload-hint">
+        Hỗ trợ định dạng: <code>.csv</code>, <code>.xlsx</code>, <code>.parquet</code>, <code>.json</code>. Kích thước tối đa 500MB/file.
+      </p>
+    </nz-upload>
+  </nz-card>
+
+  <!-- History Table Card -->
+  <nz-card class="table-card" [nzBordered]="false">
+    <h3 class="card-inside-title">Lịch sử và Tiến độ các Lô Nạp Dữ Liệu (Import Batches)</h3>
+    <nz-table #importTable [nzData]="importBatches" [nzLoading]="loading" [nzPageSize]="10">
+      <thead>
+        <tr>
+          <th>Mã Lô Batch</th>
+          <th>Tên File</th>
+          <th>Dung lượng</th>
+          <th>Tổng số Dòng</th>
+          <th>Thành công</th>
+          <th>Dòng Lỗi</th>
+          <th>Tiến độ</th>
+          <th>Trạng thái</th>
+          <th>Thời gian Nhập</th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr *ngFor="let batch of importTable.data">
+          <td><code class="batch-id">{{ batch.id }}</code></td>
+          <td class="font-medium text-slate-200">
+            <span nz-icon nzType="file-text" class="text-indigo mr-2"></span> {{ batch.filename }}
+          </td>
+          <td>{{ batch.fileSizeMb }} MB</td>
+          <td>{{ batch.totalRows | number }}</td>
+          <td><span class="text-green font-bold">{{ batch.successRows | number }}</span></td>
+          <td><span class="text-rose font-bold" *ngIf="batch.errorRows > 0">{{ batch.errorRows | number }}</span><span *ngIf="batch.errorRows === 0">0</span></td>
+          <td>
+            <nz-progress [nzPercent]="batch.progressPercentage" nzSize="small" [nzStatus]="batch.status === 'COMPLETED' ? 'success' : 'active'"></nz-progress>
+          </td>
+          <td>
+            <nz-badge [nzStatus]="getStatusBadge(batch.status)" [nzText]="batch.status"></nz-badge>
+          </td>
+          <td>{{ batch.uploadedAt }}</td>
+        </tr>
+      </tbody>
+    </nz-table>
+  </nz-card>
+</div>

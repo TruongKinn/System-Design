@@ -1,0 +1,186 @@
+<nz-layout class="admin-layout">
+  <!-- SIDEBAR -->
+  <nz-sider
+    nzCollapsible
+    [(nzCollapsed)]="isCollapsed"
+    [nzTrigger]="null"
+    nzWidth="260"
+    nzCollapsedWidth="72"
+    class="admin-sider">
+
+    <!-- Logo Area -->
+    <div class="sider-logo" [class.collapsed]="isCollapsed">
+      <div class="logo-mark">
+        <span>DF</span>
+      </div>
+      <div class="logo-text" *ngIf="!isCollapsed">
+        <div class="logo-title">DataFlow</div>
+        <div class="logo-subtitle">Enterprise Platform</div>
+      </div>
+    </div>
+
+    <!-- Navigation Menu -->
+    <ul nz-menu nzMode="inline" nzTheme="dark" class="admin-menu">
+      <li
+        nz-menu-item
+        *ngFor="let item of menuItems"
+        [routerLink]="item.route"
+        routerLinkActive="ant-menu-item-selected"
+        (click)="navigateTo(item.route, item.label)"
+        nz-tooltip
+        [nzTooltipTitle]="isCollapsed ? item.label : ''"
+        nzTooltipPlacement="right">
+        <span nz-icon [nzType]="item.icon" nzTheme="outline"></span>
+        <span *ngIf="!isCollapsed">{{ item.label }}</span>
+        <nz-badge
+          *ngIf="item.badge && !isCollapsed"
+          [nzCount]="item.badge.count"
+          [nzStyle]="{ backgroundColor: item.badge.color }"
+          style="margin-left: auto;">
+        </nz-badge>
+      </li>
+    </ul>
+
+    <!-- Sider Bottom Info -->
+    <div class="sider-bottom" *ngIf="!isCollapsed">
+      <div class="service-health">
+        <div class="health-item">
+          <span class="health-dot online"></span>
+          <span>API Gateway (:8080)</span>
+        </div>
+        <div class="health-item">
+          <span class="health-dot online"></span>
+          <span>Auth Service (:8081)</span>
+        </div>
+        <div class="health-item">
+          <span class="health-dot online"></span>
+          <span>Job Service (:8082)</span>
+        </div>
+        <div class="health-item">
+          <span class="health-dot warning"></span>
+          <span>Kafka (:9092)</span>
+        </div>
+      </div>
+    </div>
+  </nz-sider>
+
+  <!-- MAIN LAYOUT -->
+  <nz-layout class="main-layout">
+
+    <!-- HEADER -->
+    <nz-header class="admin-header">
+      <!-- Left: Toggle + Breadcrumb -->
+      <div class="header-left">
+        <button
+          nz-button
+          nzType="text"
+          class="toggle-btn"
+          (click)="toggleCollapse()">
+          <span nz-icon [nzType]="isCollapsed ? 'menu-unfold' : 'menu-fold'" nzTheme="outline"></span>
+        </button>
+
+        <nz-breadcrumb class="admin-breadcrumb">
+          <nz-breadcrumb-item *ngFor="let crumb of breadcrumbs">{{ crumb }}</nz-breadcrumb-item>
+        </nz-breadcrumb>
+      </div>
+
+      <!-- Right: Notifications + User Menu -->
+      <div class="header-right">
+        <!-- Search -->
+        <nz-input-group [nzPrefix]="searchIcon" class="header-search">
+          <input nz-input placeholder="Tìm kiếm..." style="background: transparent; border: none; color: #f8fafc;"/>
+        </nz-input-group>
+        <ng-template #searchIcon>
+          <span nz-icon nzType="search" style="color: #64748b;"></span>
+        </ng-template>
+
+        <!-- Notifications -->
+        <button nz-button nzType="text" class="header-icon-btn" nz-dropdown [nzDropdownMenu]="notifMenu">
+          <nz-badge [nzCount]="notificationCount" [nzStyle]="{ backgroundColor: '#6366f1' }">
+            <span nz-icon nzType="bell" nzTheme="outline" style="font-size: 1.1rem;"></span>
+          </nz-badge>
+        </button>
+
+        <nz-dropdown-menu #notifMenu="nzDropdownMenu">
+          <div class="notif-panel">
+            <div class="notif-header">
+              <strong>Thông báo Hệ thống</strong>
+              <a style="font-size: 0.78rem; color: #6366f1;">Đánh dấu tất cả</a>
+            </div>
+            <ul nz-menu>
+              <li nz-menu-item class="notif-item">
+                <span nz-icon nzType="check-circle" style="color: #10b981;"></span>
+                <div>
+                  <p>Export job #234 hoàn thành</p>
+                  <span>1 phút trước</span>
+                </div>
+              </li>
+              <li nz-menu-item class="notif-item">
+                <span nz-icon nzType="warning" style="color: #f59e0b;"></span>
+                <div>
+                  <p>Kafka consumer lag > 10,000</p>
+                  <span>5 phút trước</span>
+                </div>
+              </li>
+              <li nz-menu-item class="notif-item">
+                <span nz-icon nzType="info-circle" style="color: #6366f1;"></span>
+                <div>
+                  <p>Job SYNC_CUSTOMER_DATA đã chạy</p>
+                  <span>15 phút trước</span>
+                </div>
+              </li>
+            </ul>
+          </div>
+        </nz-dropdown-menu>
+
+        <!-- User Avatar + Dropdown -->
+        <div nz-dropdown [nzDropdownMenu]="userMenu" class="user-avatar-btn">
+          <img [src]="avatarUrl" class="user-avatar" alt="Avatar"/>
+          <div class="user-info" *ngIf="true">
+            <div class="user-name">{{ currentUser?.username || 'Admin' }}</div>
+            <div class="user-role">{{ currentUser?.roles?.[0] || 'ROLE_ADMIN' }}</div>
+          </div>
+          <span nz-icon nzType="down" style="color: #64748b; font-size: 0.75rem;"></span>
+        </div>
+
+        <nz-dropdown-menu #userMenu="nzDropdownMenu">
+          <ul nz-menu class="user-menu-panel">
+            <li nz-menu-item>
+              <span nz-icon nzType="user" nzTheme="outline"></span>
+              Hồ sơ cá nhân
+            </li>
+            <li nz-menu-item>
+              <span nz-icon nzType="setting" nzTheme="outline"></span>
+              Cài đặt hệ thống
+            </li>
+            <li nz-menu-divider></li>
+            <li nz-menu-item (click)="logout()" class="logout-item">
+              <span nz-icon nzType="logout" nzTheme="outline"></span>
+              Đăng xuất
+            </li>
+          </ul>
+        </nz-dropdown-menu>
+      </div>
+    </nz-header>
+
+    <!-- CONTENT -->
+    <nz-content class="admin-content">
+      <router-outlet></router-outlet>
+    </nz-content>
+
+    <!-- FOOTER -->
+    <nz-footer class="admin-footer">
+      <span>DataFlow Platform v1.0 © 2026 BabySystem Enterprise</span>
+      <div class="footer-status">
+        <span class="status-indicator online">
+          <span class="indicator-dot"></span>
+          All Systems Operational
+        </span>
+        <span style="color: #334155;">|</span>
+        <span style="color: #334155;">Microservices: 5/5 Running</span>
+        <span style="color: #334155;">|</span>
+        <span style="color: #334155;">Uptime: 99.9%</span>
+      </div>
+    </nz-footer>
+  </nz-layout>
+</nz-layout>

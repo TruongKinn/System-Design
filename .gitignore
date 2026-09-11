@@ -1,0 +1,25 @@
+# Maven target directories
+target/
+*.class
+*.jar
+*.war
+*.ear
+
+# Node & Angular
+node_modules/
+.angular/
+dist/
+tmp/
+*.log
+
+# IDE & Editor files
+.idea/
+*.iml
+.vscode/
+.settings/
+.project/
+.classpath/
+
+# OS generated files
+.DS_Store
+Thumbs.db

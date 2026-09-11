@@ -1,0 +1,180 @@
+<div class="jobs-container">
+  <!-- Header Title Bar -->
+  <div class="page-header">
+    <div class="header-title">
+      <h2><span nz-icon nzType="schedule" nzTheme="outline"></span> Quản lý Tác vụ Lập lịch (Cron Jobs)</h2>
+      <p class="subtitle">Cấu hình, giám sát và vận hành các Quartz Scheduler Jobs trong hệ thống Microservices</p>
+    </div>
+    <div class="header-actions">
+      <button nz-button nzType="default" (click)="loadJobs()" class="btn-refresh">
+        <span nz-icon nzType="reload"></span> Làm mới
+      </button>
+      <button nz-button nzType="primary" (click)="openCreateModal()" class="btn-create">
+        <span nz-icon nzType="plus"></span> Tạo Cron Job Mới
+      </button>
+    </div>
+  </div>
+
+  <!-- Job Statistics Bar -->
+  <div class="stats-row">
+    <div class="stat-mini-card">
+      <span class="stat-label">Tổng số Jobs</span>
+      <span class="stat-val text-indigo">{{ jobs.length }}</span>
+    </div>
+    <div class="stat-mini-card">
+      <span class="stat-label">Đang Hoạt Động</span>
+      <span class="stat-val text-green">{{ getActiveCount() }}</span>
+    </div>
+    <div class="stat-mini-card">
+      <span class="stat-label">Đã Tạm Dừng</span>
+      <span class="stat-val text-amber">{{ getPausedCount() }}</span>
+    </div>
+    <div class="stat-mini-card">
+      <span class="stat-label">Gặp Lỗi (Failed)</span>
+      <span class="stat-val text-rose">{{ getFailedCount() }}</span>
+    </div>
+  </div>
+
+  <!-- Main Table Card -->
+  <nz-card class="table-card" [nzBordered]="false">
+    <nz-table #jobTable [nzData]="jobs" [nzLoading]="loading" [nzPageSize]="10">
+      <thead>
+        <tr>
+          <th>Tên Job & Group</th>
+          <th>Mô tả</th>
+          <th>Cron Expression</th>
+          <th>Trạng thái</th>
+          <th>Lần chạy cuối</th>
+          <th>Lần chạy kế tiếp</th>
+          <th>Tỷ lệ Thành công</th>
+          <th>Hành động</th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr *ngFor="let job of jobTable.data">
+          <td>
+            <div class="job-name-cell">
+              <span class="job-name">{{ job.name }}</span>
+              <nz-tag [nzColor]="'purple'" class="group-tag">{{ job.groupName }}</nz-tag>
+            </div>
+          </td>
+          <td class="desc-cell">{{ job.description }}</td>
+          <td>
+            <code class="cron-code">{{ job.cronExpression }}</code>
+          </td>
+          <td>
+            <nz-badge [nzStatus]="getStatusColor(job.status)" [nzText]="job.status"></nz-badge>
+          </td>
+          <td>{{ job.lastRunTime || 'Chưa chạy' }}</td>
+          <td>{{ job.nextRunTime || '-' }}</td>
+          <td>
+            <span class="success-rate text-green">{{ job.successCount }}/{{ job.executionCount }}</span>
+          </td>
+          <td>
+            <div class="action-buttons">
+              <button nz-button nzType="primary" nzSize="small" (click)="triggerJob(job)" nzTooltipTitle="Kích hoạt chạy ngay">
+                <span nz-icon nzType="play-circle"></span> Chạy ngay
+              </button>
+              
+              <button nz-button 
+                      [nzType]="job.status === 'PAUSED' ? 'default' : 'dashed'" 
+                      nzSize="small" 
+                      (click)="togglePauseResume(job)">
+                <span nz-icon [nzType]="job.status === 'PAUSED' ? 'caret-right' : 'pause'"></span>
+                {{ job.status === 'PAUSED' ? 'Kích hoạt' : 'Tạm dừng' }}
+              </button>
+
+              <button nz-button nzType="text" nzSize="small" (click)="viewHistory(job)" class="btn-history">
+                <span nz-icon nzType="history"></span> Lịch sử
+              </button>
+            </div>
+          </td>
+        </tr>
+      </tbody>
+    </nz-table>
+  </nz-card>
+
+  <!-- Modal Tạo Job Mới -->
+  <nz-modal [(nzVisible)]="isCreateModalVisible" 
+            nzTitle="Tạo mới Quartz Cron Job" 
+            (nzOnOk)="handleCreateOk()" 
+            (nzOnCancel)="handleCreateCancel()"
+            [nzOkText]="'Lưu & Kích hoạt'"
+            [nzCancelText]="'Hủy bỏ'">
+    <ng-container *nzModalContent>
+      <form nz-form nzLayout="vertical">
+        <nz-form-item>
+          <nz-form-label nzRequired>Tên Cron Job</nz-form-label>
+          <nz-form-control>
+            <input nz-input [(ngModel)]="newJobName" name="newJobName" placeholder="vd: aggregate-daily-report" />
+          </nz-form-control>
+        </nz-form-item>
+
+        <nz-form-item>
+          <nz-form-label nzRequired>Nhóm (Group Name)</nz-form-label>
+          <nz-form-control>
+            <nz-select [(ngModel)]="newJobGroup" name="newJobGroup">
+              <nz-option nzValue="ANALYTICS" nzLabel="ANALYTICS - Phân tích dữ liệu"></nz-option>
+              <nz-option nzValue="SYNC" nzLabel="SYNC - Đồng bộ dữ liệu Kafka"></nz-option>
+              <nz-option nzValue="FINANCE" nzLabel="FINANCE - Tác vụ tài chính đối soát"></nz-option>
+              <nz-option nzValue="MAINTENANCE" nzLabel="MAINTENANCE - Bảo trì hệ thống"></nz-option>
+            </nz-select>
+          </nz-form-control>
+        </nz-form-item>
+
+        <nz-form-item>
+          <nz-form-label nzRequired>Cron Expression</nz-form-label>
+          <nz-form-control nzExtra="Định dạng Quartz Cron Syntax: 秒 分 时 日 月 周 年">
+            <input nz-input [(ngModel)]="newJobCron" name="newJobCron" placeholder="0 0 1 * * ?" />
+          </nz-form-control>
+        </nz-form-item>
+
+        <nz-form-item>
+          <nz-form-label>Mô tả chi tiết</nz-form-label>
+          <nz-form-control>
+            <textarea nz-input [(ngModel)]="newJobDesc" name="newJobDesc" rows="3" placeholder="Mô tả mục đích chạy của tác vụ này..."></textarea>
+          </nz-form-control>
+        </nz-form-item>
+      </form>
+    </ng-container>
+  </nz-modal>
+
+  <!-- Modal/Drawer Xem Lịch Sử Thực Thi -->
+  <nz-modal [(nzVisible)]="isExecutionDrawerVisible" 
+            [nzTitle]="'Lịch sử thực thi - ' + (selectedJobForHistory?.name || 'Tất cả Jobs')" 
+            (nzOnCancel)="isExecutionDrawerVisible = false"
+            [nzFooter]="null"
+            nzWidth="800px">
+    <ng-container *nzModalContent>
+      <nz-table #execTable [nzData]="getFilteredExecutions()" [nzPageSize]="5">
+        <thead>
+          <tr>
+            <th>Mã Thực Thi</th>
+            <th>Tên Job</th>
+            <th>Trạng thái</th>
+            <th>Thời gian bắt đầu</th>
+            <th>Thời gian chạy (ms)</th>
+            <th>Số dòng xử lý</th>
+            <th>Lỗi (Nếu có)</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr *ngFor="let exec of execTable.data">
+            <td><code>{{ exec.id }}</code></td>
+            <td>{{ exec.jobName }}</td>
+            <td>
+              <nz-tag [nzColor]="exec.status === 'SUCCESS' ? 'success' : 'error'">{{ exec.status }}</nz-tag>
+            </td>
+            <td>{{ exec.startTime }}</td>
+            <td>{{ exec.durationMs ? exec.durationMs + ' ms' : '-' }}</td>
+            <td>{{ exec.processedRecords | number }}</td>
+            <td>
+              <span *ngIf="exec.errorMessage" class="text-rose text-xs">{{ exec.errorMessage }}</span>
+              <span *ngIf="!exec.errorMessage">-</span>
+            </td>
+          </tr>
+        </tbody>
+      </nz-table>
+    </ng-container>
+  </nz-modal>
+</div>

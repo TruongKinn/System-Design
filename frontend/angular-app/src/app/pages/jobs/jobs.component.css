@@ -1,0 +1,150 @@
+.jobs-container {
+  padding: 0 4px;
+}
+
+.page-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 24px;
+}
+
+.header-title h2 {
+  color: #f8fafc;
+  font-size: 20px;
+  font-weight: 700;
+  margin: 0;
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+
+.header-title .subtitle {
+  color: #94a3b8;
+  font-size: 13px;
+  margin: 4px 0 0 0;
+}
+
+.header-actions {
+  display: flex;
+  gap: 12px;
+}
+
+.stats-row {
+  display: grid;
+  grid-template-columns: repeat(4, 1fr);
+  gap: 16px;
+  margin-bottom: 24px;
+}
+
+.stat-mini-card {
+  background: rgba(30, 41, 59, 0.7);
+  border: 1px solid rgba(255, 255, 255, 0.08);
+  border-radius: 12px;
+  padding: 16px 20px;
+  display: flex;
+  flex-direction: column;
+  backdrop-filter: blur(8px);
+}
+
+.stat-label {
+  color: #94a3b8;
+  font-size: 12px;
+  font-weight: 500;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+}
+
+.stat-val {
+  font-size: 26px;
+  font-weight: 800;
+  margin-top: 4px;
+}
+
+.text-indigo { color: #818cf8; }
+.text-green { color: #34d399; }
+.text-amber { color: #fbbf24; }
+.text-rose { color: #f43f5e; }
+
+.table-card {
+  background: rgba(30, 41, 59, 0.8) !important;
+  border-radius: 12px !important;
+  border: 1px solid rgba(255, 255, 255, 0.08) !important;
+}
+
+.job-name-cell {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+}
+
+.job-name {
+  color: #f1f5f9;
+  font-weight: 600;
+  font-family: 'JetBrains Mono', monospace;
+}
+
+.group-tag {
+  width: fit-content;
+  font-size: 10px;
+  border-radius: 4px;
+}
+
+.desc-cell {
+  color: #94a3b8;
+  max-width: 250px;
+}
+
+.cron-code {
+  background: #0f172a;
+  color: #38bdf8;
+  padding: 3px 8px;
+  border-radius: 4px;
+  font-family: 'JetBrains Mono', monospace;
+  font-size: 12px;
+  border: 1px solid rgba(56, 189, 248, 0.2);
+}
+
+.action-buttons {
+  display: flex;
+  gap: 6px;
+}
+
+.btn-create {
+  background: linear-gradient(135deg, #6366f1 0%, #4f46e5 100%) !important;
+  border: none !important;
+  border-radius: 8px !important;
+  box-shadow: 0 4px 12px rgba(99, 102, 241, 0.4);
+}
+
+.btn-refresh {
+  background: rgba(51, 65, 85, 0.6) !important;
+  border: 1px solid rgba(255, 255, 255, 0.1) !important;
+  color: #cbd5e1 !important;
+  border-radius: 8px !important;
+}
+
+.btn-history {
+  color: #38bdf8 !important;
+}
+
+::ng-deep .ant-table {
+  background: transparent !important;
+  color: #cbd5e1 !important;
+}
+
+::ng-deep .ant-table-thead > tr > th {
+  background: #0f172a !important;
+  color: #94a3b8 !important;
+  border-bottom: 1px solid rgba(255, 255, 255, 0.08) !important;
+  font-size: 12px;
+  text-transform: uppercase;
+}
+
+::ng-deep .ant-table-tbody > tr > td {
+  border-bottom: 1px solid rgba(255, 255, 255, 0.05) !important;
+}
+
+::ng-deep .ant-table-tbody > tr:hover > td {
+  background: rgba(51, 65, 85, 0.3) !important;
+}

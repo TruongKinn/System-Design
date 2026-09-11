@@ -1,0 +1,664 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>DataFlow Platform — Enterprise System Design Dashboard</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;500;600;700&family=JetBrains+Mono:wght@400;500;600&display=swap" rel="stylesheet">
+    <style>
+        :root {
+            --bg-dark: #0f172a;
+            --bg-card: rgba(30, 41, 59, 0.7);
+            --bg-card-hover: rgba(51, 65, 85, 0.8);
+            --border-color: rgba(255, 255, 255, 0.1);
+            --primary: #6366f1;
+            --primary-glow: rgba(99, 102, 241, 0.35);
+            --accent: #06b6d4;
+            --success: #10b981;
+            --warning: #f59e0b;
+            --danger: #ef4444;
+            --text-main: #f8fafc;
+            --text-muted: #94a3b8;
+        }
+
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+        }
+
+        body {
+            font-family: 'Outfit', sans-serif;
+            background-color: var(--bg-dark);
+            color: var(--text-main);
+            min-height: 100vh;
+            display: flex;
+            flex-direction: column;
+            background-image: 
+                radial-gradient(circle at 15% 20%, rgba(99, 102, 241, 0.15) 0%, transparent 40%),
+                radial-gradient(circle at 85% 80%, rgba(6, 182, 212, 0.15) 0%, transparent 40%);
+            overflow-x: hidden;
+        }
+
+        header {
+            background: rgba(15, 23, 42, 0.85);
+            backdrop-filter: blur(12px);
+            border-bottom: 1px solid var(--border-color);
+            padding: 1rem 2rem;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            position: sticky;
+            top: 0;
+            z-index: 100;
+        }
+
+        .logo {
+            display: flex;
+            align-items: center;
+            gap: 0.75rem;
+            font-weight: 700;
+            font-size: 1.35rem;
+            background: linear-gradient(135deg, #a5b4fc, #38bdf8);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+        }
+
+        .logo-icon {
+            width: 38px;
+            height: 38px;
+            background: linear-gradient(135deg, var(--primary), var(--accent));
+            border-radius: 10px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: white;
+            font-weight: 800;
+            box-shadow: 0 0 15px var(--primary-glow);
+        }
+
+        .user-status {
+            display: flex;
+            align-items: center;
+            gap: 1rem;
+        }
+
+        .badge {
+            background: rgba(16, 185, 129, 0.15);
+            color: var(--success);
+            border: 1px solid rgba(16, 185, 129, 0.3);
+            padding: 0.35rem 0.75rem;
+            border-radius: 20px;
+            font-size: 0.85rem;
+            font-weight: 600;
+            display: flex;
+            align-items: center;
+            gap: 0.4rem;
+        }
+
+        .badge-dot {
+            width: 8px;
+            height: 8px;
+            background: var(--success);
+            border-radius: 50%;
+            box-shadow: 0 0 8px var(--success);
+        }
+
+        main {
+            flex: 1;
+            padding: 2rem;
+            max-width: 1400px;
+            margin: 0 auto;
+            width: 100%;
+        }
+
+        .nav-tabs {
+            display: flex;
+            gap: 0.75rem;
+            margin-bottom: 2rem;
+            border-bottom: 1px solid var(--border-color);
+            padding-bottom: 0.75rem;
+        }
+
+        .tab-btn {
+            background: transparent;
+            border: none;
+            color: var(--text-muted);
+            padding: 0.75rem 1.25rem;
+            border-radius: 8px;
+            font-size: 0.95rem;
+            font-weight: 500;
+            cursor: pointer;
+            transition: all 0.25s ease;
+            font-family: inherit;
+        }
+
+        .tab-btn:hover {
+            color: var(--text-main);
+            background: rgba(255, 255, 255, 0.05);
+        }
+
+        .tab-btn.active {
+            color: white;
+            background: linear-gradient(135deg, var(--primary), #4f46e5);
+            box-shadow: 0 4px 12px var(--primary-glow);
+        }
+
+        .tab-content {
+            display: none;
+            animation: fadeIn 0.3s ease;
+        }
+
+        .tab-content.active {
+            display: block;
+        }
+
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(8px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+
+        .grid-2 {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 1.5rem;
+        }
+
+        .grid-3 {
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            gap: 1.5rem;
+        }
+
+        .card {
+            background: var(--bg-card);
+            backdrop-filter: blur(16px);
+            border: 1px solid var(--border-color);
+            border-radius: 16px;
+            padding: 1.5rem;
+            transition: all 0.3s ease;
+        }
+
+        .card:hover {
+            border-color: rgba(255, 255, 255, 0.2);
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.3);
+        }
+
+        .card-title {
+            font-size: 1.15rem;
+            font-weight: 600;
+            margin-bottom: 1.25rem;
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+            color: #e2e8f0;
+        }
+
+        .btn {
+            background: linear-gradient(135deg, var(--primary), #4f46e5);
+            color: white;
+            border: none;
+            padding: 0.65rem 1.25rem;
+            border-radius: 8px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.25s ease;
+            font-family: inherit;
+            display: inline-flex;
+            align-items: center;
+            gap: 0.5rem;
+        }
+
+        .btn:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 6px 15px var(--primary-glow);
+        }
+
+        .btn-outline {
+            background: transparent;
+            border: 1px solid var(--border-color);
+            color: var(--text-main);
+        }
+
+        .btn-outline:hover {
+            background: rgba(255, 255, 255, 0.08);
+        }
+
+        .btn-success {
+            background: linear-gradient(135deg, #10b981, #059669);
+        }
+
+        .btn-danger {
+            background: linear-gradient(135deg, #ef4444, #dc2626);
+        }
+
+        .progress-container {
+            margin: 1rem 0;
+        }
+
+        .progress-bar-bg {
+            height: 12px;
+            background: rgba(255, 255, 255, 0.1);
+            border-radius: 6px;
+            overflow: hidden;
+            position: relative;
+        }
+
+        .progress-bar-fill {
+            height: 100%;
+            width: 0%;
+            background: linear-gradient(90deg, var(--primary), var(--accent));
+            border-radius: 6px;
+            transition: width 0.3s ease;
+            box-shadow: 0 0 10px var(--primary-glow);
+        }
+
+        .progress-stats {
+            display: flex;
+            justify-content: space-between;
+            font-size: 0.85rem;
+            color: var(--text-muted);
+            margin-top: 0.5rem;
+        }
+
+        .console-box {
+            background: #020617;
+            border: 1px solid var(--border-color);
+            border-radius: 12px;
+            padding: 1rem;
+            font-family: 'JetBrains Mono', monospace;
+            font-size: 0.85rem;
+            color: #38bdf8;
+            height: 220px;
+            overflow-y: auto;
+            line-height: 1.6;
+        }
+
+        .log-entry {
+            margin-bottom: 0.25rem;
+        }
+
+        .log-info { color: #38bdf8; }
+        .log-success { color: #34d399; }
+        .log-warn { color: #fbbf24; }
+        .log-error { color: #f87171; }
+
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            font-size: 0.9rem;
+        }
+
+        th, td {
+            padding: 0.75rem 1rem;
+            text-align: left;
+            border-bottom: 1px solid var(--border-color);
+        }
+
+        th {
+            color: var(--text-muted);
+            font-weight: 500;
+        }
+
+        tr:hover {
+            background: rgba(255, 255, 255, 0.02);
+        }
+
+        .status-pill {
+            padding: 0.25rem 0.6rem;
+            border-radius: 12px;
+            font-size: 0.75rem;
+            font-weight: 600;
+        }
+
+        .status-active { background: rgba(16, 185, 129, 0.2); color: #34d399; }
+        .status-pending { background: rgba(245, 158, 11, 0.2); color: #fbbf24; }
+        .status-completed { background: rgba(99, 102, 241, 0.2); color: #a5b4fc; }
+
+        .arch-diagram {
+            display: flex;
+            flex-direction: column;
+            gap: 1.5rem;
+            align-items: center;
+        }
+
+        .arch-node {
+            background: rgba(30, 41, 59, 0.9);
+            border: 1px solid var(--primary);
+            border-radius: 12px;
+            padding: 1rem 2rem;
+            text-align: center;
+            box-shadow: 0 0 15px var(--primary-glow);
+            font-weight: 600;
+        }
+
+        .arch-row {
+            display: flex;
+            gap: 1.5rem;
+            justify-content: center;
+            width: 100%;
+        }
+
+        .input-group {
+            display: flex;
+            flex-direction: column;
+            gap: 0.4rem;
+            margin-bottom: 1rem;
+        }
+
+        .input-group label {
+            font-size: 0.85rem;
+            color: var(--text-muted);
+        }
+
+        .input-control {
+            background: rgba(15, 23, 42, 0.6);
+            border: 1px solid var(--border-color);
+            border-radius: 8px;
+            padding: 0.65rem 1rem;
+            color: white;
+            font-family: inherit;
+            font-size: 0.95rem;
+        }
+
+        .input-control:focus {
+            outline: none;
+            border-color: var(--primary);
+            box-shadow: 0 0 8px var(--primary-glow);
+        }
+    </style>
+</head>
+<body>
+
+    <header>
+        <div class="logo">
+            <div class="logo-icon">DF</div>
+            DataFlow Platform
+        </div>
+        <div class="user-status">
+            <div class="badge">
+                <div class="badge-dot"></div>
+                Kafka & Redis Online
+            </div>
+            <div style="font-size: 0.9rem; color: var(--text-muted);">User: <strong style="color: white;">admin</strong> (ROLE_ADMIN)</div>
+        </div>
+    </header>
+
+    <main>
+        <div class="nav-tabs">
+            <button class="tab-btn active" onclick="switchTab('overview')">🏛️ System Architecture</button>
+            <button class="tab-btn" onclick="switchTab('auth')">🔐 Auth & RBAC</button>
+            <button class="tab-btn" onclick="switchTab('jobs')">⚙️ Job Scheduler & Lock</button>
+            <button class="tab-btn" onclick="switchTab('data')">🚀 Large Data Processing (1M Records)</button>
+        </div>
+
+        <!-- TAB 1: OVERVIEW -->
+        <div id="overview" class="tab-content active">
+            <div class="grid-3" style="margin-bottom: 1.5rem;">
+                <div class="card">
+                    <div style="color: var(--text-muted); font-size: 0.85rem;">Total Microservices</div>
+                    <div style="font-size: 2rem; font-weight: 700; color: var(--primary); margin-top: 0.25rem;">5 Services</div>
+                    <div style="font-size: 0.8rem; color: var(--success); margin-top: 0.5rem;">Gateway, Auth, Job, Export, Import</div>
+                </div>
+                <div class="card">
+                    <div style="color: var(--text-muted); font-size: 0.85rem;">Export/Import Scale</div>
+                    <div style="font-size: 2rem; font-weight: 700; color: var(--accent); margin-top: 0.25rem;">1,000,000+</div>
+                    <div style="font-size: 0.8rem; color: var(--text-muted); margin-top: 0.5rem;">Records Async Kafka Processing</div>
+                </div>
+                <div class="card">
+                    <div style="color: var(--text-muted); font-size: 0.85rem;">Distributed Lock</div>
+                    <div style="font-size: 2rem; font-weight: 700; color: var(--success); margin-top: 0.25rem;">Redis Engine</div>
+                    <div style="font-size: 0.8rem; color: var(--success); margin-top: 0.5rem;">Chống Race Condition Scheduler</div>
+                </div>
+            </div>
+
+            <div class="card">
+                <div class="card-title">Architecture Topology</div>
+                <div class="arch-diagram">
+                    <div class="arch-node" style="border-color: #38bdf8;">🌐 Angular Single Page Application</div>
+                    <div style="color: var(--text-muted);">↓ (JWT Bearer Token / CORS)</div>
+                    <div class="arch-node" style="border-color: var(--primary); width: 80%;">🚪 Spring Cloud API Gateway (Port 8080)</div>
+                    <div style="color: var(--text-muted);">↓ Routing & Claims Header Propagation</div>
+                    <div class="arch-row">
+                        <div class="arch-node" style="flex: 1;">🔐 Auth Service<br><span style="font-size: 0.75rem; color: var(--text-muted);">Port 8081 | JWT & RBAC</span></div>
+                        <div class="arch-node" style="flex: 1;">⚙️ Job Service<br><span style="font-size: 0.75rem; color: var(--text-muted);">Port 8082 | Scheduler</span></div>
+                        <div class="arch-node" style="flex: 1;">📤 Export Service<br><span style="font-size: 0.75rem; color: var(--text-muted);">Port 8083 | 1M Records</span></div>
+                        <div class="arch-node" style="flex: 1;">📥 Import Service<br><span style="font-size: 0.75rem; color: var(--text-muted);">Port 8084 | Batch Insert</span></div>
+                    </div>
+                    <div style="color: var(--text-muted);">↓ Async Events & Distributed Cache</div>
+                    <div class="arch-row">
+                        <div class="arch-node" style="flex: 1; border-color: var(--warning);">⚡ Apache Kafka<br><span style="font-size: 0.75rem;">Topic: data.export.request</span></div>
+                        <div class="arch-node" style="flex: 1; border-color: var(--success);">🔴 Redis Cluster<br><span style="font-size: 0.75rem;">Distributed Lock & Progress</span></div>
+                        <div class="arch-node" style="flex: 1; border-color: var(--accent);">🗄️ MinIO S3<br><span style="font-size: 0.75rem;">Presigned XLSX File Links</span></div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- TAB 2: AUTH & RBAC -->
+        <div id="auth" class="tab-content">
+            <div class="grid-2">
+                <div class="card">
+                    <div class="card-title">🔐 JWT Authentication Console</div>
+                    <div class="input-group">
+                        <label>Tên đăng nhập (Username)</label>
+                        <input type="text" class="input-control" value="admin">
+                    </div>
+                    <div class="input-group">
+                        <label>Mật khẩu (Password)</label>
+                        <input type="password" class="input-control" value="admin123">
+                    </div>
+                    <button class="btn" onclick="simulateLogin()">Đăng nhập & Cấp JWT Token</button>
+
+                    <div style="margin-top: 1.5rem;">
+                        <label style="font-size: 0.85rem; color: var(--text-muted);">JWT Access Token Cấp Phát:</label>
+                        <div id="jwt-display" class="console-box" style="height: 100px; margin-top: 0.5rem; word-break: break-all;">
+                            eyJhbGciOiJIUzI1NiJ9.eyJzdWIiOiJhZG1pbiIsInVzZXJJZCI6MSwicm9sZXMiOlsiUk9MRV9BRE1JTiJdLCJwZXJtaXNzaW9ucyI6WyJKT0JfUkVBRCIsIkpPQl9FWEVDVVRFIiwiSk9CX01BTkFHRSIsIkVYUE9SVF9EQVRBIiwiSU1QT1JUX0RBVEEiXX0...
+                        </div>
+                    </div>
+                </div>
+
+                <div class="card">
+                    <div class="card-title">🛡️ RBAC Permissions Matrix</div>
+                    <p style="font-size: 0.85rem; color: var(--text-muted); margin-bottom: 1rem;">Quyền hạn được đính kèm trực tiếp vào JWT Claims và được API Gateway truyền tới các Microservices qua HTTP Headers.</p>
+                    
+                    <div style="display: flex; flex-direction: column; gap: 0.75rem;">
+                        <div style="display: flex; justify-content: space-between; align-items: center; background: rgba(255, 255, 255, 0.03); padding: 0.65rem 1rem; border-radius: 8px;">
+                            <span><code>JOB_READ</code> — Xem danh sách tác vụ</span>
+                            <span class="status-pill status-active">CẤP PHÉP</span>
+                        </div>
+                        <div style="display: flex; justify-content: space-between; align-items: center; background: rgba(255, 255, 255, 0.03); padding: 0.65rem 1rem; border-radius: 8px;">
+                            <span><code>JOB_EXECUTE</code> — Kích hoạt chạy Job</span>
+                            <span class="status-pill status-active">CẤP PHÉP</span>
+                        </div>
+                        <div style="display: flex; justify-content: space-between; align-items: center; background: rgba(255, 255, 255, 0.03); padding: 0.65rem 1rem; border-radius: 8px;">
+                            <span><code>EXPORT_DATA</code> — Xuất dữ liệu lớn 1M bản ghi</span>
+                            <span class="status-pill status-active">CẤP PHÉP</span>
+                        </div>
+                        <div style="display: flex; justify-content: space-between; align-items: center; background: rgba(255, 255, 255, 0.03); padding: 0.65rem 1rem; border-radius: 8px;">
+                            <span><code>IMPORT_DATA</code> — Import Excel Streaming Batch Insert</span>
+                            <span class="status-pill status-active">CẤP PHÉP</span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- TAB 3: JOBS -->
+        <div id="jobs" class="tab-content">
+            <div class="card" style="margin-bottom: 1.5rem;">
+                <div class="card-title">⚙️ Cron Job Management & Redis Distributed Lock</div>
+                <table>
+                    <thead>
+                        <tr>
+                            <th>Job Name</th>
+                            <th>Cron Expression</th>
+                            <th>Target Endpoint</th>
+                            <th>HTTP Method</th>
+                            <th>Status</th>
+                            <th>Actions</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr>
+                            <td><strong>SYNC_CUSTOMER_DATA</strong></td>
+                            <td><code>0 */5 * * * *</code></td>
+                            <td><code>/api/customers/sync</code></td>
+                            <td><span class="status-pill status-completed">POST</span></td>
+                            <td><span class="status-pill status-active">ACTIVE</span></td>
+                            <td>
+                                <button class="btn btn-success" style="padding: 0.35rem 0.75rem; font-size: 0.8rem;" onclick="triggerJob('SYNC_CUSTOMER_DATA')">▶ Run Now</button>
+                            </td>
+                        </tr>
+                        <tr>
+                            <td><strong>CLEANUP_AUDIT_LOGS</strong></td>
+                            <td><code>0 0 2 * * *</code></td>
+                            <td><code>/api/system/cleanup</code></td>
+                            <td><span class="status-pill status-completed">DELETE</span></td>
+                            <td><span class="status-pill status-active">ACTIVE</span></td>
+                            <td>
+                                <button class="btn btn-success" style="padding: 0.35rem 0.75rem; font-size: 0.8rem;" onclick="triggerJob('CLEANUP_AUDIT_LOGS')">▶ Run Now</button>
+                            </td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
+
+            <div class="card">
+                <div class="card-title">📜 Distributed Execution Logs (Redis Lock Status)</div>
+                <div id="job-console" class="console-box">
+                    <div class="log-entry log-info">[20:07:00] [JobScheduler] Active Jobs scanning... 2 jobs found.</div>
+                    <div class="log-entry log-success">[20:07:00] [RedisLock] Acquired Lock 'lock:job:1' for Instance 'node-1-uuid' (Expire: 5m)</div>
+                    <div class="log-entry log-info">[20:07:01] [JobExecution] Executing Job [SYNC_CUSTOMER_DATA] via /api/customers/sync</div>
+                    <div class="log-entry log-success">[20:07:01] [JobExecution] Execution COMPLETED successfully. Released Redis Lock.</div>
+                </div>
+            </div>
+        </div>
+
+        <!-- TAB 4: LARGE DATA PROCESSING -->
+        <div id="data" class="tab-content">
+            <div class="grid-2">
+                <div class="card">
+                    <div class="card-title">📤 Large Dataset Export (1,000,000 Records)</div>
+                    <p style="font-size: 0.85rem; color: var(--text-muted); margin-bottom: 1rem;">Gửi yêu cầu qua Kafka Topic `data.export.request` -> Worker tiêu thụ Chunks 250k bản ghi -> MinIO Presigned Download URL.</p>
+                    
+                    <button class="btn" onclick="startExportSimulation()">🚀 Kích hoạt Export 1,000,000 Records</button>
+
+                    <div class="progress-container">
+                        <div class="progress-stats">
+                            <span id="export-status-text">Trạng thái: Sẵn sàng</span>
+                            <span id="export-percent-text">0%</span>
+                        </div>
+                        <div class="progress-bar-bg">
+                            <div id="export-bar" class="progress-bar-fill"></div>
+                        </div>
+                    </div>
+
+                    <div id="export-download-area" style="display: none; margin-top: 1rem; padding: 1rem; background: rgba(16, 185, 129, 0.1); border: 1px solid rgba(16, 185, 129, 0.3); border-radius: 10px;">
+                        <div style="font-size: 0.9rem; font-weight: 600; color: #34d399; margin-bottom: 0.5rem;">✅ Xuất file hoàn tất thành công!</div>
+                        <a id="download-link" href="#" target="_blank" class="btn btn-success" style="font-size: 0.85rem;">📥 Tải file XLSX từ MinIO Storage</a>
+                    </div>
+                </div>
+
+                <div class="card">
+                    <div class="card-title">📥 Streaming Excel Import (Batch Insert 1,000 rows/lượt)</div>
+                    <p style="font-size: 0.85rem; color: var(--text-muted); margin-bottom: 1rem;">SAX Event Parser đọc luồng Excel -> Gom nhóm 1,000 bản ghi Batch Insert MySQL -> Tránh tràn RAM.</p>
+                    
+                    <button class="btn btn-outline" onclick="startImportSimulation()">⚡ Import 100,000 Customers Batch Insert</button>
+
+                    <div class="progress-container">
+                        <div class="progress-stats">
+                            <span id="import-status-text">Trạng thái: Sẵn sàng</span>
+                            <span id="import-percent-text">0%</span>
+                        </div>
+                        <div class="progress-bar-bg">
+                            <div id="import-bar" class="progress-bar-fill" style="background: linear-gradient(90deg, #06b6d4, #10b981);"></div>
+                        </div>
+                    </div>
+
+                    <div id="import-console" class="console-box" style="height: 110px;">
+                        <div class="log-entry log-info">Hệ thống sẵn sàng nhận file Excel...</div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </main>
+
+    <script>
+        function switchTab(tabId) {
+            document.querySelectorAll('.tab-btn').forEach(btn => btn.classList.remove('active'));
+            document.querySelectorAll('.tab-content').forEach(content => content.classList.remove('active'));
+            
+            event.target.classList.add('active');
+            document.getElementById(tabId).classList.add('active');
+        }
+
+        function simulateLogin() {
+            const display = document.getElementById('jwt-display');
+            display.innerText = 'Refreshing JWT Token...\nHeader: {"alg":"HS256","typ":"JWT"}\nPayload: {"sub":"admin","userId":1,"roles":["ROLE_ADMIN"],"permissions":["JOB_READ","JOB_EXECUTE","JOB_MANAGE","EXPORT_DATA","IMPORT_DATA"]}';
+        }
+
+        function triggerJob(jobName) {
+            const consoleBox = document.getElementById('job-console');
+            const now = new Date().toLocaleTimeString();
+            consoleBox.innerHTML += `<div class="log-entry log-warn">[${now}] [ManualTrigger] Triggering Job '${jobName}'...</div>`;
+            consoleBox.innerHTML += `<div class="log-entry log-success">[${now}] [RedisLock] Lock 'lock:job:${jobName}' acquired. Execution status: SUCCESS</div>`;
+            consoleBox.scrollTop = consoleBox.scrollHeight;
+        }
+
+        function startExportSimulation() {
+            const bar = document.getElementById('export-bar');
+            const statusText = document.getElementById('export-status-text');
+            const percentText = document.getElementById('export-percent-text');
+            const downloadArea = document.getElementById('export-download-area');
+
+            downloadArea.style.display = 'none';
+            let progress = 0;
+            statusText.innerText = 'Trạng thái: Đang xử lý Chunks Kafka...';
+
+            const interval = setInterval(() => {
+                progress += 25;
+                bar.style.width = progress + '%';
+                percentText.innerText = progress + '%';
+                statusText.innerText = `Đã xuất ${progress * 10000} / 1,000,000 bản ghi (${progress}%)`;
+
+                if (progress >= 100) {
+                    clearInterval(interval);
+                    statusText.innerText = 'Trạng thái: HOÀN THÀNH!';
+                    downloadArea.style.display = 'block';
+                    document.getElementById('download-link').href = 'http://localhost:9000/dataflow-exports/2026/09/export_transactions_1m.xlsx';
+                }
+            }, 500);
+        }
+
+        function startImportSimulation() {
+            const bar = document.getElementById('import-bar');
+            const statusText = document.getElementById('import-status-text');
+            const percentText = document.getElementById('import-percent-text');
+            const consoleBox = document.getElementById('import-console');
+
+            let progress = 0;
+            statusText.innerText = 'Trạng thái: Đang đọc Streaming SAX & Batch Insert...';
+
+            const interval = setInterval(() => {
+                progress += 20;
+                bar.style.width = progress + '%';
+                percentText.innerText = progress + '%';
+                
+                const now = new Date().toLocaleTimeString();
+                consoleBox.innerHTML += `<div class="log-entry log-info">[${now}] Batch Inserted ${progress * 1000} rows -> MySQL (Speed: 20,000 rows/s)</div>`;
+                consoleBox.scrollTop = consoleBox.scrollHeight;
+
+                if (progress >= 100) {
+                    clearInterval(interval);
+                    statusText.innerText = 'Trạng thái: HOÀN THÀNH!';
+                    consoleBox.innerHTML += `<div class="log-entry log-success">[${now}] ✅ Import 100,000 records COMPLETED successfully!</div>`;
+                    consoleBox.scrollTop = consoleBox.scrollHeight;
+                }
+            }, 400);
+        }
+    </script>
+</body>
+</html>
