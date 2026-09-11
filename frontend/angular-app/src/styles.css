@@ -2,16 +2,40 @@
 @import '@angular/cdk/overlay-prebuilt.css';
 @import 'ng-zorro-antd/ng-zorro-antd.min.css';
 
-:root {
-  --bg-main: #0f172a;
-  --bg-card: rgba(30, 41, 59, 0.8);
-  --bg-sidebar: #090d16;
+/* DARK THEME (DEFAULT) */
+:root, [data-theme="dark"] {
+  --bg-main: #0b0f19;
+  --bg-card: rgba(30, 41, 59, 0.85);
+  --bg-card-solid: #1e293b;
+  --bg-sider: #090d16;
+  --bg-header: rgba(15, 23, 42, 0.95);
   --border-color: rgba(255, 255, 255, 0.08);
   --text-main: #f8fafc;
   --text-muted: #94a3b8;
-  --accent-purple: #6366f1;
-  --accent-cyan: #38bdf8;
-  --accent-green: #10b981;
+  --text-sub: #64748b;
+  --primary: #6366f1;
+  --primary-hover: #4f46e5;
+  --input-bg: #0f172a;
+  --table-header-bg: #0f172a;
+  --card-shadow: 0 4px 20px rgba(0, 0, 0, 0.3);
+}
+
+/* LIGHT THEME */
+[data-theme="light"] {
+  --bg-main: #f1f5f9;
+  --bg-card: #ffffff;
+  --bg-card-solid: #ffffff;
+  --bg-sider: #ffffff;
+  --bg-header: #ffffff;
+  --border-color: #e2e8f0;
+  --text-main: #0f172a;
+  --text-muted: #475569;
+  --text-sub: #64748b;
+  --primary: #4f46e5;
+  --primary-hover: #4338ca;
+  --input-bg: #f8fafc;
+  --table-header-bg: #f1f5f9;
+  --card-shadow: 0 4px 12px rgba(0, 0, 0, 0.05);
 }
 
 body, html {
@@ -22,6 +46,7 @@ body, html {
   font-family: 'Outfit', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, Cantarell, sans-serif;
   background-color: var(--bg-main);
   color: var(--text-main);
+  transition: background-color 0.3s ease, color 0.3s ease;
   -webkit-font-smoothing: antialiased;
 }
 
@@ -32,77 +57,77 @@ body, html {
 }
 
 ::-webkit-scrollbar-track {
-  background: #0f172a;
+  background: var(--bg-main);
 }
 
 ::-webkit-scrollbar-thumb {
-  background: #334155;
+  background: var(--text-sub);
   border-radius: 3px;
 }
 
 ::-webkit-scrollbar-thumb:hover {
-  background: #475569;
+  background: var(--text-muted);
 }
 
-/* Custom Ant Design Overrides for Dark Theme */
+/* Custom Ant Design Overrides */
 .ant-modal-content {
-  background-color: #1e293b !important;
-  color: #f8fafc !important;
-  border: 1px solid rgba(255, 255, 255, 0.1) !important;
+  background-color: var(--bg-card-solid) !important;
+  color: var(--text-main) !important;
+  border: 1px solid var(--border-color) !important;
   border-radius: 12px !important;
-  box-shadow: 0 20px 25px -5px rgba(0, 0, 0, 0.5) !important;
+  box-shadow: var(--card-shadow) !important;
 }
 
 .ant-modal-header {
-  background-color: #1e293b !important;
-  border-bottom: 1px solid rgba(255, 255, 255, 0.08) !important;
+  background-color: var(--bg-card-solid) !important;
+  border-bottom: 1px solid var(--border-color) !important;
   border-radius: 12px 12px 0 0 !important;
 }
 
 .ant-modal-title {
-  color: #f8fafc !important;
+  color: var(--text-main) !important;
   font-weight: 700 !important;
 }
 
 .ant-modal-close-icon {
-  color: #94a3b8 !important;
+  color: var(--text-muted) !important;
 }
 
 .ant-form-item-label > label {
-  color: #cbd5e1 !important;
+  color: var(--text-main) !important;
   font-weight: 500;
 }
 
 .ant-input, .ant-select-selector {
-  background-color: #0f172a !important;
-  border-color: rgba(255, 255, 255, 0.12) !important;
-  color: #f8fafc !important;
+  background-color: var(--input-bg) !important;
+  border-color: var(--border-color) !important;
+  color: var(--text-main) !important;
   border-radius: 8px !important;
 }
 
 .ant-input:focus, .ant-input-focused {
-  border-color: #6366f1 !important;
+  border-color: var(--primary) !important;
   box-shadow: 0 0 0 2px rgba(99, 102, 241, 0.2) !important;
 }
 
 .ant-select-dropdown {
-  background-color: #1e293b !important;
-  border: 1px solid rgba(255, 255, 255, 0.1) !important;
+  background-color: var(--bg-card-solid) !important;
+  border: 1px solid var(--border-color) !important;
 }
 
 .ant-select-item {
-  color: #cbd5e1 !important;
+  color: var(--text-main) !important;
 }
 
 .ant-select-item-option-selected:not(.ant-select-item-option-disabled) {
-  background-color: rgba(99, 102, 241, 0.2) !important;
-  color: #818cf8 !important;
+  background-color: rgba(99, 102, 241, 0.15) !important;
+  color: var(--primary) !important;
 }
 
 .ant-message-notice-content {
-  background: #1e293b !important;
-  color: #f8fafc !important;
-  border: 1px solid rgba(255, 255, 255, 0.1) !important;
+  background: var(--bg-card-solid) !important;
+  color: var(--text-main) !important;
+  border: 1px solid var(--border-color) !important;
   border-radius: 8px !important;
-  box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.3) !important;
+  box-shadow: var(--card-shadow) !important;
 }

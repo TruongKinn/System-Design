@@ -68,6 +68,23 @@ export class AdminLayoutComponent implements OnInit {
 
   ngOnInit(): void {
     this.currentUser = this.authService.currentUser;
+    const savedTheme = localStorage.getItem('dataflow_theme');
+    if (savedTheme) {
+      this.isDarkMode = savedTheme === 'dark';
+    }
+    this.applyTheme();
+  }
+
+  toggleTheme(): void {
+    this.isDarkMode = !this.isDarkMode;
+    localStorage.setItem('dataflow_theme', this.isDarkMode ? 'dark' : 'light');
+    this.applyTheme();
+  }
+
+  private applyTheme(): void {
+    const theme = this.isDarkMode ? 'dark' : 'light';
+    document.documentElement.setAttribute('data-theme', theme);
+    document.body.setAttribute('data-theme', theme);
   }
 
   logout(): void {

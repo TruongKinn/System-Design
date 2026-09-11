@@ -20,7 +20,7 @@
     </div>
 
     <!-- Navigation Menu -->
-    <ul nz-menu nzMode="inline" nzTheme="dark" class="admin-menu">
+    <ul nz-menu nzMode="inline" [nzTheme]="isDarkMode ? 'dark' : 'light'" class="admin-menu">
       <li
         nz-menu-item
         *ngFor="let item of menuItems"
@@ -84,20 +84,32 @@
         </nz-breadcrumb>
       </div>
 
-      <!-- Right: Notifications + User Menu -->
+      <!-- Right: Search + Theme Toggle + Notifications + User Menu -->
       <div class="header-right">
         <!-- Search -->
         <nz-input-group [nzPrefix]="searchIcon" class="header-search">
-          <input nz-input placeholder="Tìm kiếm..." style="background: transparent; border: none; color: #f8fafc;"/>
+          <input nz-input placeholder="Tìm kiếm..." />
         </nz-input-group>
         <ng-template #searchIcon>
-          <span nz-icon nzType="search" style="color: #64748b;"></span>
+          <span nz-icon nzType="search" class="search-icon"></span>
         </ng-template>
+
+        <!-- Light / Dark Theme Switcher Button -->
+        <button 
+          nz-button 
+          nzType="text" 
+          class="theme-toggle-btn" 
+          (click)="toggleTheme()"
+          nz-tooltip
+          [nzTooltipTitle]="isDarkMode ? 'Chuyển sang Chế độ Sáng' : 'Chuyển sang Chế độ Tối'"
+          nzTooltipPlacement="bottom">
+          <span nz-icon [nzType]="isDarkMode ? 'sun' : 'moon'" nzTheme="outline"></span>
+        </button>
 
         <!-- Notifications -->
         <button nz-button nzType="text" class="header-icon-btn" nz-dropdown [nzDropdownMenu]="notifMenu">
           <nz-badge [nzCount]="notificationCount" [nzStyle]="{ backgroundColor: '#6366f1' }">
-            <span nz-icon nzType="bell" nzTheme="outline" style="font-size: 1.1rem;"></span>
+            <span nz-icon nzType="bell" nzTheme="outline"></span>
           </nz-badge>
         </button>
 
@@ -105,7 +117,7 @@
           <div class="notif-panel">
             <div class="notif-header">
               <strong>Thông báo Hệ thống</strong>
-              <a style="font-size: 0.78rem; color: #6366f1;">Đánh dấu tất cả</a>
+              <a class="mark-all-link">Đánh dấu tất cả</a>
             </div>
             <ul nz-menu>
               <li nz-menu-item class="notif-item">
@@ -133,14 +145,14 @@
           </div>
         </nz-dropdown-menu>
 
-        <!-- User Avatar + Dropdown -->
-        <div nz-dropdown [nzDropdownMenu]="userMenu" class="user-avatar-btn">
+        <!-- User Profile Dropdown Button -->
+        <div class="user-profile-wrapper" nz-dropdown [nzDropdownMenu]="userMenu" nzPlacement="bottomRight">
           <img [src]="avatarUrl" class="user-avatar" alt="Avatar"/>
-          <div class="user-info" *ngIf="true">
-            <div class="user-name">{{ currentUser?.username || 'Admin' }}</div>
-            <div class="user-role">{{ currentUser?.roles?.[0] || 'ROLE_ADMIN' }}</div>
+          <div class="user-info-text">
+            <span class="user-name">{{ currentUser?.username || 'admin' }}</span>
+            <span class="user-role">{{ currentUser?.roles?.[0] || 'ROLE_ADMIN' }}</span>
           </div>
-          <span nz-icon nzType="down" style="color: #64748b; font-size: 0.75rem;"></span>
+          <span nz-icon nzType="down" class="dropdown-arrow"></span>
         </div>
 
         <nz-dropdown-menu #userMenu="nzDropdownMenu">
@@ -176,10 +188,10 @@
           <span class="indicator-dot"></span>
           All Systems Operational
         </span>
-        <span style="color: #334155;">|</span>
-        <span style="color: #334155;">Microservices: 5/5 Running</span>
-        <span style="color: #334155;">|</span>
-        <span style="color: #334155;">Uptime: 99.9%</span>
+        <span class="divider">|</span>
+        <span class="sub-text">Microservices: 5/5 Running</span>
+        <span class="divider">|</span>
+        <span class="sub-text">Uptime: 99.9%</span>
       </div>
     </nz-footer>
   </nz-layout>

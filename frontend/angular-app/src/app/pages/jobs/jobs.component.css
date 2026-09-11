@@ -10,7 +10,7 @@
 }
 
 .header-title h2 {
-  color: #f8fafc;
+  color: var(--text-main);
   font-size: 20px;
   font-weight: 700;
   margin: 0;
@@ -20,7 +20,7 @@
 }
 
 .header-title .subtitle {
-  color: #94a3b8;
+  color: var(--text-muted);
   font-size: 13px;
   margin: 4px 0 0 0;
 }
@@ -38,19 +38,19 @@
 }
 
 .stat-mini-card {
-  background: rgba(30, 41, 59, 0.7);
-  border: 1px solid rgba(255, 255, 255, 0.08);
+  background: var(--bg-card);
+  border: 1px solid var(--border-color);
   border-radius: 12px;
   padding: 16px 20px;
   display: flex;
   flex-direction: column;
-  backdrop-filter: blur(8px);
+  box-shadow: var(--card-shadow);
 }
 
 .stat-label {
-  color: #94a3b8;
+  color: var(--text-muted);
   font-size: 12px;
-  font-weight: 500;
+  font-weight: 600;
   text-transform: uppercase;
   letter-spacing: 0.5px;
 }
@@ -62,14 +62,15 @@
 }
 
 .text-indigo { color: #818cf8; }
-.text-green { color: #34d399; }
-.text-amber { color: #fbbf24; }
+.text-green { color: #10b981; }
+.text-amber { color: #f59e0b; }
 .text-rose { color: #f43f5e; }
 
 .table-card {
-  background: rgba(30, 41, 59, 0.8) !important;
+  background: var(--bg-card) !important;
   border-radius: 12px !important;
-  border: 1px solid rgba(255, 255, 255, 0.08) !important;
+  border: 1px solid var(--border-color) !important;
+  box-shadow: var(--card-shadow) !important;
 }
 
 .job-name-cell {
@@ -79,7 +80,7 @@
 }
 
 .job-name {
-  color: #f1f5f9;
+  color: var(--text-main);
   font-weight: 600;
   font-family: 'JetBrains Mono', monospace;
 }
@@ -91,18 +92,18 @@
 }
 
 .desc-cell {
-  color: #94a3b8;
+  color: var(--text-muted);
   max-width: 250px;
 }
 
 .cron-code {
-  background: #0f172a;
+  background: var(--input-bg);
   color: #38bdf8;
   padding: 3px 8px;
   border-radius: 4px;
   font-family: 'JetBrains Mono', monospace;
   font-size: 12px;
-  border: 1px solid rgba(56, 189, 248, 0.2);
+  border: 1px solid var(--border-color);
 }
 
 .action-buttons {
@@ -113,14 +114,15 @@
 .btn-create {
   background: linear-gradient(135deg, #6366f1 0%, #4f46e5 100%) !important;
   border: none !important;
+  color: white !important;
   border-radius: 8px !important;
   box-shadow: 0 4px 12px rgba(99, 102, 241, 0.4);
 }
 
 .btn-refresh {
-  background: rgba(51, 65, 85, 0.6) !important;
-  border: 1px solid rgba(255, 255, 255, 0.1) !important;
-  color: #cbd5e1 !important;
+  background: var(--bg-card) !important;
+  border: 1px solid var(--border-color) !important;
+  color: var(--text-main) !important;
   border-radius: 8px !important;
 }
 
@@ -130,21 +132,21 @@
 
 ::ng-deep .ant-table {
   background: transparent !important;
-  color: #cbd5e1 !important;
+  color: var(--text-main) !important;
 }
 
 ::ng-deep .ant-table-thead > tr > th {
-  background: #0f172a !important;
-  color: #94a3b8 !important;
-  border-bottom: 1px solid rgba(255, 255, 255, 0.08) !important;
+  background: var(--table-header-bg) !important;
+  color: var(--text-muted) !important;
+  border-bottom: 1px solid var(--border-color) !important;
   font-size: 12px;
   text-transform: uppercase;
 }
 
 ::ng-deep .ant-table-tbody > tr > td {
-  border-bottom: 1px solid rgba(255, 255, 255, 0.05) !important;
+  border-bottom: 1px solid var(--border-color) !important;
 }
 
 ::ng-deep .ant-table-tbody > tr:hover > td {
-  background: rgba(51, 65, 85, 0.3) !important;
+  background: rgba(99, 102, 241, 0.05) !important;
 }
