@@ -1,6 +1,6 @@
 /* Dashboard Page Styles */
 .dashboard-page {
-  padding: 24px;
+  padding: 0 4px;
   display: flex;
   flex-direction: column;
   gap: 24px;
@@ -14,8 +14,8 @@
 }
 
 .stat-card {
-  background: rgba(30, 41, 59, 0.8);
-  border: 1px solid rgba(255, 255, 255, 0.08);
+  background: var(--bg-card);
+  border: 1px solid var(--border-color);
   border-radius: 16px;
   padding: 20px;
   display: flex;
@@ -24,20 +24,12 @@
   transition: all 0.3s ease;
   position: relative;
   overflow: hidden;
-}
-
-.stat-card::before {
-  content: '';
-  position: absolute;
-  inset: 0;
-  background: linear-gradient(135deg, rgba(255,255,255,0.02), transparent);
-  pointer-events: none;
+  box-shadow: var(--card-shadow);
 }
 
 .stat-card:hover {
-  transform: translateY(-4px);
-  box-shadow: 0 20px 40px rgba(0, 0, 0, 0.3);
-  border-color: rgba(255, 255, 255, 0.12);
+  transform: translateY(-3px);
+  border-color: rgba(99, 102, 241, 0.4);
 }
 
 .stat-icon {
@@ -57,7 +49,7 @@
 
 .stat-label {
   font-size: 0.78rem;
-  color: #64748b;
+  color: var(--text-muted);
   margin-bottom: 4px;
 }
 
@@ -65,12 +57,13 @@
   font-size: 1.6rem;
   font-weight: 800;
   line-height: 1;
+  color: var(--text-main);
   margin-bottom: 2px;
 }
 
 .stat-suffix {
   font-size: 0.75rem;
-  color: #475569;
+  color: var(--text-muted);
   text-transform: uppercase;
   letter-spacing: 0.5px;
 }
@@ -89,7 +82,7 @@
 }
 
 .stat-trend.positive {
-  background: rgba(16, 185, 129, 0.1);
+  background: rgba(16, 185, 129, 0.15);
   color: #10b981;
 }
 
@@ -105,15 +98,16 @@
 .activity-card,
 .kafka-card,
 .arch-card {
-  background: rgba(30, 41, 59, 0.8) !important;
-  border: 1px solid rgba(255, 255, 255, 0.08) !important;
+  background: var(--bg-card) !important;
+  border: 1px solid var(--border-color) !important;
   border-radius: 16px !important;
+  box-shadow: var(--card-shadow) !important;
 }
 
 :deep(.ant-card-head) {
   background: transparent !important;
-  border-bottom: 1px solid rgba(255, 255, 255, 0.06) !important;
-  color: #f8fafc !important;
+  border-bottom: 1px solid var(--border-color) !important;
+  color: var(--text-main) !important;
   font-size: 0.95rem !important;
   padding: 0 20px !important;
 }
@@ -131,8 +125,8 @@
 
 .service-item {
   padding: 12px;
-  background: rgba(15, 23, 42, 0.5);
-  border: 1px solid rgba(255, 255, 255, 0.05);
+  background: var(--input-bg);
+  border: 1px solid var(--border-color);
   border-radius: 10px;
 }
 
@@ -153,16 +147,10 @@
   width: 9px;
   height: 9px;
   border-radius: 50%;
-  animation: pulse-dot 2s infinite;
-}
-
-@keyframes pulse-dot {
-  0%, 100% { opacity: 1; transform: scale(1); }
-  50% { opacity: 0.6; transform: scale(0.8); }
 }
 
 .service-name-row strong {
-  color: #f8fafc;
+  color: var(--text-main);
   font-size: 0.875rem;
 }
 
@@ -191,7 +179,7 @@
 
 .metric-label {
   font-size: 0.7rem;
-  color: #64748b;
+  color: var(--text-muted);
   width: 32px;
   text-transform: uppercase;
   font-weight: 700;
@@ -206,14 +194,14 @@
 
 .activity-time {
   font-size: 0.72rem;
-  color: #475569;
+  color: var(--text-muted);
   font-family: 'JetBrains Mono', monospace;
 }
 
 .activity-event {
   margin: 0;
   font-size: 0.825rem;
-  color: #94a3b8;
+  color: var(--text-main);
   line-height: 1.4;
 }
 
@@ -226,28 +214,24 @@
 .kafka-table th {
   text-align: left;
   padding: 10px 12px;
-  background: rgba(15, 23, 42, 0.6);
-  color: #64748b;
+  background: var(--table-header-bg);
+  color: var(--text-muted);
   font-size: 0.75rem;
   text-transform: uppercase;
   letter-spacing: 0.5px;
-  border-bottom: 1px solid rgba(255, 255, 255, 0.06);
+  border-bottom: 1px solid var(--border-color);
 }
 
 .kafka-table td {
   padding: 10px 12px;
-  border-bottom: 1px solid rgba(255, 255, 255, 0.04);
-  color: #94a3b8;
+  border-bottom: 1px solid var(--border-color);
+  color: var(--text-main);
   font-size: 0.85rem;
 }
 
-.kafka-table tr:hover td {
-  background: rgba(255, 255, 255, 0.02);
-}
-
 .topic-name {
-  background: rgba(99, 102, 241, 0.1);
-  color: #818cf8;
+  background: rgba(99, 102, 241, 0.15);
+  color: #6366f1;
   padding: 2px 8px;
   border-radius: 4px;
   font-family: 'JetBrains Mono', monospace;
@@ -274,7 +258,7 @@
   font-size: 0.72rem;
   text-transform: uppercase;
   letter-spacing: 1px;
-  color: #475569;
+  color: var(--text-muted);
   font-weight: 700;
 }
 
@@ -286,7 +270,7 @@
 }
 
 .arch-arrow {
-  color: #334155;
+  color: var(--text-muted);
   font-size: 0.8rem;
   text-align: center;
   padding: 8px;
@@ -310,17 +294,17 @@
 .arch-node small {
   display: block;
   font-size: 0.7rem;
-  opacity: 0.7;
+  opacity: 0.8;
   font-family: 'JetBrains Mono', monospace;
 }
 
-.angular { border-color: #06b6d4; color: #06b6d4; background: rgba(6, 182, 212, 0.08); }
-.gateway { border-color: #6366f1; color: #6366f1; background: rgba(99, 102, 241, 0.08); }
-.auth { border-color: #10b981; color: #10b981; background: rgba(16, 185, 129, 0.08); }
-.job { border-color: #f59e0b; color: #f59e0b; background: rgba(245, 158, 11, 0.08); }
-.export { border-color: #ec4899; color: #ec4899; background: rgba(236, 72, 153, 0.08); }
-.import { border-color: #8b5cf6; color: #8b5cf6; background: rgba(139, 92, 246, 0.08); }
-.mysql { border-color: #06b6d4; color: #06b6d4; background: rgba(6, 182, 212, 0.08); }
-.redis { border-color: #ef4444; color: #ef4444; background: rgba(239, 68, 68, 0.08); }
-.kafka { border-color: #f59e0b; color: #f59e0b; background: rgba(245, 158, 11, 0.08); }
-.minio { border-color: #10b981; color: #10b981; background: rgba(16, 185, 129, 0.08); }
+.angular { border-color: #06b6d4; color: #06b6d4; background: rgba(6, 182, 212, 0.1); }
+.gateway { border-color: #6366f1; color: #6366f1; background: rgba(99, 102, 241, 0.1); }
+.auth { border-color: #10b981; color: #10b981; background: rgba(16, 185, 129, 0.1); }
+.job { border-color: #f59e0b; color: #f59e0b; background: rgba(245, 158, 11, 0.1); }
+.export { border-color: #ec4899; color: #ec4899; background: rgba(236, 72, 153, 0.1); }
+.import { border-color: #8b5cf6; color: #8b5cf6; background: rgba(139, 92, 246, 0.1); }
+.mysql { border-color: #06b6d4; color: #06b6d4; background: rgba(6, 182, 212, 0.1); }
+.redis { border-color: #ef4444; color: #ef4444; background: rgba(239, 68, 68, 0.1); }
+.kafka { border-color: #f59e0b; color: #f59e0b; background: rgba(245, 158, 11, 0.1); }
+.minio { border-color: #10b981; color: #10b981; background: rgba(16, 185, 129, 0.1); }

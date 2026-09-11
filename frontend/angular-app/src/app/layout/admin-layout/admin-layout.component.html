@@ -103,7 +103,8 @@
           nz-tooltip
           [nzTooltipTitle]="isDarkMode ? 'Chuyển sang Chế độ Sáng' : 'Chuyển sang Chế độ Tối'"
           nzTooltipPlacement="bottom">
-          <span nz-icon [nzType]="isDarkMode ? 'sun' : 'moon'" nzTheme="outline"></span>
+          <span class="theme-mode-icon" *ngIf="isDarkMode">☀️</span>
+          <span class="theme-mode-icon" *ngIf="!isDarkMode">🌙</span>
         </button>
 
         <!-- Notifications -->

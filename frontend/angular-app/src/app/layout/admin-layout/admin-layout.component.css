@@ -236,6 +236,17 @@
   justify-content: center !important;
 }
 
+.theme-mode-icon {
+  font-size: 1.25rem;
+  line-height: 1;
+  display: inline-block;
+  transition: transform 0.3s ease;
+}
+
+.theme-toggle-btn:hover .theme-mode-icon {
+  transform: rotate(20deg) scale(1.15);
+}
+
 .theme-toggle-btn:hover, .header-icon-btn:hover {
   background: rgba(99, 102, 241, 0.1) !important;
   color: var(--primary) !important;
