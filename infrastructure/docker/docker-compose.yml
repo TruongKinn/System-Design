@@ -2,22 +2,23 @@ version: '3.8'
 
 services:
   # -------------------------------------------------------------------
-  # MySQL Database Instance
+  # PostgreSQL Database Instance
   # -------------------------------------------------------------------
-  mysql:
-    image: mysql:8.0
-    container_name: dataflow-mysql
+  postgres:
+    image: postgres:16-alpine
+    container_name: dataflow-postgres
     environment:
-      MYSQL_ROOT_PASSWORD: rootpassword
-      MYSQL_DATABASE: dataflow_db
+      POSTGRES_DB: dataflow_db
+      POSTGRES_USER: postgres
+      POSTGRES_PASSWORD: postgres
     ports:
-      - "3307:3306"
+      - "5432:5432"
     volumes:
-      - mysql_data:/var/lib/mysql
+      - postgres_data:/var/lib/postgresql/data
     networks:
       - dataflow-net
     healthcheck:
-      test: ["CMD", "mysqladmin", "ping", "-h", "localhost"]
+      test: ["CMD-SHELL", "pg_isready -U postgres"]
       interval: 10s
       timeout: 5s
       retries: 5
@@ -94,6 +95,6 @@ networks:
     driver: bridge
 
 volumes:
-  mysql_data:
+  postgres_data:
   redis_data:
   minio_data:

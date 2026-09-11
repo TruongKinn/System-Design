@@ -74,8 +74,8 @@ DataFlow Platform là một hệ thống phân tán cấp doanh nghiệp (Enterp
 
 ## 4. Mô hình Dữ liệu & Lưu trữ (Data & Storage Layer)
 
-1. **MySQL Databases (Relational DB)**:
-   - Database per service pattern: `auth_db`, `job_db`, `export_db`, `import_db`.
+1. **PostgreSQL Databases (Relational DB)**:
+   - Database per service pattern: `auth_db`, `job_db`, `export_db`, `import_db` (PostgreSQL 16).
    - Lưu trữ thông tin tài khoản, RBAC, định nghĩa Job, Lịch sử Job Execution, Trạng thái Export/Import.
 2. **Redis Cache & Distributed Lock**:
    - **Distributed Lock**: Đảm bảo tại một thời điểm chỉ có 1 instance của Job Service kích hoạt một Cron Job.
