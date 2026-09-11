@@ -18,9 +18,16 @@
   left: 0 !important;
   top: 0 !important;
   z-index: 1000 !important;
-  overflow-y: auto;
-  overflow-x: hidden;
+  display: flex !important;
+  flex-direction: column !important;
+  overflow: hidden;
   transition: all 0.3s ease !important;
+}
+
+.admin-sider :deep(.ant-layout-sider-children) {
+  display: flex;
+  flex-direction: column;
+  height: 100%;
 }
 
 .sider-logo {
@@ -69,12 +76,37 @@
   letter-spacing: 1.5px;
 }
 
-/* Menu */
+/* Menu Container */
+.menu-container {
+  flex: 1;
+  overflow-y: auto;
+  overflow-x: hidden;
+  padding: 12px 0;
+}
+
 .admin-menu {
   background: transparent !important;
   border-right: none !important;
-  flex: 1;
-  padding: 12px 0;
+}
+
+/* MetisMenu Group Title */
+.menu-group-title {
+  padding: 14px 20px 6px 20px;
+  font-size: 0.68rem;
+  font-weight: 700;
+  color: var(--text-sub);
+  text-transform: uppercase;
+  letter-spacing: 1.2px;
+  pointer-events: none;
+}
+
+.menu-item-icon {
+  font-size: 1.1rem !important;
+  color: var(--primary) !important;
+}
+
+.menu-item-text {
+  font-weight: 500;
 }
 
 .admin-menu :deep(.ant-menu-item) {
@@ -102,6 +134,59 @@
 
 .admin-menu :deep(.ant-menu-item-selected::after) {
   display: none !important;
+}
+
+.admin-menu :deep(.ant-menu-submenu-title) {
+  margin: 4px 10px !important;
+  border-radius: 10px !important;
+  color: var(--text-muted) !important;
+  height: 44px !important;
+  line-height: 44px !important;
+  display: flex !important;
+  align-items: center !important;
+  gap: 10px !important;
+  transition: all 0.2s ease !important;
+}
+
+.admin-menu :deep(.ant-menu-submenu-title:hover) {
+  background: rgba(99, 102, 241, 0.12) !important;
+  color: var(--text-main) !important;
+}
+
+.admin-menu :deep(.ant-menu-sub) {
+  background: transparent !important;
+  padding-left: 8px !important;
+}
+
+/* Sider Toggle Collapse / Expand Bar (MetisMenu Footer Toggle) */
+.sider-toggle-bar {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  padding: 14px 20px;
+  background: rgba(99, 102, 241, 0.08);
+  border-top: 1px solid var(--border-color);
+  border-bottom: 1px solid var(--border-color);
+  cursor: pointer;
+  color: var(--text-main);
+  transition: all 0.2s ease;
+  user-select: none;
+  flex-shrink: 0;
+}
+
+.sider-toggle-bar:hover {
+  background: rgba(99, 102, 241, 0.18);
+  color: var(--primary);
+}
+
+.toggle-bar-icon {
+  font-size: 1.1rem;
+  color: var(--primary);
+}
+
+.toggle-bar-text {
+  font-size: 0.85rem;
+  font-weight: 600;
 }
 
 /* Sider bottom service health */
@@ -252,7 +337,7 @@
   color: var(--primary) !important;
 }
 
-/* User profile wrapper - Flexbox 1 hàng chuẩn */
+/* User profile wrapper */
 .user-profile-wrapper {
   display: flex;
   align-items: center;

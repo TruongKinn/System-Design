@@ -14,48 +14,60 @@ export class AdminLayoutComponent implements OnInit {
   currentUser: AuthUser | null = null;
   notificationCount = 3;
 
-  menuItems = [
+  // MetisMenu Style Accordion Items
+  menuGroups = [
     {
-      key: 'dashboard',
-      icon: 'dashboard',
-      label: 'Bảng Điều Khiển',
-      route: '/admin/dashboard',
-      badge: null
+      title: 'CHÍNH',
+      items: [
+        {
+          key: 'dashboard',
+          icon: 'dashboard',
+          label: 'Bảng Điều Khiển',
+          route: '/admin/dashboard',
+          badge: null
+        }
+      ]
     },
     {
-      key: 'jobs',
-      icon: 'schedule',
-      label: 'Quản Lý Cron Jobs',
-      route: '/admin/jobs',
-      badge: { count: 3, color: '#6366f1' }
+      title: 'TÁC VỤ & LẬP LỊCH',
+      items: [
+        {
+          key: 'job-group',
+          icon: 'schedule',
+          label: 'Quản Lý Cron Jobs',
+          children: [
+            { key: 'jobs', icon: 'schedule', label: 'Danh Sách Cron Jobs', route: '/admin/jobs', badge: { count: 3, color: '#6366f1' } }
+          ]
+        }
+      ]
     },
     {
-      key: 'exports',
-      icon: 'export',
-      label: 'Xuất Dữ Liệu Lớn',
-      route: '/admin/exports',
-      badge: null
+      title: 'XỬ LÝ DỮ LIỆU LỚN',
+      items: [
+        {
+          key: 'data-group',
+          icon: 'cloud-server',
+          label: 'Xuất / Nhập Dữ Liệu',
+          children: [
+            { key: 'exports', icon: 'export', label: 'Xuất Dữ Liệu Lớn (Async)', route: '/admin/exports' },
+            { key: 'imports', icon: 'import', label: 'Nhập Excel Streaming', route: '/admin/imports' }
+          ]
+        }
+      ]
     },
     {
-      key: 'imports',
-      icon: 'import',
-      label: 'Nhập Excel Streaming',
-      route: '/admin/imports',
-      badge: null
-    },
-    {
-      key: 'users',
-      icon: 'team',
-      label: 'Quản Lý Người Dùng',
-      route: '/admin/users',
-      badge: null
-    },
-    {
-      key: 'rbac',
-      icon: 'safety',
-      label: 'Phân Quyền RBAC',
-      route: '/admin/rbac',
-      badge: null
+      title: 'QUẢN TRỊ HỆ THỐNG',
+      items: [
+        {
+          key: 'system-group',
+          icon: 'team',
+          label: 'Người Dùng & Phân Quyền',
+          children: [
+            { key: 'users', icon: 'user', label: 'Quản Lý Người Dùng', route: '/admin/users' },
+            { key: 'rbac', icon: 'safety', label: 'Phân Quyền RBAC', route: '/admin/rbac' }
+          ]
+        }
+      ]
     }
   ];
 

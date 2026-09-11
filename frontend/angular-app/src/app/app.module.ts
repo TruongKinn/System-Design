@@ -6,6 +6,43 @@ import { FormsModule, ReactiveFormsModule } from '@angular/forms';
 import { registerLocaleData } from '@angular/common';
 import vi from '@angular/common/locales/vi';
 import { NZ_I18N, vi_VN } from 'ng-zorro-antd/i18n';
+import { NZ_ICONS } from 'ng-zorro-antd/icon';
+import {
+  DashboardOutline,
+  ScheduleOutline,
+  ExportOutline,
+  ImportOutline,
+  TeamOutline,
+  SafetyOutline,
+  MenuFoldOutline,
+  MenuUnfoldOutline,
+  SearchOutline,
+  BellOutline,
+  UserOutline,
+  SettingOutline,
+  LogoutOutline,
+  DownOutline,
+  RightOutline,
+  LockOutline,
+  SunOutline,
+  MoonOutline,
+  FileTextOutline,
+  InboxOutline,
+  ReloadOutline,
+  PlusOutline,
+  PlayCircleOutline,
+  PauseOutline,
+  CaretRightOutline,
+  HistoryOutline,
+  DownloadOutline,
+  ShieldOutline,
+  CloudServerOutline,
+  AppstoreOutline,
+  CodeSandboxOutline,
+  DatabaseOutline,
+  ToolOutline,
+  CrownOutline
+} from '@ant-design/icons-angular/icons';
 
 // Ant Design Modules
 import { NzLayoutModule } from 'ng-zorro-antd/layout';
@@ -60,6 +97,18 @@ import { LoginComponent } from './pages/login/login.component';
 
 registerLocaleData(vi);
 
+const icons = [
+  DashboardOutline, ScheduleOutline, ExportOutline, ImportOutline,
+  TeamOutline, SafetyOutline, MenuFoldOutline, MenuUnfoldOutline,
+  SearchOutline, BellOutline, UserOutline, SettingOutline,
+  LogoutOutline, DownOutline, RightOutline, LockOutline,
+  SunOutline, MoonOutline, FileTextOutline, InboxOutline,
+  ReloadOutline, PlusOutline, PlayCircleOutline, PauseOutline,
+  CaretRightOutline, HistoryOutline, DownloadOutline, ShieldOutline,
+  CloudServerOutline, AppstoreOutline, CodeSandboxOutline, DatabaseOutline,
+  ToolOutline, CrownOutline
+];
+
 const ANT_MODULES = [
   NzLayoutModule, NzMenuModule, NzIconModule, NzButtonModule,
   NzFormModule, NzInputModule, NzTableModule, NzCardModule,
@@ -90,6 +139,7 @@ const ANT_MODULES = [
   ],
   providers: [
     { provide: NZ_I18N, useValue: vi_VN },
+    { provide: NZ_ICONS, useValue: icons },
     { provide: HTTP_INTERCEPTORS, useClass: JwtInterceptor, multi: true }
   ],
   bootstrap: [AppComponent]

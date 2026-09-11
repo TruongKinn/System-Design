@@ -19,27 +19,68 @@
       </div>
     </div>
 
-    <!-- Navigation Menu -->
-    <ul nz-menu nzMode="inline" [nzTheme]="isDarkMode ? 'dark' : 'light'" class="admin-menu">
-      <li
-        nz-menu-item
-        *ngFor="let item of menuItems"
-        [routerLink]="item.route"
-        routerLinkActive="ant-menu-item-selected"
-        (click)="navigateTo(item.route, item.label)"
-        nz-tooltip
-        [nzTooltipTitle]="isCollapsed ? item.label : ''"
-        nzTooltipPlacement="right">
-        <span nz-icon [nzType]="item.icon" nzTheme="outline"></span>
-        <span *ngIf="!isCollapsed">{{ item.label }}</span>
-        <nz-badge
-          *ngIf="item.badge && !isCollapsed"
-          [nzCount]="item.badge.count"
-          [nzStyle]="{ backgroundColor: item.badge.color }"
-          style="margin-left: auto;">
-        </nz-badge>
-      </li>
-    </ul>
+    <!-- Navigation MetisMenu -->
+    <div class="menu-container">
+      <ul nz-menu nzMode="inline" [nzTheme]="isDarkMode ? 'dark' : 'light'" class="admin-menu" [nzInlineCollapsed]="isCollapsed">
+        <ng-container *ngFor="let group of menuGroups">
+          <li class="menu-group-title" *ngIf="!isCollapsed && group.title">{{ group.title }}</li>
+
+          <ng-container *ngFor="let item of group.items">
+            <!-- Single Menu Item (No Children) -->
+            <li
+              *ngIf="!item.children"
+              nz-menu-item
+              [routerLink]="item.route"
+              routerLinkActive="ant-menu-item-selected"
+              (click)="navigateTo(item.route, item.label)"
+              nz-tooltip
+              [nzTooltipTitle]="isCollapsed ? item.label : ''"
+              nzTooltipPlacement="right">
+              <span nz-icon [nzType]="item.icon" nzTheme="outline" class="menu-item-icon"></span>
+              <span class="menu-item-text" *ngIf="!isCollapsed">{{ item.label }}</span>
+              <nz-badge
+                *ngIf="item.badge && !isCollapsed"
+                [nzCount]="item.badge.count"
+                [nzStyle]="{ backgroundColor: item.badge.color }"
+                style="margin-left: auto;">
+              </nz-badge>
+            </li>
+
+            <!-- Submenu Collapsible & Expandable (Has Children) -->
+            <li
+              *ngIf="item.children"
+              nz-submenu
+              [nzTitle]="item.label"
+              [nzIcon]="item.icon"
+              nzOpen>
+              <ul>
+                <li
+                  *ngFor="let child of item.children"
+                  nz-menu-item
+                  [routerLink]="child.route"
+                  routerLinkActive="ant-menu-item-selected"
+                  (click)="navigateTo(child.route, child.label)">
+                  <span nz-icon [nzType]="child.icon" nzTheme="outline" class="menu-item-icon"></span>
+                  <span>{{ child.label }}</span>
+                  <nz-badge
+                    *ngIf="child.badge"
+                    [nzCount]="child.badge.count"
+                    [nzStyle]="{ backgroundColor: child.badge.color }"
+                    style="margin-left: auto;">
+                  </nz-badge>
+                </li>
+              </ul>
+            </li>
+          </ng-container>
+        </ng-container>
+      </ul>
+    </div>
+
+    <!-- MetisMenu Style Collapse / Expand Toggle Bar -->
+    <div class="sider-toggle-bar" (click)="toggleCollapse()" nz-tooltip [nzTooltipTitle]="isCollapsed ? 'Mở rộng Sidebar' : 'Thu gọn Sidebar'">
+      <span nz-icon [nzType]="isCollapsed ? 'menu-unfold' : 'menu-fold'" nzTheme="outline" class="toggle-bar-icon"></span>
+      <span class="toggle-bar-text" *ngIf="!isCollapsed">Thu gọn Sidebar</span>
+    </div>
 
     <!-- Sider Bottom Info -->
     <div class="sider-bottom" *ngIf="!isCollapsed">
