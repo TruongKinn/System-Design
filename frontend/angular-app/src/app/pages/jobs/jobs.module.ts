@@ -17,6 +17,7 @@ import { NzPopconfirmModule } from 'ng-zorro-antd/popconfirm';
 import { NzToolTipModule } from 'ng-zorro-antd/tooltip';
 import { NzTimelineModule } from 'ng-zorro-antd/timeline';
 import { NzDividerModule } from 'ng-zorro-antd/divider';
+import { NzBadgeModule } from 'ng-zorro-antd/badge';
 import { JobsComponent } from './jobs.component';
 
 @NgModule({
@@ -27,7 +28,7 @@ import { JobsComponent } from './jobs.component';
     NzTableModule, NzButtonModule, NzTagModule, NzModalModule,
     NzFormModule, NzInputModule, NzSelectModule, NzSwitchModule,
     NzIconModule, NzMessageModule, NzCardModule, NzPopconfirmModule,
-    NzToolTipModule, NzTimelineModule, NzDividerModule
+    NzToolTipModule, NzTimelineModule, NzDividerModule, NzBadgeModule
   ]
 })
 export class JobsModule {}
