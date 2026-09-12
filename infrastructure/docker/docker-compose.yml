@@ -90,6 +90,31 @@ services:
     networks:
       - dataflow-net
 
+  minio-init:
+    image: minio/mc:RELEASE.2023-09-02T03-24-48Z
+    container_name: dataflow-minio-init
+    depends_on:
+      - minio
+    entrypoint: >
+      /bin/sh -c "
+      echo 'Waiting for MinIO...';
+      until /usr/bin/mc alias set myminio http://minio:9000 minioadmin minioadmin; do
+        sleep 2;
+      done;
+      /usr/bin/mc mb myminio/exports --ignore-existing;
+      /usr/bin/mc anonymous set download myminio/exports;
+      echo 'id,transaction_id,amount,status,created_at
+      1,TXN-1001,1500000,SUCCESS,2026-09-01 10:00:00
+      2,TXN-1002,2300000,SUCCESS,2026-09-01 11:30:00
+      3,TXN-1003,500000,PENDING,2026-09-02 08:15:00
+      4,TXN-1004,8900000,SUCCESS,2026-09-02 14:20:00' > /tmp/transactions_q3_2026.csv;
+      /usr/bin/mc cp /tmp/transactions_q3_2026.csv myminio/exports/transactions_q3_2026.csv;
+      echo 'MinIO initialized successfully with public exports bucket and sample data.';
+      exit 0;
+      "
+    networks:
+      - dataflow-net
+
 networks:
   dataflow-net:
     driver: bridge

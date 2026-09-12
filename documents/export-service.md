@@ -75,3 +75,38 @@ Key Format: `export:progress:{exportJobId}` (Hash Structure)
 - `created_at`: Timestamp
 - `processed_at`: Timestamp
 
+---
+
+## 6. Cấu hình MinIO Object Storage & Cơ chế Download File
+
+### 6.1. Nguyên nhân lỗi AccessDenied từ MinIO
+Mặc định theo chuẩn AWS S3 API, mọi bucket mới tạo trên MinIO đều ở trạng thái **Private**. Khi client hoặc trình duyệt truy cập đường dẫn trực tiếp (ví dụ: `http://localhost:9000/exports/filename.csv`) mà không có chữ ký xác thực (S3 Signature/Presigned URL) hoặc bucket chưa cấu hình Anonymous Access, MinIO sẽ phản hồi:
+```xml
+<Error>
+  <Code>AccessDenied</Code>
+  <Message>Access Denied.</Message>
+</Error>
+```
+
+### 6.2. Giải pháp triển khai trong Hệ thống
+
+1. **Chế độ Public Read Bucket (`exports`)**:
+   - Sử dụng MinIO Client (`mc`) để cấp quyền ẩn danh `download`:
+     ```bash
+     mc anonymous set download myminio/exports
+     ```
+   - Tự động hóa qua container `dataflow-minio-init` trong `docker-compose.yml`: tự động khởi tạo bucket `exports`, set policy `download` và nạp sẵn dữ liệu mẫu.
+
+2. **Chế độ Presigned Download URL (Môi trường Production bảo mật cao)**:
+   - Export Service sinh link download có thời hạn (TTL) thông qua MinIO SDK:
+     ```java
+     GetPresignedObjectUrlArgs args = GetPresignedObjectUrlArgs.builder()
+         .method(Method.GET)
+         .bucket("exports")
+         .object(filePath)
+         .expiry(60 * 60) // Hết hạn sau 1 giờ
+         .build();
+     String presignedUrl = minioClient.getPresignedObjectUrl(args);
+     ```
+   - Bảo vệ file khỏi truy cập trái phép, chỉ người dùng sở hữu job export mới có link tải hợp lệ.
+
