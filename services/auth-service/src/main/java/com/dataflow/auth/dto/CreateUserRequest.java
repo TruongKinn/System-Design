@@ -11,14 +11,10 @@ import java.util.Set;
 @NoArgsConstructor
 @AllArgsConstructor
 @Builder
-public class UserProfileDto {
-    private Long id;
+public class CreateUserRequest {
     private String username;
+    private String password;
     private String email;
     private String fullName;
-    private String status;
     private Set<String> roles;
-    private Set<String> permissions;
-    private String createdAt;
-    private String updatedAt;
 }

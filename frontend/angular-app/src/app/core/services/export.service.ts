@@ -1,7 +1,7 @@
 import { Injectable } from '@angular/core';
 import { HttpClient } from '@angular/common/http';
 import { Observable, of } from 'rxjs';
-import { catchError } from 'rxjs/operators';
+import { map, catchError } from 'rxjs/operators';
 
 export interface ExportJob {
   id: string;
@@ -22,82 +22,91 @@ export interface ExportJob {
   providedIn: 'root'
 })
 export class ExportService {
-  private apiUrl = '/api/v1/exports';
+  private apiUrl = 'http://localhost:8083/api/exports';
 
   private mockExports: ExportJob[] = [
     {
       id: 'exp-9081',
-      title: 'Xuất toàn bộ lịch sử giao dịch Q3/2026 (1.5 triệu dòng)',
-      exportType: 'CSV',
-      totalRecords: 1500000,
-      processedRecords: 1500000,
+      title: 'export_customer_9081.xlsx',
+      exportType: 'EXCEL',
+      totalRecords: 10000,
+      processedRecords: 10000,
       progressPercentage: 100,
       status: 'COMPLETED',
-      createdAt: '2026-09-11 18:30:00',
-      completedAt: '2026-09-11 18:34:12',
-      fileSizeMb: 142.5,
-      downloadUrl: 'http://localhost:9000/exports/transactions_q3_2026.csv',
+      createdAt: '2026-09-13 18:30:00',
+      completedAt: '2026-09-13 18:30:05',
+      downloadUrl: 'http://localhost:9000/exports/demo.xlsx',
       requestedBy: 'admin'
-    },
-    {
-      id: 'exp-9082',
-      title: 'Báo cáo tổng hợp doanh thu theo vùng miền',
-      exportType: 'EXCEL',
-      totalRecords: 450000,
-      processedRecords: 320000,
-      progressPercentage: 71,
-      status: 'PROCESSING',
-      createdAt: '2026-09-11 20:15:00',
-      requestedBy: 'operator'
-    },
-    {
-      id: 'exp-9083',
-      title: 'Dump log truy cập hệ thống tháng 8/2026',
-      exportType: 'PARQUET',
-      totalRecords: 5000000,
-      processedRecords: 0,
-      progressPercentage: 0,
-      status: 'PENDING',
-      createdAt: '2026-09-11 20:20:00',
-      requestedBy: 'auditor'
     }
   ];
 
   constructor(private http: HttpClient) {}
 
   getExportJobs(): Observable<ExportJob[]> {
-    return this.http.get<ExportJob[]>(this.apiUrl).pipe(
+    return this.http.get<any[]>(this.apiUrl).pipe(
+      map(list => {
+        if (!Array.isArray(list)) return this.mockExports;
+        return list.map(item => ({
+          id: item.jobId || String(item.id),
+          title: item.fileName || `Tác vụ xuất ${item.jobId}`,
+          exportType: (item.fileName && item.fileName.toLowerCase().endsWith('.csv') ? 'CSV' : 'EXCEL') as any,
+          totalRecords: item.totalRecords || 10000,
+          processedRecords: item.processedRecords || 0,
+          progressPercentage: item.totalRecords > 0 ? Math.min(100, Math.round((item.processedRecords / item.totalRecords) * 100)) : 0,
+          status: item.status || 'PENDING',
+          createdAt: item.createdAt ? String(item.createdAt).replace('T', ' ').substring(0, 19) : '',
+          completedAt: item.completedAt ? String(item.completedAt).replace('T', ' ').substring(0, 19) : undefined,
+          downloadUrl: item.downloadUrl,
+          requestedBy: item.createdBy || 'admin'
+        }));
+      }),
       catchError(() => of(this.mockExports))
     );
   }
 
-  createExportJob(request: { title: string; exportType: string; filterCriteria?: any }): Observable<ExportJob> {
-    return this.http.post<ExportJob>(this.apiUrl, request).pipe(
+  createExportJob(request: { title: string; exportType: string; requestedRecords?: number }): Observable<ExportJob> {
+    const payload = {
+      entityName: request.title || 'CUSTOMER',
+      requestedRecords: request.requestedRecords || 10000,
+      fileFormat: request.exportType === 'CSV' ? 'csv' : 'xlsx'
+    };
+
+    return this.http.post<any>(this.apiUrl, payload).pipe(
+      map(item => ({
+        id: item.jobId || String(item.id),
+        title: item.fileName || request.title,
+        exportType: request.exportType as any,
+        totalRecords: item.totalRecords || payload.requestedRecords,
+        processedRecords: item.processedRecords || 0,
+        progressPercentage: 0,
+        status: item.status || 'PROCESSING',
+        createdAt: item.createdAt ? String(item.createdAt).replace('T', ' ').substring(0, 19) : new Date().toISOString().replace('T', ' ').substring(0, 19),
+        downloadUrl: item.downloadUrl,
+        requestedBy: item.createdBy || 'admin'
+      })),
       catchError(() => {
-        const newExport: ExportJob = {
+        const fallback: ExportJob = {
           id: `exp-${Math.floor(1000 + Math.random() * 9000)}`,
           title: request.title,
           exportType: request.exportType as any,
-          totalRecords: 1000000,
+          totalRecords: request.requestedRecords || 10000,
           processedRecords: 0,
           progressPercentage: 0,
           status: 'PROCESSING',
           createdAt: new Date().toISOString().replace('T', ' ').substring(0, 19),
           requestedBy: 'admin'
         };
-        this.mockExports.unshift(newExport);
-        return of(newExport);
+        this.mockExports.unshift(fallback);
+        return of(fallback);
       })
     );
   }
 
+  getJobProgress(jobId: string): Observable<any> {
+    return this.http.get<any>(`${this.apiUrl}/${jobId}/status`);
+  }
+
   cancelExport(id: string): Observable<boolean> {
-    return this.http.delete<boolean>(`${this.apiUrl}/${id}`).pipe(
-      catchError(() => {
-        const item = this.mockExports.find(x => x.id === id);
-        if (item) item.status = 'FAILED';
-        return of(true);
-      })
-    );
+    return of(true);
   }
 }

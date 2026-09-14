@@ -4,11 +4,19 @@ server:
 spring:
   application:
     name: import-service
+  servlet:
+    multipart:
+      enabled: true
+      max-file-size: 500MB
+      max-request-size: 500MB
   datasource:
     url: ${SPRING_DATASOURCE_URL:jdbc:postgresql://localhost:5432/dataflow_db}
     driver-class-name: ${SPRING_DATASOURCE_DRIVER:org.postgresql.Driver}
     username: ${SPRING_DATASOURCE_USERNAME:postgres}
     password: ${SPRING_DATASOURCE_PASSWORD:postgres}
+    hikari:
+      maximum-pool-size: 20
+      minimum-idle: 5
   data:
     redis:
       host: ${SPRING_REDIS_HOST:localhost}
@@ -16,12 +24,13 @@ spring:
   jpa:
     hibernate:
       ddl-auto: update
-    show-sql: true
+    show-sql: false
     properties:
       hibernate:
-        format_sql: true
+        format_sql: false
         dialect: org.hibernate.dialect.PostgreSQLDialect
         jdbc:
-          batch_size: 50
+          batch_size: 1000
         order_inserts: true
         order_updates: true
+

@@ -103,6 +103,13 @@ public class ExportService {
         return storageService.generatePresignedUrl(job.getFilePath());
     }
 
+    public java.util.List<ExportJobDto> getAllExportJobs() {
+        return exportJobRepository.findAll().stream()
+                .sorted((a, b) -> b.getCreatedAt() != null && a.getCreatedAt() != null ? b.getCreatedAt().compareTo(a.getCreatedAt()) : 0)
+                .map(this::mapToDto)
+                .collect(java.util.stream.Collectors.toList());
+    }
+
     private ExportJobDto mapToDto(ExportJob job) {
         return ExportJobDto.builder()
                 .id(job.getId())
@@ -117,6 +124,7 @@ public class ExportService {
                 .createdBy(job.getCreatedBy())
                 .createdAt(job.getCreatedAt())
                 .completedAt(job.getCompletedAt())
+                .downloadUrl("COMPLETED".equalsIgnoreCase(job.getStatus()) ? storageService.generatePresignedUrl(job.getFilePath()) : null)
                 .build();
     }
 }

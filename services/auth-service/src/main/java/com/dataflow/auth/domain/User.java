@@ -31,6 +31,9 @@ public class User {
     @Column(nullable = false)
     private String status; // ACTIVE, INACTIVE, BLOCKED
 
+    @Column(name = "full_name")
+    private String fullName;
+
     @ManyToMany(fetch = FetchType.EAGER)
     @JoinTable(
         name = "user_roles",

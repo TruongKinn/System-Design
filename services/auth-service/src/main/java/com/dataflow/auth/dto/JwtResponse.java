@@ -13,9 +13,14 @@ import java.util.Set;
 @Builder
 public class JwtResponse {
     private String token;
+    private String accessToken;
     private String refreshToken;
     @Builder.Default
     private String type = "Bearer";
+
+    public String getAccessToken() {
+        return accessToken != null ? accessToken : token;
+    }
     private Long id;
     private String username;
     private String email;

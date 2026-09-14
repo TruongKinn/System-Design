@@ -35,6 +35,10 @@ public class JwtAuthenticationFilter extends AbstractGatewayFilterFactory<JwtAut
         return (exchange, chain) -> {
             ServerHttpRequest request = exchange.getRequest();
 
+            if (org.springframework.http.HttpMethod.OPTIONS.equals(request.getMethod())) {
+                return chain.filter(exchange);
+            }
+
             if (!request.getHeaders().containsKey(HttpHeaders.AUTHORIZATION)) {
                 exchange.getResponse().setStatusCode(HttpStatus.UNAUTHORIZED);
                 return exchange.getResponse().setComplete();

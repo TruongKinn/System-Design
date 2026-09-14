@@ -5,7 +5,13 @@
       <h2><span nz-icon nzType="import" nzTheme="outline"></span> Nhập Dữ Liệu Hàng Loạt (Batch Data Ingestion)</h2>
       <p class="subtitle">Tải lên file dữ liệu CSV, Excel, Parquet để thực hiện nạp dữ liệu số lượng lớn với cơ chế Batch Insert & Validation</p>
     </div>
-    <div class="header-actions">
+    <div class="header-actions" style="display: flex; gap: 8px;">
+      <button nz-button nzType="dashed" (click)="downloadSampleTemplate()" style="border-color: #6366f1; color: #a5b4fc;">
+        <span nz-icon nzType="download"></span> File Mẫu (.CSV)
+      </button>
+      <button nz-button nzType="dashed" (click)="downloadSampleExcelTemplate()" style="border-color: #10b981; color: #6ee7b7;">
+        <span nz-icon nzType="file-excel"></span> File Mẫu (.XLSX)
+      </button>
       <button nz-button nzType="default" (click)="loadBatches()" class="btn-refresh">
         <span nz-icon nzType="reload"></span> Làm mới
       </button>
@@ -57,7 +63,7 @@
           <td><span class="text-green font-bold">{{ batch.successRows | number }}</span></td>
           <td><span class="text-rose font-bold" *ngIf="batch.errorRows > 0">{{ batch.errorRows | number }}</span><span *ngIf="batch.errorRows === 0">0</span></td>
           <td>
-            <nz-progress [nzPercent]="batch.progressPercentage" nzSize="small" [nzStatus]="batch.status === 'COMPLETED' ? 'success' : 'active'"></nz-progress>
+            <nz-progress [nzPercent]="batch.progressPercentage" nzSize="small" [nzStatus]="batch.status === 'COMPLETED' ? 'success' : (batch.status === 'FAILED' ? 'exception' : 'active')"></nz-progress>
           </td>
           <td>
             <nz-badge [nzStatus]="getStatusBadge(batch.status)" [nzText]="batch.status"></nz-badge>

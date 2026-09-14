@@ -42,10 +42,16 @@ export class AuthService {
   login(username: string, password: string): Observable<LoginResponse> {
     return this.http.post<LoginResponse>(`${this.API_URL}/auth/login`, { username, password }).pipe(
       tap(res => {
-        localStorage.setItem(this.ACCESS_TOKEN_KEY, res.accessToken);
-        localStorage.setItem(this.REFRESH_TOKEN_KEY, res.refreshToken);
+        const token = (res as any).token || res.accessToken;
+        const refreshToken = (res as any).refreshToken || res.refreshToken;
+        if (token) {
+          localStorage.setItem(this.ACCESS_TOKEN_KEY, token);
+        }
+        if (refreshToken) {
+          localStorage.setItem(this.REFRESH_TOKEN_KEY, refreshToken);
+        }
         const user: AuthUser = {
-          userId: res.userId,
+          userId: res.userId || (res as any).id,
           username: res.username,
           email: res.email,
           roles: res.roles,
@@ -100,8 +106,9 @@ export class AuthService {
     const refreshToken = localStorage.getItem(this.REFRESH_TOKEN_KEY);
     return this.http.post<any>(`${this.API_URL}/auth/refresh`, { refreshToken }).pipe(
       tap(res => {
-        if (res.accessToken) {
-          localStorage.setItem(this.ACCESS_TOKEN_KEY, res.accessToken);
+        const token = res.token || res.accessToken;
+        if (token) {
+          localStorage.setItem(this.ACCESS_TOKEN_KEY, token);
         }
       })
     );

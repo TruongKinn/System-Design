@@ -17,7 +17,7 @@ spring:
         - id: auth-service-secured
           uri: ${AUTH_SERVICE_URI:http://localhost:8081}
           predicates:
-            - Path=/api/auth/me, /api/users/**
+            - Path=/api/auth/me, /api/users, /api/users/**
           filters:
             - JwtAuthenticationFilter
 
@@ -33,7 +33,7 @@ spring:
         - id: export-service
           uri: ${EXPORT_SERVICE_URI:http://localhost:8083}
           predicates:
-            - Path=/api/exports/**
+            - Path=/api/exports, /api/exports/**, /api/v1/exports, /api/v1/exports/**
           filters:
             - JwtAuthenticationFilter
 
@@ -41,7 +41,7 @@ spring:
         - id: import-service
           uri: ${IMPORT_SERVICE_URI:http://localhost:8084}
           predicates:
-            - Path=/api/imports/**
+            - Path=/api/imports, /api/imports/**, /api/v1/imports, /api/v1/imports/**
           filters:
             - JwtAuthenticationFilter
 

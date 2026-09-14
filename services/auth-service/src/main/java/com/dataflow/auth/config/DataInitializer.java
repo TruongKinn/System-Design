@@ -25,10 +25,6 @@ public class DataInitializer implements CommandLineRunner {
 
     @Override
     public void run(String... args) throws Exception {
-        if (userRepository.count() > 0) {
-            return;
-        }
-
         // 1. Create Permissions
         Permission permJobRead = createPermissionIfNotFound("JOB_READ", "Permission to read jobs");
         Permission permJobExecute = createPermissionIfNotFound("JOB_EXECUTE", "Permission to execute jobs");
@@ -53,19 +49,42 @@ public class DataInitializer implements CommandLineRunner {
 
         Role operatorRole = createRoleIfNotFound("ROLE_OPERATOR", "Operator Role", operatorPermissions);
 
-        // 4. Create Initial Admin User
+        // 4. Create or Update Initial Admin User
         Set<Role> adminRoles = new HashSet<>();
         adminRoles.add(adminRole);
 
-        User adminUser = User.builder()
-                .username("admin")
-                .password(passwordEncoder.encode("admin123"))
-                .email("admin@dataflow.com")
-                .status("ACTIVE")
-                .roles(adminRoles)
-                .build();
+        userRepository.findByUsername("admin").ifPresentOrElse(existingAdmin -> {
+            existingAdmin.setPassword(passwordEncoder.encode("Admin@123"));
+            if (existingAdmin.getFullName() == null) {
+                existingAdmin.setFullName("Quản trị viên Hệ thống");
+            }
+            userRepository.save(existingAdmin);
+        }, () -> {
+            User adminUser = User.builder()
+                    .username("admin")
+                    .fullName("Quản trị viên Hệ thống")
+                    .password(passwordEncoder.encode("Admin@123"))
+                    .email("admin@dataflow.com")
+                    .status("ACTIVE")
+                    .roles(adminRoles)
+                    .build();
+            userRepository.save(adminUser);
+        });
 
-        userRepository.save(adminUser);
+        // 5. Create Initial Operator User
+        if (!userRepository.existsByUsername("operator")) {
+            Set<Role> operRoles = new HashSet<>();
+            operRoles.add(operatorRole);
+            User operUser = User.builder()
+                    .username("operator")
+                    .fullName("Trần Văn Vận Hành")
+                    .password(passwordEncoder.encode("Oper@123"))
+                    .email("operator@dataflow.com")
+                    .status("ACTIVE")
+                    .roles(operRoles)
+                    .build();
+            userRepository.save(operUser);
+        }
     }
 
     private Permission createPermissionIfNotFound(String code, String description) {

@@ -16,6 +16,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.util.HashSet;
+import java.util.List;
 import java.util.Set;
 import java.util.stream.Collectors;
 
@@ -52,6 +53,7 @@ public class AuthService {
 
         return JwtResponse.builder()
                 .token(token)
+                .accessToken(token)
                 .refreshToken(refreshToken)
                 .type("Bearer")
                 .id(user.getId())
@@ -127,6 +129,7 @@ public class AuthService {
 
         return JwtResponse.builder()
                 .token(newAccessToken)
+                .accessToken(newAccessToken)
                 .refreshToken(newRefreshToken)
                 .type("Bearer")
                 .id(user.getId())
@@ -135,6 +138,70 @@ public class AuthService {
                 .roles(roles)
                 .permissions(permissions)
                 .build();
+    }
+
+    @Transactional(readOnly = true)
+    public List<UserProfileDto> getAllUsers() {
+        return userRepository.findAll().stream()
+                .map(this::getUserProfile)
+                .collect(Collectors.toList());
+    }
+
+    @Transactional
+    public UserProfileDto createUser(CreateUserRequest request) {
+        if (userRepository.existsByUsername(request.getUsername())) {
+            throw new IllegalArgumentException("Username already taken: " + request.getUsername());
+        }
+
+        if (userRepository.existsByEmail(request.getEmail())) {
+            throw new IllegalArgumentException("Email already in use: " + request.getEmail());
+        }
+
+        Set<Role> roles = new HashSet<>();
+        if (request.getRoles() != null && !request.getRoles().isEmpty()) {
+            for (String roleName : request.getRoles()) {
+                Role role = roleRepository.findByName(roleName)
+                        .orElseGet(() -> roleRepository.save(Role.builder()
+                                .name(roleName)
+                                .description("Role " + roleName)
+                                .build()));
+                roles.add(role);
+            }
+        } else {
+            Role defaultRole = roleRepository.findByName("ROLE_VIEWER")
+                    .orElseGet(() -> roleRepository.save(Role.builder()
+                            .name("ROLE_VIEWER")
+                            .description("Default Viewer Role")
+                            .build()));
+            roles.add(defaultRole);
+        }
+
+        User user = User.builder()
+                .username(request.getUsername())
+                .fullName(request.getFullName() != null && !request.getFullName().isBlank() ? request.getFullName() : request.getUsername())
+                .email(request.getEmail())
+                .password(passwordEncoder.encode(request.getPassword() != null && !request.getPassword().isBlank() ? request.getPassword() : "Dataflow@123"))
+                .status("ACTIVE")
+                .roles(roles)
+                .build();
+
+        User savedUser = userRepository.save(user);
+        return getUserProfile(savedUser);
+    }
+
+    @Transactional
+    public UserProfileDto toggleUserStatus(Long id) {
+        User user = userRepository.findById(id)
+                .orElseThrow(() -> new RuntimeException("User not found with id: " + id));
+
+        if ("ACTIVE".equalsIgnoreCase(user.getStatus())) {
+            user.setStatus("LOCKED");
+        } else {
+            user.setStatus("ACTIVE");
+        }
+
+        User updatedUser = userRepository.save(user);
+        return getUserProfile(updatedUser);
     }
 
     private UserProfileDto getUserProfile(User user) {
@@ -151,9 +218,12 @@ public class AuthService {
                 .id(user.getId())
                 .username(user.getUsername())
                 .email(user.getEmail())
+                .fullName(user.getFullName())
                 .status(user.getStatus())
                 .roles(roles)
                 .permissions(permissions)
+                .createdAt(user.getCreatedAt() != null ? user.getCreatedAt().toString() : null)
+                .updatedAt(user.getUpdatedAt() != null ? user.getUpdatedAt().toString() : null)
                 .build();
     }
 }

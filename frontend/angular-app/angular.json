@@ -34,8 +34,8 @@
               "budgets": [
                 {
                   "type": "initial",
-                  "maximumWarning": "500kb",
-                  "maximumError": "1mb"
+                  "maximumWarning": "3mb",
+                  "maximumError": "5mb"
                 }
               ],
               "outputHashing": "all"
@@ -50,6 +50,9 @@
         },
         "serve": {
           "builder": "@angular-devkit/build-angular:dev-server",
+          "options": {
+            "proxyConfig": "proxy.conf.json"
+          },
           "configurations": {
             "production": {
               "buildTarget": "dataflow-angular-admin:build:production"

@@ -54,6 +54,20 @@
             <scope>runtime</scope>
         </dependency>
 
+        <!-- Apache POI Streaming Reader for Excel Imports -->
+        <dependency>
+            <groupId>org.apache.poi</groupId>
+            <artifactId>poi-ooxml</artifactId>
+            <version>5.2.5</version>
+        </dependency>
+
+        <!-- Apache Commons CSV -->
+        <dependency>
+            <groupId>org.apache.commons</groupId>
+            <artifactId>commons-csv</artifactId>
+            <version>1.10.0</version>
+        </dependency>
+
         <!-- Utility & Dev Tools -->
         <dependency>
             <groupId>org.projectlombok</groupId>

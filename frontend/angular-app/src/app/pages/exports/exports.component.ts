@@ -11,6 +11,7 @@ export class ExportsComponent implements OnInit, OnDestroy {
   exportJobs: ExportJob[] = [];
   loading = false;
   timerInterval: any;
+  activePollingCountdown = 0;
 
   // New Export Modal state
   isModalVisible = false;
@@ -26,21 +27,18 @@ export class ExportsComponent implements OnInit, OnDestroy {
   ngOnInit(): void {
     this.loadExports();
 
-    // Simulating progress polling every 3 seconds for active exports
+    // Polling active exports every 2 seconds
     this.timerInterval = setInterval(() => {
-      this.exportJobs.forEach(job => {
-        if (job.status === 'PROCESSING') {
-          job.progressPercentage = Math.min(100, job.progressPercentage + 15);
-          job.processedRecords = Math.min(job.totalRecords, Math.floor(job.totalRecords * (job.progressPercentage / 100)));
-          if (job.progressPercentage >= 100) {
-            job.status = 'COMPLETED';
-            job.fileSizeMb = 85.4;
-            job.downloadUrl = `http://localhost:9000/exports/${job.id}_data.${job.exportType.toLowerCase()}`;
-            this.message.success(`Tác vụ xuất dữ liệu [${job.title}] đã hoàn tất!`);
-          }
+      const hasActive = this.activePollingCountdown > 0 || this.exportJobs.some(j => j.status === 'PROCESSING' || j.status === 'PENDING');
+      if (hasActive) {
+        if (this.activePollingCountdown > 0) {
+          this.activePollingCountdown--;
         }
-      });
-    }, 3000);
+        this.exportService.getExportJobs().subscribe(data => {
+          this.exportJobs = data;
+        });
+      }
+    }, 2000);
   }
 
   ngOnDestroy(): void {
@@ -71,11 +69,13 @@ export class ExportsComponent implements OnInit, OnDestroy {
     }
     this.exportService.createExportJob({
       title: this.exportTitle,
-      exportType: this.exportType
+      exportType: this.exportType,
+      requestedRecords: this.recordCountEstimate || 10000
     }).subscribe(job => {
       this.message.success('Đã gửi yêu cầu xuất dữ liệu vào hàng chờ Async!');
       this.isModalVisible = false;
       this.exportTitle = '';
+      this.activePollingCountdown = 15;
       this.loadExports();
     });
   }

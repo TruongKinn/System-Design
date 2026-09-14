@@ -13,9 +13,12 @@ export class UsersComponent implements OnInit {
 
   // Create User Modal state
   isModalVisible = false;
+  isSubmitting = false;
+  passwordVisible = false;
   username = '';
   fullName = '';
   email = '';
+  password = '';
   selectedRoles: string[] = ['ROLE_OPERATOR'];
 
   constructor(
@@ -41,6 +44,11 @@ export class UsersComponent implements OnInit {
   }
 
   openCreateModal(): void {
+    this.username = '';
+    this.fullName = '';
+    this.email = '';
+    this.password = '';
+    this.selectedRoles = ['ROLE_OPERATOR'];
     this.isModalVisible = true;
   }
 
@@ -49,18 +57,33 @@ export class UsersComponent implements OnInit {
       this.message.error('Vui lòng điền đầy đủ tên đăng nhập và email!');
       return;
     }
+    if (!this.password || this.password.length < 6) {
+      this.message.error('Mật khẩu phải có ít nhất 6 ký tự!');
+      return;
+    }
+
+    this.isSubmitting = true;
     this.userService.createUser({
-      username: this.username,
-      fullName: this.fullName,
-      email: this.email,
+      username: this.username.trim(),
+      fullName: this.fullName.trim() || this.username.trim(),
+      email: this.email.trim(),
+      password: this.password,
       roles: this.selectedRoles
-    }).subscribe(() => {
-      this.message.success('Tạo tài khoản người dùng thành công!');
-      this.isModalVisible = false;
-      this.username = '';
-      this.fullName = '';
-      this.email = '';
-      this.loadUsers();
+    }).subscribe({
+      next: () => {
+        this.isSubmitting = false;
+        this.message.success('Tạo tài khoản người dùng thành công!');
+        this.isModalVisible = false;
+        this.username = '';
+        this.fullName = '';
+        this.email = '';
+        this.password = '';
+        this.loadUsers();
+      },
+      error: (err) => {
+        this.isSubmitting = false;
+        this.message.error(err?.error?.message || 'Có lỗi khi tạo tài khoản. Vui lòng thử lại!');
+      }
     });
   }
 

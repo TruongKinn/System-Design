@@ -8,6 +8,7 @@ export interface User {
   username: string;
   email: string;
   fullName: string;
+  password?: string;
   roles: string[];
   status: 'ACTIVE' | 'LOCKED' | 'INACTIVE';
   lastLoginAt?: string;
@@ -26,7 +27,7 @@ export interface RolePermission {
   providedIn: 'root'
 })
 export class UserService {
-  private apiUrl = '/api/v1/users';
+  private apiUrl = 'http://localhost:8080/api/users';
 
   private mockUsers: User[] = [
     {
@@ -111,8 +112,8 @@ export class UserService {
     );
   }
 
-  toggleUserStatus(id: number): Observable<boolean> {
-    return this.http.put<boolean>(`${this.apiUrl}/${id}/toggle-status`, {}).pipe(
+  toggleUserStatus(id: number): Observable<any> {
+    return this.http.put<any>(`${this.apiUrl}/${id}/toggle-status`, {}).pipe(
       catchError(() => {
         const user = this.mockUsers.find(u => u.id === id);
         if (user) {

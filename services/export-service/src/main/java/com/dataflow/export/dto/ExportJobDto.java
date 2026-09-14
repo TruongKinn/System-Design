@@ -24,4 +24,5 @@ public class ExportJobDto {
     private String createdBy;
     private LocalDateTime createdAt;
     private LocalDateTime completedAt;
+    private String downloadUrl;
 }

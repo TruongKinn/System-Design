@@ -70,6 +70,7 @@
             nzTitle="Thêm người dùng mới vào DataFlow Platform" 
             (nzOnOk)="handleCreate()" 
             (nzOnCancel)="isModalVisible = false"
+            [nzOkLoading]="isSubmitting"
             [nzOkText]="'Tạo Tài Khoản'"
             [nzCancelText]="'Hủy bỏ'">
     <ng-container *nzModalContent>
@@ -78,6 +79,18 @@
           <nz-form-label nzRequired>Tên đăng nhập (Username)</nz-form-label>
           <nz-form-control>
             <input nz-input [(ngModel)]="username" name="username" placeholder="vd: operator02" />
+          </nz-form-control>
+        </nz-form-item>
+
+        <nz-form-item>
+          <nz-form-label nzRequired>Mật khẩu khởi tạo</nz-form-label>
+          <nz-form-control>
+            <nz-input-group [nzSuffix]="suffixTemplate">
+              <input nz-input [type]="passwordVisible ? 'text' : 'password'" [(ngModel)]="password" name="password" placeholder="Tối thiểu 6 ký tự" />
+            </nz-input-group>
+            <ng-template #suffixTemplate>
+              <span nz-icon [nzType]="passwordVisible ? 'eye-invisible' : 'eye'" (click)="passwordVisible = !passwordVisible" style="cursor: pointer;"></span>
+            </ng-template>
           </nz-form-control>
         </nz-form-item>
 
