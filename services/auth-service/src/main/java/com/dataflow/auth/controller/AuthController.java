@@ -36,4 +36,13 @@ public class AuthController {
         }
         return ResponseEntity.ok(authService.getCurrentUserProfile(authentication.getName()));
     }
+
+    @PostMapping("/change-password")
+    public ResponseEntity<?> changePassword(Authentication authentication, @RequestBody ChangePasswordRequest request) {
+        if (authentication == null) {
+            return ResponseEntity.status(401).build();
+        }
+        authService.changePassword(authentication.getName(), request);
+        return ResponseEntity.ok(java.util.Map.of("success", true, "message", "Đổi mật khẩu thành công!"));
+    }
 }

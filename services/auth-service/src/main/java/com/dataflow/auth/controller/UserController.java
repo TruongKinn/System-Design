@@ -31,4 +31,10 @@ public class UserController {
     public ResponseEntity<UserProfileDto> toggleUserStatus(@PathVariable Long id) {
         return ResponseEntity.ok(authService.toggleUserStatus(id));
     }
+
+    @PutMapping("/{id}/reset-password")
+    public ResponseEntity<?> resetPassword(@PathVariable Long id, @RequestBody com.dataflow.auth.dto.AdminResetPasswordRequest request) {
+        authService.adminResetPassword(id, request);
+        return ResponseEntity.ok(java.util.Map.of("success", true, "message", "Đổi mật khẩu tài khoản thành công!"));
+    }
 }

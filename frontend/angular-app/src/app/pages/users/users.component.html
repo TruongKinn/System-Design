@@ -34,7 +34,7 @@
           <th nzWidth="105px">Trạng thái</th>
           <th nzWidth="145px">Đăng nhập cuối</th>
           <th nzWidth="135px">Ngày tạo</th>
-          <th nzWidth="120px" nzRight="0px">Hành động</th>
+          <th nzWidth="180px" nzRight="0px">Hành động</th>
         </tr>
       </thead>
       <tbody>
@@ -82,14 +82,24 @@
             <span class="timestamp-text">{{ formatDate(u.createdAt) }}</span>
           </td>
           <td class="nowrap-cell" nzRight="0px">
-            <button nz-button 
-                    [nzType]="u.status === 'ACTIVE' ? 'dashed' : 'primary'" 
-                    nzSize="small" 
-                    [nzDanger]="u.status === 'ACTIVE'"
-                    (click)="toggleStatus(u)">
-              <span nz-icon [nzType]="u.status === 'ACTIVE' ? 'lock' : 'unlock'"></span>
-              {{ u.status === 'ACTIVE' ? 'Khóa TK' : 'Mở khóa' }}
-            </button>
+            <div class="action-buttons-group">
+              <button nz-button 
+                      nzType="default" 
+                      nzSize="small"
+                      class="btn-action-key"
+                      (click)="openResetModal(u)"
+                      title="Đổi mật khẩu cho người dùng này">
+                <span nz-icon nzType="key"></span> Đổi Pass
+              </button>
+              <button nz-button 
+                      [nzType]="u.status === 'ACTIVE' ? 'dashed' : 'primary'" 
+                      nzSize="small" 
+                      [nzDanger]="u.status === 'ACTIVE'"
+                      (click)="toggleStatus(u)">
+                <span nz-icon [nzType]="u.status === 'ACTIVE' ? 'lock' : 'unlock'"></span>
+                {{ u.status === 'ACTIVE' ? 'Khóa' : 'Mở' }}
+              </button>
+            </div>
           </td>
         </tr>
       </tbody>
@@ -152,4 +162,42 @@
       </form>
     </ng-container>
   </nz-modal>
+
+  <!-- Reset Password Modal (Quản trị viên đổi mật khẩu cho tài khoản) -->
+  <nz-modal [(nzVisible)]="isResetModalVisible" 
+            [nzTitle]="'🔑 Đổi Mật Khẩu Tài Khoản [' + (resetUser?.username || '') + ']'" 
+            (nzOnOk)="handleResetPassword()" 
+            (nzOnCancel)="isResetModalVisible = false"
+            [nzOkLoading]="isResetSubmitting"
+            [nzOkText]="'Lưu Mật Khẩu Mới'"
+            [nzCancelText]="'Hủy bỏ'">
+    <ng-container *nzModalContent>
+      <form nz-form nzLayout="vertical">
+        <div class="alert-info-box" style="background: rgba(99, 102, 241, 0.08); border: 1px solid rgba(99, 102, 241, 0.2); border-radius: 8px; padding: 10px 14px; margin-bottom: 16px; color: var(--text-main); font-size: 13px; display: flex; align-items: center; gap: 8px;">
+          <span nz-icon nzType="info-circle" nzTheme="outline" style="color: #6366f1; font-size: 16px;"></span>
+          <span>Quản trị viên đang thiết lập lại mật khẩu cho người dùng <strong>{{ resetUser?.fullName || resetUser?.username }}</strong>. Mật khẩu mới sẽ có hiệu lực ngay lập tức.</span>
+        </div>
+
+        <nz-form-item>
+          <nz-form-label nzRequired>Mật khẩu mới</nz-form-label>
+          <nz-form-control>
+            <nz-input-group [nzSuffix]="resetSuffixTemplate">
+              <input nz-input [type]="newPasswordVisible ? 'text' : 'password'" [(ngModel)]="newPassword" name="newPassword" placeholder="Tối thiểu 6 ký tự" />
+            </nz-input-group>
+            <ng-template #resetSuffixTemplate>
+              <span nz-icon [nzType]="newPasswordVisible ? 'eye-invisible' : 'eye'" (click)="newPasswordVisible = !newPasswordVisible" style="cursor: pointer;"></span>
+            </ng-template>
+          </nz-form-control>
+        </nz-form-item>
+
+        <nz-form-item>
+          <nz-form-label nzRequired>Xác nhận mật khẩu mới</nz-form-label>
+          <nz-form-control>
+            <input nz-input [type]="newPasswordVisible ? 'text' : 'password'" [(ngModel)]="confirmPassword" name="confirmPassword" placeholder="Nhập lại mật khẩu mới" />
+          </nz-form-control>
+        </nz-form-item>
+      </form>
+    </ng-container>
+  </nz-modal>
 </div>
+

@@ -16,6 +16,14 @@ export class UsersComponent implements OnInit {
   // Map lưu trạng thái ẩn/hiện password cho từng user id
   passwordVisibilityMap: { [userId: number]: boolean } = {};
 
+  // Reset Password Modal state (Dành cho Admin đổi pass cho user)
+  isResetModalVisible = false;
+  isResetSubmitting = false;
+  resetUser: User | null = null;
+  newPassword = '';
+  confirmPassword = '';
+  newPasswordVisible = false;
+
   // Create User Modal state
   isModalVisible = false;
   isSubmitting = false;
@@ -130,6 +138,42 @@ export class UsersComponent implements OnInit {
       this.message.success('Đã sao chép mật khẩu vào bộ nhớ tạm!');
     }).catch(() => {
       this.message.info('Mật khẩu: ' + pwd);
+    });
+  }
+
+  openResetModal(user: User): void {
+    this.resetUser = user;
+    this.newPassword = '';
+    this.confirmPassword = '';
+    this.newPasswordVisible = false;
+    this.isResetModalVisible = true;
+  }
+
+  handleResetPassword(): void {
+    if (!this.resetUser) return;
+    if (!this.newPassword || this.newPassword.length < 6) {
+      this.message.error('Mật khẩu mới phải có ít nhất 6 ký tự!');
+      return;
+    }
+    if (this.newPassword !== this.confirmPassword) {
+      this.message.error('Mật khẩu xác nhận không trùng khớp!');
+      return;
+    }
+
+    this.isResetSubmitting = true;
+    this.userService.resetPassword(this.resetUser.id, this.newPassword).subscribe({
+      next: () => {
+        this.isResetSubmitting = false;
+        this.message.success(`Đổi mật khẩu cho tài khoản [${this.resetUser?.username}] thành công!`);
+        this.isResetModalVisible = false;
+        this.loadUsers();
+      },
+      error: (err) => {
+        this.isResetSubmitting = false;
+        console.error('Error resetting password:', err);
+        const errMsg = err?.error?.message || 'Có lỗi xảy ra khi đổi mật khẩu!';
+        this.message.error(errMsg);
+      }
     });
   }
 

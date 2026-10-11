@@ -16,6 +16,7 @@ import { NzInputModule } from 'ng-zorro-antd/input';
 import { NzSelectModule } from 'ng-zorro-antd/select';
 import { NzMessageModule } from 'ng-zorro-antd/message';
 import { NzAvatarModule } from 'ng-zorro-antd/avatar';
+import { NzAlertModule } from 'ng-zorro-antd/alert';
 
 import { UsersComponent } from './users.component';
 
@@ -43,7 +44,8 @@ const routes: Routes = [
     NzInputModule,
     NzSelectModule,
     NzMessageModule,
-    NzAvatarModule
+    NzAvatarModule,
+    NzAlertModule
   ]
 })
 export class UsersModule { }

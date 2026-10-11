@@ -1,6 +1,7 @@
 import { Component, OnInit, HostListener } from '@angular/core';
 import { Router } from '@angular/router';
 import { AuthService, AuthUser } from '../../core/services/auth.service';
+import { UserService } from '../../core/services/user.service';
 import { NzMessageService } from 'ng-zorro-antd/message';
 
 export interface MenuBadge {
@@ -42,6 +43,15 @@ export class AdminLayoutComponent implements OnInit {
 
   // Profile Modal State
   isProfileModalVisible = false;
+
+  // Change Password State (User đổi mật khẩu của chính mình)
+  isChangePasswordVisible = false;
+  oldPassword = '';
+  myNewPassword = '';
+  myConfirmPassword = '';
+  isPasswordSubmitting = false;
+  oldPasswordVisible = false;
+  newPasswordVisible = false;
 
   // Settings Modal State
   isSettingsModalVisible = false;
@@ -124,6 +134,7 @@ export class AdminLayoutComponent implements OnInit {
 
   constructor(
     private authService: AuthService,
+    private userService: UserService,
     private router: Router,
     private message: NzMessageService
   ) {}
@@ -183,6 +194,46 @@ export class AdminLayoutComponent implements OnInit {
   openProfileModal(): void {
     this.currentUser = this.authService.currentUser;
     this.isProfileModalVisible = true;
+  }
+
+  openChangePasswordModal(): void {
+    this.oldPassword = '';
+    this.myNewPassword = '';
+    this.myConfirmPassword = '';
+    this.oldPasswordVisible = false;
+    this.newPasswordVisible = false;
+    this.isChangePasswordVisible = true;
+  }
+
+  submitChangePassword(): void {
+    if (!this.oldPassword) {
+      this.message.error('Vui lòng nhập mật khẩu hiện tại!');
+      return;
+    }
+    if (!this.myNewPassword || this.myNewPassword.length < 6) {
+      this.message.error('Mật khẩu mới phải có ít nhất 6 ký tự!');
+      return;
+    }
+    if (this.myNewPassword !== this.myConfirmPassword) {
+      this.message.error('Mật khẩu xác nhận không trùng khớp!');
+      return;
+    }
+
+    this.isPasswordSubmitting = true;
+    this.userService.changeMyPassword(this.oldPassword, this.myNewPassword).subscribe({
+      next: () => {
+        this.isPasswordSubmitting = false;
+        this.message.success('Đổi mật khẩu thành công! Vui lòng ghi nhớ mật khẩu mới.');
+        this.isChangePasswordVisible = false;
+        this.isProfileModalVisible = false;
+      },
+      error: (err) => {
+        this.isPasswordSubmitting = false;
+        console.error('Error changing password:', err);
+        const errMsg = err?.error?.message || 'Có lỗi xảy ra khi đổi mật khẩu!';
+        this.message.error(errMsg);
+      }
+    });
   }
 
   openSettingsModal(): void {

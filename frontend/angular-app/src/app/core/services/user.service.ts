@@ -43,6 +43,14 @@ export class UserService {
     return this.http.put<any>(`${this.apiUrl}/${id}/toggle-status`, {});
   }
 
+  resetPassword(id: number, newPassword: string): Observable<any> {
+    return this.http.put<any>(`${this.apiUrl}/${id}/reset-password`, { newPassword });
+  }
+
+  changeMyPassword(oldPassword: string, newPassword: string): Observable<any> {
+    return this.http.post<any>('http://localhost:8080/api/auth/change-password', { oldPassword, newPassword });
+  }
+
   getRoles(): Observable<RolePermission[]> {
     return this.http.get<RolePermission[]>(this.rolesUrl);
   }

@@ -275,8 +275,57 @@
       </div>
     </ng-container>
     <ng-template #profileFooter>
-      <button nz-button nzType="primary" (click)="isProfileModalVisible = false">Đóng</button>
+      <div style="display: flex; justify-content: space-between; width: 100%;">
+        <button nz-button nzType="default" (click)="openChangePasswordModal()" style="border-color: #6366f1; color: #818cf8;">
+          <span nz-icon nzType="key"></span> Đổi Mật Khẩu
+        </button>
+        <button nz-button nzType="primary" (click)="isProfileModalVisible = false">Đóng</button>
+      </div>
     </ng-template>
+  </nz-modal>
+
+  <!-- Modal Đổi Mật Khẩu Cá Nhân -->
+  <nz-modal [(nzVisible)]="isChangePasswordVisible" 
+            nzTitle="🔑 Đổi Mật Khẩu Cá Nhân" 
+            (nzOnOk)="submitChangePassword()" 
+            (nzOnCancel)="isChangePasswordVisible = false"
+            [nzOkLoading]="isPasswordSubmitting"
+            [nzOkText]="'Xác Nhận Đổi Mật Khẩu'"
+            [nzCancelText]="'Hủy bỏ'">
+    <ng-container *nzModalContent>
+      <form nz-form nzLayout="vertical">
+        <nz-form-item>
+          <nz-form-label nzRequired>Mật khẩu hiện tại</nz-form-label>
+          <nz-form-control>
+            <nz-input-group [nzSuffix]="oldSuffix">
+              <input nz-input [type]="oldPasswordVisible ? 'text' : 'password'" [(ngModel)]="oldPassword" name="oldPassword" placeholder="Nhập mật khẩu đang dùng" />
+            </nz-input-group>
+            <ng-template #oldSuffix>
+              <span nz-icon [nzType]="oldPasswordVisible ? 'eye-invisible' : 'eye'" (click)="oldPasswordVisible = !oldPasswordVisible" style="cursor: pointer;"></span>
+            </ng-template>
+          </nz-form-control>
+        </nz-form-item>
+
+        <nz-form-item>
+          <nz-form-label nzRequired>Mật khẩu mới</nz-form-label>
+          <nz-form-control>
+            <nz-input-group [nzSuffix]="newSuffix">
+              <input nz-input [type]="newPasswordVisible ? 'text' : 'password'" [(ngModel)]="myNewPassword" name="myNewPassword" placeholder="Tối thiểu 6 ký tự" />
+            </nz-input-group>
+            <ng-template #newSuffix>
+              <span nz-icon [nzType]="newPasswordVisible ? 'eye-invisible' : 'eye'" (click)="newPasswordVisible = !newPasswordVisible" style="cursor: pointer;"></span>
+            </ng-template>
+          </nz-form-control>
+        </nz-form-item>
+
+        <nz-form-item>
+          <nz-form-label nzRequired>Xác nhận mật khẩu mới</nz-form-label>
+          <nz-form-control>
+            <input nz-input [type]="newPasswordVisible ? 'text' : 'password'" [(ngModel)]="myConfirmPassword" name="myConfirmPassword" placeholder="Nhập lại mật khẩu mới" />
+          </nz-form-control>
+        </nz-form-item>
+      </form>
+    </ng-container>
   </nz-modal>
 
   <!-- Modal Cài Đặt Hệ Thống -->
