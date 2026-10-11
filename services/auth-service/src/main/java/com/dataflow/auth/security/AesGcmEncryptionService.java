@@ -30,12 +30,33 @@ public class AesGcmEncryptionService {
     @Value("${app.security.aes-gcm.secret-key:DataFlowPlatformAES256GCMSecretKey2026!}")
     private String secretKeyString;
 
+    private final org.springframework.beans.factory.ObjectProvider<VaultSecretService> vaultSecretServiceProvider;
+
     private SecretKey secretKey;
     private final SecureRandom secureRandom = new SecureRandom();
 
+    public AesGcmEncryptionService(org.springframework.beans.factory.ObjectProvider<VaultSecretService> vaultSecretServiceProvider) {
+        this.vaultSecretServiceProvider = vaultSecretServiceProvider;
+    }
+
     @PostConstruct
     public void init() {
-        byte[] keyBytes = secretKeyString.getBytes(StandardCharsets.UTF_8);
+        String activeKey = null;
+        VaultSecretService vaultSecretService = vaultSecretServiceProvider.getIfAvailable();
+        if (vaultSecretService != null) {
+            java.util.Optional<String> vaultKey = vaultSecretService.getSecretKey("aes_gcm_key");
+            if (vaultKey.isPresent() && !vaultKey.get().trim().isEmpty()) {
+                activeKey = vaultKey.get().trim();
+                log.info("[AesGcmEncryptionService] Loaded AES-256-GCM master key directly from HashiCorp Vault!");
+            }
+        }
+
+        if (activeKey == null) {
+            log.info("[AesGcmEncryptionService] Using fallback AES-256-GCM secret key from application configuration.");
+            activeKey = secretKeyString;
+        }
+
+        byte[] keyBytes = activeKey.getBytes(StandardCharsets.UTF_8);
         byte[] validKey256 = new byte[32]; // 256 bits = 32 bytes
         System.arraycopy(keyBytes, 0, validKey256, 0, Math.min(keyBytes.length, 32));
         this.secretKey = new SecretKeySpec(validKey256, "AES");

@@ -105,6 +105,24 @@ services:
       timeout: 5s
       retries: 5
 
+  vault:
+    image: hashicorp/vault:latest
+    container_name: dataflow-vault
+    environment:
+      VAULT_DEV_ROOT_TOKEN_ID: 00000000-0000-0000-0000-000000000000
+      VAULT_DEV_LISTEN_ADDRESS: 0.0.0.0:8200
+    ports:
+      - "8200:8200"
+    cap_add:
+      - IPC_LOCK
+    networks:
+      - dataflow-net
+    healthcheck:
+      test: ["CMD", "vault", "status"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+
   # -------------------------------------------------------------------
   # Application Layer: Microservices
   # NOTE: Cần build JAR trước khi chạy: mvn clean package -DskipTests
@@ -122,8 +140,15 @@ services:
       SPRING_DATASOURCE_USERNAME: postgres
       SPRING_DATASOURCE_PASSWORD: postgres
       JWT_SECRET: DataFlowPlatformSuperSecretKeyForJWTAuthTokenGeneration2026!
+      VAULT_ENABLED: "true"
+      VAULT_URI: http://vault:8200
+      VAULT_TOKEN: 00000000-0000-0000-0000-000000000000
+      VAULT_SECRET_PATH: secret/data/auth-service
+      AES_GCM_SECRET_KEY: DataFlowPlatformAES256GCMSecretKey2026!
     depends_on:
       postgres:
+        condition: service_healthy
+      vault:
         condition: service_healthy
     networks:
       - dataflow-net
