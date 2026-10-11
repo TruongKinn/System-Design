@@ -307,3 +307,45 @@ public void init() {
 3. **Kiểm tra API giải mã**:
    - Khi gọi API `GET /api/users` với tài khoản `ROLE_ADMIN`, hệ thống tự động giải mã `raw_password` sử dụng khóa master từ Vault và hiển thị mật khẩu gốc `"Admin@123"` cho quản trị viên xem.
 
+---
+
+## 9. Màn Hình Trực Quan: Crypto Studio & Vault Management (UI / UX)
+
+### 9.1. Giới thiệu Màn Hình (`/admin/crypto`)
+Cung cấp môi trường kiểm thử trực quan (Interactive Cryptography Studio) cho Quản trị viên và Đội ngũ An ninh hệ thống:
+- **Đường dẫn truy cập**: Menu *Quản Trị & Bảo Mật* ➔ **Mã Hóa & Giải Mã (Vault)** (`/admin/crypto`).
+- **Giao diện hiện đại**: Thiết kế theo phong cách Ultra-Modern Fintech / Cyber Security Dashboard với hiệu ứng Glassmorphism, viền ánh sáng tinh tế và Terminal Code Blocks chuyên nghiệp.
+
+### 9.2. Các Phân Hệ Chức Năng Chính
+
+```
+┌────────────────────────────────────────────────────────────────────────┐
+│             Crypto Studio & Vault Key Management Header                │
+│    [AEAD AES-256-GCM]  [ZERO TRUST PRODUCTION]  [Làm mới trạng thái]   │
+└────────────────────────────────────────────────────────────────────────┘
+┌──────────────┐  ┌──────────────┐  ┌──────────────┐  ┌──────────────┐
+│  Trạng Thái  │  │  Thuật Toán  │  │ Đường Dẫn    │  │ Độ Dài Khóa  │
+│    Vault     │  │  AES-256-GCM │  │  Vault Path  │  │ 256-bit      │
+│   (Online)   │  │    (AEAD)    │  │ secret/auth  │  │ (32 bytes)   │
+└──────────────┘  └──────────────┘  └──────────────┘  └──────────────┘
+┌─────────────────────────────────┐  ┌─────────────────────────────────┐
+│     CỘT 1: MÃ HÓA (ENCRYPT)     │  │     CỘT 2: GIẢI MÃ (DECRYPT)    │
+│  - Nhập Plaintext / Mẫu JSON    │  │  - Nhập chuỗi ENC:Base64(...)   │
+│  - Nút "Mã hóa bằng Vault Key"  │  │  - Nút "Thử nghiệm giả mạo"     │
+│  - Hiển thị Terminal chuỗi ENC  │  │  - Nút "Giải mã & Verify Auth"  │
+│  - Phân tích chi tiết AEAD:     │  │  - Kết quả 1: XÁC THỰC 100% OK  │
+│    + 12-byte IV ngẫu nhiên      │  │  - Kết quả 2: CẢNH BÁO BẢO MẬT: │
+│    + 16-byte Auth Tag (128-bit) │  │    Phát hiện giả mạo/tampering  │
+│    + Cipher Payload Hex         │  │    (AEADBadTagException)        │
+└─────────────────────────────────┘  └─────────────────────────────────┘
+```
+
+### 9.3. Danh Sách REST API Mới
+
+| Method | Endpoint | Description | Auth Required |
+| :--- | :--- | :--- | :--- |
+| `GET` | `/api/security/crypto/status` | Lấy trạng thái kết nối HashiCorp Vault, URI, Secret Path, Key Length | Bearer Token |
+| `POST` | `/api/security/crypto/encrypt` | Mã hóa văn bản với AES-256-GCM, bóc tách cấu trúc Nonce, Auth Tag, Payload | Bearer Token |
+| `POST` | `/api/security/crypto/decrypt` | Giải mã dữ liệu và xác thực tính toàn vẹn 100% bằng Auth Tag (AEAD) | Bearer Token |
+
+

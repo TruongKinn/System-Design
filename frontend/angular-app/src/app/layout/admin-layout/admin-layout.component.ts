@@ -125,6 +125,12 @@ export class AdminLayoutComponent implements OnInit {
           icon: 'safety-certificate',
           label: 'Phân Quyền RBAC',
           route: '/admin/rbac'
+        },
+        {
+          key: 'crypto',
+          icon: 'lock',
+          label: 'Mã Hóa & Giải Mã (Vault)',
+          route: '/admin/crypto'
         }
       ]
     }

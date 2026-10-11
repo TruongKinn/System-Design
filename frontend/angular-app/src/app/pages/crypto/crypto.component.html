@@ -1,0 +1,384 @@
+<div class="crypto-page-container">
+
+  <!-- 1. PAGE HERO / HEADER -->
+  <div class="page-hero-card">
+    <div class="hero-left">
+      <div class="hero-icon-wrapper">
+        <span nz-icon nzType="lock" nzTheme="outline" class="hero-icon"></span>
+        <span class="icon-pulse-ring"></span>
+      </div>
+      <div class="hero-text-box">
+        <div class="hero-title-row">
+          <h2 class="hero-title">Crypto Studio & Vault Key Management</h2>
+          <span class="badge-fips">AEAD AES-256-GCM</span>
+          <span class="badge-prod">Zero Trust Production</span>
+        </div>
+        <p class="hero-subtitle">
+          Công cụ bảo mật mã hóa xác thực hai chiều dữ liệu nhạy cảm lưu trong cơ sở dữ liệu (Encryption at Rest) sử dụng Master Key cấp phát động từ <strong>HashiCorp Vault KV v2</strong>.
+        </p>
+      </div>
+    </div>
+    <div class="hero-right">
+      <button nz-button nzType="default" (click)="loadVaultStatus()" [nzLoading]="isLoadingStatus" class="btn-refresh-vault">
+        <span nz-icon nzType="sync" nzTheme="outline"></span>
+        <span>Làm mới Vault</span>
+      </button>
+    </div>
+  </div>
+
+  <!-- 2. STATS & ARCHITECTURE OVERVIEW (4 THẺ NỔI BẬT) -->
+  <div class="stats-grid">
+    <!-- Card 1: Vault Status -->
+    <div class="stat-card" [class.border-glow-green]="vaultStatus?.vaultConnected" [class.border-glow-amber]="!vaultStatus?.vaultConnected">
+      <div class="stat-card-header">
+        <span class="stat-title">Trạng Thái Vault</span>
+        <div class="stat-icon-circle bg-emerald-dim">
+          <span nz-icon nzType="cloud-server" nzTheme="outline" class="text-green"></span>
+        </div>
+      </div>
+      <div class="stat-body">
+        <div class="stat-main-row">
+          <span class="status-dot" [class.dot-online]="vaultStatus?.vaultConnected" [class.dot-offline]="!vaultStatus?.vaultConnected"></span>
+          <span class="stat-value" [class.text-green]="vaultStatus?.vaultConnected" [class.text-amber]="!vaultStatus?.vaultConnected">
+            {{ vaultStatus?.vaultConnected ? 'HashiCorp Vault Online' : 'Fallback Key Active' }}
+          </span>
+        </div>
+        <div class="stat-meta-info">
+          URI: <span class="font-mono">{{ vaultStatus?.vaultUri || 'http://localhost:8200' }}</span>
+        </div>
+      </div>
+    </div>
+
+    <!-- Card 2: Algorithm -->
+    <div class="stat-card border-glow-cyan">
+      <div class="stat-card-header">
+        <span class="stat-title">Thuật Toán Mã Hóa</span>
+        <div class="stat-icon-circle bg-cyan-dim">
+          <span nz-icon nzType="safety-certificate" nzTheme="outline" class="text-cyan"></span>
+        </div>
+      </div>
+      <div class="stat-body">
+        <div class="stat-main-row">
+          <span class="stat-value text-cyan">AES-256-GCM</span>
+        </div>
+        <div class="stat-meta-info">
+          Galois/Counter Mode • AEAD Authenticated
+        </div>
+      </div>
+    </div>
+
+    <!-- Card 3: Vault Path -->
+    <div class="stat-card border-glow-emerald">
+      <div class="stat-card-header">
+        <span class="stat-title">Đường Dẫn Vault Secret</span>
+        <div class="stat-icon-circle bg-purple-dim">
+          <span nz-icon nzType="database" nzTheme="outline" class="text-purple"></span>
+        </div>
+      </div>
+      <div class="stat-body">
+        <div class="stat-main-row">
+          <span class="stat-value-sm font-mono text-emerald">secret/data/auth-service</span>
+        </div>
+        <div class="stat-meta-info">
+          Secret Key: <span class="key-pill">aes_gcm_key</span>
+        </div>
+      </div>
+    </div>
+
+    <!-- Card 4: Key Length -->
+    <div class="stat-card border-glow-purple">
+      <div class="stat-card-header">
+        <span class="stat-title">Độ Dài Master Key</span>
+        <div class="stat-icon-circle bg-blue-dim">
+          <span nz-icon nzType="safety" nzTheme="outline" class="text-purple"></span>
+        </div>
+      </div>
+      <div class="stat-body">
+        <div class="stat-main-row">
+          <span class="stat-value text-purple">256-bit (32 bytes)</span>
+        </div>
+        <div class="stat-meta-info">
+          128-bit Auth Tag • 96-bit IV Nonce
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- 3. WORKSPACES: ENCRYPTION & DECRYPTION WORKBENCH -->
+  <div class="workbench-grid">
+
+    <!-- CỘT 1: MÃ HÓA (ENCRYPT STUDIO) -->
+    <div class="workbench-card">
+      <div class="workbench-card-header">
+        <div class="header-left-title">
+          <div class="tool-icon-box bg-cyan-dim">
+            <span nz-icon nzType="lock" nzTheme="outline" class="text-cyan"></span>
+          </div>
+          <div>
+            <h3 class="tool-title">Mã Hóa Dữ Liệu (Encryption)</h3>
+            <span class="tool-desc">Plaintext ➔ Authenticated AES-GCM Ciphertext</span>
+          </div>
+        </div>
+        <div class="sample-actions">
+          <button nz-button nzSize="small" nzType="text" (click)="fillSamplePassword()" class="btn-sample-tag">
+            + Mật khẩu
+          </button>
+          <button nz-button nzSize="small" nzType="text" (click)="fillSampleJson()" class="btn-sample-tag">
+            + JSON Secret
+          </button>
+        </div>
+      </div>
+
+      <div class="workbench-card-body">
+        <!-- Input Area -->
+        <div class="input-container">
+          <div class="input-header-bar">
+            <span class="input-label">VĂN BẢN GỐC (PLAINTEXT INPUT)</span>
+            <span class="char-count">{{ plainTextInput?.length || 0 }} ký tự</span>
+          </div>
+          <textarea
+            nz-input
+            rows="4"
+            [(ngModel)]="plainTextInput"
+            placeholder="Nhập chuỗi văn bản, mật khẩu hoặc JSON cần bảo vệ..."
+            class="code-textarea">
+          </textarea>
+        </div>
+
+        <button
+          nz-button
+          nzType="primary"
+          nzBlock
+          [nzLoading]="isEncrypting"
+          (click)="onEncrypt()"
+          class="btn-gradient-encrypt">
+          <span nz-icon nzType="safety-certificate" nzTheme="outline"></span>
+          <span>Mã Hóa Bằng Khóa HashiCorp Vault (AES-256-GCM)</span>
+        </button>
+
+        <!-- KẾT QUẢ MÃ HÓA -->
+        <div *ngIf="encryptResult" class="result-box-wrapper animate-fade-in">
+          <div class="result-bar-title">
+            <div class="title-with-icon text-green">
+              <span nz-icon nzType="check-circle" nzTheme="outline"></span>
+              <span>DỮ LIỆU ĐÃ ĐƯỢC MÃ HÓA (DATABASE VALUE)</span>
+            </div>
+            <div class="btn-actions-group">
+              <button nz-button nzSize="small" (click)="copyToClipboard(encryptResult.cipherText, 'Chuỗi mã hóa')" class="btn-icon-action">
+                <span nz-icon nzType="copy" nzTheme="outline"></span> Copy
+              </button>
+              <button nz-button nzSize="small" (click)="sendToDecrypt()" class="btn-transfer-action">
+                <span>Chuyển sang giải mã</span> &rarr;
+              </button>
+            </div>
+          </div>
+
+          <!-- Ciphertext Terminal Box -->
+          <div class="terminal-box">
+            <div class="terminal-bar">
+              <div class="terminal-dots">
+                <span class="dot dot-red"></span>
+                <span class="dot dot-yellow"></span>
+                <span class="dot dot-green"></span>
+              </div>
+              <span class="terminal-format">FORMAT: ENC:Base64(IV + Ciphertext + Tag)</span>
+            </div>
+            <div class="terminal-content text-green">
+              {{ encryptResult.cipherText }}
+            </div>
+          </div>
+
+          <!-- PHÂN RÃ THÀNH PHẦN MẬT MÃ (DEEP CRYPTO INSPECTION) -->
+          <div class="crypto-details-card">
+            <div class="details-card-header">
+              <span nz-icon nzType="info-circle" nzTheme="outline" class="text-cyan"></span>
+              <span>CẤU TRÚC AUTHENTICATED ENCRYPTION (AEAD) CHI TIẾT</span>
+            </div>
+
+            <div class="detail-row">
+              <div class="detail-label-col">
+                <span class="detail-name">1. IV / Nonce</span>
+                <span class="detail-size">12 bytes (96-bit)</span>
+              </div>
+              <div class="detail-val-box text-amber font-mono">
+                {{ encryptResult.ivHex }}
+              </div>
+            </div>
+
+            <div class="detail-row">
+              <div class="detail-label-col">
+                <span class="detail-name">2. Auth Tag (AEAD)</span>
+                <span class="detail-size">16 bytes (128-bit)</span>
+              </div>
+              <div class="detail-val-box text-purple font-mono">
+                {{ encryptResult.authTagHex }}
+              </div>
+            </div>
+
+            <div class="detail-row">
+              <div class="detail-label-col">
+                <span class="detail-name">3. Cipher Payload</span>
+                <span class="detail-size">{{ getPayloadLength() }} bytes</span>
+              </div>
+              <div class="detail-val-box text-cyan font-mono">
+                {{ encryptResult.cipherPayloadHex }}
+              </div>
+            </div>
+
+            <div class="details-card-footer">
+              <span class="key-status-label">Nguồn Khóa Master: <strong class="text-green">{{ encryptResult.keyStatus }}</strong></span>
+              <span class="cipher-spec-label">Provider: <strong>SunJCE / NoPadding</strong></span>
+            </div>
+          </div>
+        </div>
+
+      </div>
+    </div>
+
+    <!-- CỘT 2: GIẢI MÃ & KIỂM TRA CHỐNG GIẢ MẠO (DECRYPT STUDIO) -->
+    <div class="workbench-card">
+      <div class="workbench-card-header">
+        <div class="header-left-title">
+          <div class="tool-icon-box bg-emerald-dim">
+            <span nz-icon nzType="unlock" nzTheme="outline" class="text-green"></span>
+          </div>
+          <div>
+            <h3 class="tool-title">Giải Mã & Kiểm Tra Toàn Vẹn</h3>
+            <span class="tool-desc">Xác thực Auth Tag & phục hồi Plaintext</span>
+          </div>
+        </div>
+        <div class="sample-actions">
+          <button
+            nz-button
+            nzSize="small"
+            (click)="simulateTamper()"
+            title="Sửa đổi 1 byte trong chuỗi mã hóa để kiểm tra phản ứng của GCM"
+            class="btn-tamper-pill">
+            <span nz-icon nzType="warning" nzTheme="outline"></span>
+            <span>Thử nghiệm giả mạo (Tamper)</span>
+          </button>
+        </div>
+      </div>
+
+      <div class="workbench-card-body">
+        <!-- Input Area -->
+        <div class="input-container">
+          <div class="input-header-bar">
+            <span class="input-label">CHUỖI MÃ HÓA CẦN GIẢI MÃ (CIPHERTEXT INPUT)</span>
+            <span class="char-count">{{ cipherTextInput?.length || 0 }} ký tự</span>
+          </div>
+          <textarea
+            nz-input
+            rows="4"
+            [(ngModel)]="cipherTextInput"
+            placeholder="Dán chuỗi ENC:Base64(...) vào đây..."
+            class="code-textarea">
+          </textarea>
+        </div>
+
+        <button
+          nz-button
+          nzType="primary"
+          nzBlock
+          [nzLoading]="isDecrypting"
+          (click)="onDecrypt()"
+          class="btn-gradient-decrypt">
+          <span nz-icon nzType="unlock" nzTheme="outline"></span>
+          <span>Giải Mã & Xác Thực Auth Tag (GCM Integrity Check)</span>
+        </button>
+
+        <!-- KẾT QUẢ GIẢI MÃ -->
+        <div *ngIf="decryptResult" class="result-box-wrapper animate-fade-in">
+
+          <!-- TRƯỜNG HỢP 1: XÁC THỰC TOÀN VẸN THÀNH CÔNG -->
+          <div *ngIf="decryptResult.success" class="decrypt-card-success">
+            <div class="decrypt-card-header">
+              <div class="status-badge-row text-green">
+                <span nz-icon nzType="check-circle" nzTheme="outline" class="status-main-icon"></span>
+                <div>
+                  <div class="status-bold-text">XÁC THỰC TOÀN VẸN THÀNH CÔNG (100% AUTHENTIC)</div>
+                  <div class="status-sub-text">Khóa HashiCorp Vault đã xác thực tính hợp lệ của Authentication Tag</div>
+                </div>
+              </div>
+              <button nz-button nzSize="small" (click)="copyToClipboard(decryptResult.plainText, 'Văn bản gốc')" class="btn-icon-action">
+                <span nz-icon nzType="copy" nzTheme="outline"></span> Copy
+              </button>
+            </div>
+
+            <div class="plaintext-display-box">
+              <div class="display-label">VĂN BẢN GỐC ĐÃ GIẢI MÃ:</div>
+              <div class="display-content">{{ decryptResult.plainText }}</div>
+            </div>
+
+            <div class="decrypt-meta-footer">
+              <span class="badge-verified">✓ Integrity Verified</span>
+              <span>AES-256-GCM Decryption Completed via Vault Key</span>
+            </div>
+          </div>
+
+          <!-- TRƯỜNG HỢP 2: PHÁT HIỆN GIẢ MẠO / CAN THIỆP -->
+          <div *ngIf="!decryptResult.success" class="decrypt-card-tampered">
+            <div class="tamper-banner">
+              <div class="tamper-icon-circle">
+                <span nz-icon nzType="warning" nzTheme="outline"></span>
+              </div>
+              <div>
+                <div class="tamper-alert-title">PHÁT HIỆN DỮ LIỆU ĐÃ BỊ THAY ĐỔI / GIẢ MẠO!</div>
+                <div class="tamper-alert-subtitle">Ngoại lệ: AEADBadTagException • Authentication Tag Mismatch</div>
+              </div>
+            </div>
+
+            <div class="tamper-error-box">
+              {{ decryptResult.message }}
+            </div>
+
+            <div class="tamper-explanation-card">
+              <div class="exp-header">
+                <span nz-icon nzType="safety" nzTheme="outline"></span>
+                <span>TẠI SAO GCM TỪ CHỐI GIẢI MÃ?</span>
+              </div>
+              <p class="exp-text">
+                Khác với các chế độ cũ (AES-CBC), <strong>AES-GCM (Galois/Counter Mode)</strong> tạo ra một mã xác thực (Authentication Tag) 128-bit đại diện cho toàn bộ ciphertext và IV. Khi kẻ tấn công cố tình thay đổi dù chỉ 1 bit trong Database, giá trị Tag tính toán lại trong RAM sẽ không khớp ➔ Hệ thống lập tức hủy thao tác, bảo vệ an toàn 100% trước tấn công Bit-flipping và giả mạo dữ liệu.
+              </p>
+            </div>
+          </div>
+
+        </div>
+
+      </div>
+    </div>
+
+  </div>
+
+  <!-- 4. ARCHITECTURE FOOTER (GIẢI THÍCH MÔ HÌNH BẢO MẬT ENTERPRISE) -->
+  <div class="architecture-footer-card">
+    <div class="arch-header">
+      <span nz-icon nzType="safety" nzTheme="outline" class="text-cyan"></span>
+      <span>KIẾN TRÚC BẢO MẬT TẬP TRUNG ZERO TRUST (DATAFLOW PLATFORM)</span>
+    </div>
+    <div class="arch-pillars-grid">
+      <div class="pillar-box">
+        <div class="pillar-number text-cyan">01</div>
+        <div class="pillar-title">HashiCorp Vault Secrets</div>
+        <p class="pillar-desc">
+          Khóa Master Key được bảo vệ tại Vault KV Engine v2 qua API Token có kiểm soát, tách biệt hoàn toàn khỏi mã nguồn và môi trường ứng dụng.
+        </p>
+      </div>
+      <div class="pillar-box">
+        <div class="pillar-number text-green">02</div>
+        <div class="pillar-title">JPA Transparent Converter</div>
+        <p class="pillar-desc">
+          Mỗi bản ghi được mã hóa tự động với 12-byte IV ngẫu nhiên trước khi lưu vào Database, đảm bảo 2 bản ghi cùng nội dung cũng có chuỗi mã hóa khác nhau.
+        </p>
+      </div>
+      <div class="pillar-box">
+        <div class="pillar-number text-purple">03</div>
+        <div class="pillar-title">AEAD Authenticated Encryption</div>
+        <p class="pillar-desc">
+          Authentication Tag 128-bit khóa chặt tính toàn vẹn. Bất kỳ sự can thiệp trực tiếp nào vào PostgreSQL đều bị phát hiện ngay lập tức.
+        </p>
+      </div>
+    </div>
+  </div>
+
+</div>

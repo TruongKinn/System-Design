@@ -44,6 +44,11 @@ const routes: Routes = [
         loadChildren: () =>
           import('./pages/rbac/rbac.module').then(m => m.RbacModule)
       },
+      {
+        path: 'crypto',
+        loadChildren: () =>
+          import('./pages/crypto/crypto.module').then(m => m.CryptoModule)
+      },
       { path: '', redirectTo: 'dashboard', pathMatch: 'full' }
     ]
   },

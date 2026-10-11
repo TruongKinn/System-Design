@@ -53,7 +53,8 @@ import {
   RiseOutline,
   LoginOutline,
   EyeOutline,
-  EyeInvisibleOutline
+  EyeInvisibleOutline,
+  CopyOutline
 } from '@ant-design/icons-angular/icons';
 
 // Ant Design Modules
@@ -120,7 +121,8 @@ const icons = [
   CloudServerOutline, AppstoreOutline, CodeSandboxOutline, DatabaseOutline,
   ToolOutline, CrownOutline, UserAddOutline, UnlockOutline, WarningOutline,
   CheckCircleOutline, InfoCircleOutline, FileAddOutline, SyncOutline,
-  ClockCircleOutline, RiseOutline, LoginOutline, EyeOutline, EyeInvisibleOutline
+  ClockCircleOutline, RiseOutline, LoginOutline, EyeOutline, EyeInvisibleOutline,
+  CopyOutline
 ];
 
 const ANT_MODULES = [
