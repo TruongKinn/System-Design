@@ -132,6 +132,49 @@
   white-space: nowrap;
 }
 
+.password-cell {
+  display: flex;
+  align-items: center;
+  gap: 4px;
+}
+
+.password-text {
+  font-family: 'JetBrains Mono', monospace;
+  font-size: 12px;
+  background: var(--input-bg);
+  padding: 2px 6px;
+  border-radius: 4px;
+  color: var(--text-main);
+  max-width: 110px;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+  display: inline-block;
+  vertical-align: middle;
+  border: 1px solid var(--border-color);
+}
+
+.btn-icon {
+  color: var(--text-muted) !important;
+  padding: 0 4px !important;
+  height: 24px !important;
+  line-height: 24px !important;
+  transition: all 0.2s ease;
+}
+
+.btn-icon:hover {
+  color: #6366f1 !important;
+  transform: scale(1.1);
+}
+
+.login-highlight {
+  color: var(--text-main);
+  font-weight: 500;
+  display: inline-flex;
+  align-items: center;
+  gap: 5px;
+}
+
 .text-muted {
   color: var(--text-muted);
 }

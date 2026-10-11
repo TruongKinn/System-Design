@@ -1,5 +1,6 @@
 import { Component, OnInit } from '@angular/core';
 import { UserService, User } from '../../core/services/user.service';
+import { AuthService } from '../../core/services/auth.service';
 import { NzMessageService } from 'ng-zorro-antd/message';
 
 @Component({
@@ -10,6 +11,10 @@ import { NzMessageService } from 'ng-zorro-antd/message';
 export class UsersComponent implements OnInit {
   users: User[] = [];
   loading = false;
+  isAdmin = false;
+
+  // Map lưu trạng thái ẩn/hiện password cho từng user id
+  passwordVisibilityMap: { [userId: number]: boolean } = {};
 
   // Create User Modal state
   isModalVisible = false;
@@ -23,10 +28,12 @@ export class UsersComponent implements OnInit {
 
   constructor(
     private userService: UserService,
+    private authService: AuthService,
     private message: NzMessageService
   ) {}
 
   ngOnInit(): void {
+    this.isAdmin = this.authService.hasRole('ROLE_ADMIN');
     this.loadUsers();
   }
 
@@ -104,6 +111,26 @@ export class UsersComponent implements OnInit {
       case 'ROLE_VIEWER': return 'cyan';
       default: return 'default';
     }
+  }
+
+  togglePasswordVisibility(user: User): void {
+    this.passwordVisibilityMap[user.id] = !this.passwordVisibilityMap[user.id];
+  }
+
+  isPasswordVisible(user: User): boolean {
+    return !!this.passwordVisibilityMap[user.id];
+  }
+
+  copyPassword(pwd: string | undefined): void {
+    if (!pwd) {
+      this.message.warning('Mật khẩu trống hoặc chưa được thiết lập');
+      return;
+    }
+    navigator.clipboard.writeText(pwd).then(() => {
+      this.message.success('Đã sao chép mật khẩu vào bộ nhớ tạm!');
+    }).catch(() => {
+      this.message.info('Mật khẩu: ' + pwd);
+    });
   }
 
   formatDate(val: string | undefined): string {

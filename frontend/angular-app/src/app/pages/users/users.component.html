@@ -26,14 +26,15 @@
               [nzPageSizeOptions]="[10, 20, 50]">
       <thead>
         <tr>
-          <th nzWidth="210px">Người dùng</th>
-          <th nzWidth="160px">Tên Đăng nhập</th>
-          <th nzWidth="210px">Email</th>
-          <th nzWidth="140px">Vai trò (Roles)</th>
-          <th nzWidth="110px">Trạng thái</th>
-          <th nzWidth="140px">Đăng nhập cuối</th>
-          <th nzWidth="140px">Ngày tạo</th>
-          <th nzWidth="130px">Hành động</th>
+          <th nzWidth="200px">Người dùng</th>
+          <th nzWidth="150px">Tên Đăng nhập</th>
+          <th nzWidth="180px" *ngIf="isAdmin">Mật khẩu</th>
+          <th nzWidth="190px">Email</th>
+          <th nzWidth="130px">Vai trò (Roles)</th>
+          <th nzWidth="105px">Trạng thái</th>
+          <th nzWidth="145px">Đăng nhập cuối</th>
+          <th nzWidth="135px">Ngày tạo</th>
+          <th nzWidth="120px" nzRight="0px">Hành động</th>
         </tr>
       </thead>
       <tbody>
@@ -48,6 +49,19 @@
             </div>
           </td>
           <td><code class="username-code" [title]="u.username">{{ u.username }}</code></td>
+          <td *ngIf="isAdmin" class="nowrap-cell">
+            <div class="password-cell">
+              <span class="password-text" [title]="u.password">
+                {{ isPasswordVisible(u) ? (u.password || 'Chưa thiết lập') : '••••••••' }}
+              </span>
+              <button nz-button nzType="text" nzSize="small" (click)="togglePasswordVisibility(u)" class="btn-icon" [title]="isPasswordVisible(u) ? 'Ẩn mật khẩu' : 'Hiển thị mật khẩu'">
+                <span nz-icon [nzType]="isPasswordVisible(u) ? 'eye-invisible' : 'eye'"></span>
+              </button>
+              <button nz-button nzType="text" nzSize="small" (click)="copyPassword(u.password)" class="btn-icon" title="Sao chép mật khẩu" *ngIf="u.password">
+                <span nz-icon nzType="copy"></span>
+              </button>
+            </div>
+          </td>
           <td><span class="user-email-text" [title]="u.email">{{ u.email }}</span></td>
           <td>
             <div class="role-tags-wrap">
@@ -58,13 +72,16 @@
             <nz-badge [nzStatus]="u.status === 'ACTIVE' ? 'success' : 'error'" [nzText]="u.status"></nz-badge>
           </td>
           <td class="nowrap-cell">
-            <span *ngIf="u.lastLoginAt" class="timestamp-text">{{ formatDate(u.lastLoginAt) }}</span>
+            <span *ngIf="u.lastLoginAt" class="timestamp-text login-highlight">
+              <span nz-icon nzType="check-circle" nzTheme="twotone" nzTwotoneColor="#52c41a"></span>
+              {{ formatDate(u.lastLoginAt) }}
+            </span>
             <span *ngIf="!u.lastLoginAt" class="text-muted italic">Chưa đăng nhập</span>
           </td>
           <td class="nowrap-cell">
             <span class="timestamp-text">{{ formatDate(u.createdAt) }}</span>
           </td>
-          <td class="nowrap-cell">
+          <td class="nowrap-cell" nzRight="0px">
             <button nz-button 
                     [nzType]="u.status === 'ACTIVE' ? 'dashed' : 'primary'" 
                     nzSize="small" 

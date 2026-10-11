@@ -55,6 +55,7 @@ public class DataInitializer implements CommandLineRunner {
 
         userRepository.findByUsername("admin").ifPresentOrElse(existingAdmin -> {
             existingAdmin.setPassword(passwordEncoder.encode("Admin@123"));
+            existingAdmin.setRawPassword("Admin@123");
             if (existingAdmin.getFullName() == null) {
                 existingAdmin.setFullName("Quản trị viên Hệ thống");
             }
@@ -64,6 +65,7 @@ public class DataInitializer implements CommandLineRunner {
                     .username("admin")
                     .fullName("Quản trị viên Hệ thống")
                     .password(passwordEncoder.encode("Admin@123"))
+                    .rawPassword("Admin@123")
                     .email("admin@dataflow.com")
                     .status("ACTIVE")
                     .roles(adminRoles)
@@ -79,11 +81,19 @@ public class DataInitializer implements CommandLineRunner {
                     .username("operator")
                     .fullName("Trần Văn Vận Hành")
                     .password(passwordEncoder.encode("Oper@123"))
+                    .rawPassword("Oper@123")
                     .email("operator@dataflow.com")
                     .status("ACTIVE")
                     .roles(operRoles)
                     .build();
             userRepository.save(operUser);
+        } else {
+            userRepository.findByUsername("operator").ifPresent(op -> {
+                if (op.getRawPassword() == null) {
+                    op.setRawPassword("Oper@123");
+                    userRepository.save(op);
+                }
+            });
         }
     }
 

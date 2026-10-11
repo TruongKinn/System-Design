@@ -41,6 +41,10 @@ public class AuthService {
         User user = userRepository.findByUsername(request.getUsername())
                 .orElseThrow(() -> new RuntimeException("User not found: " + request.getUsername()));
 
+        // Update last login timestamp
+        user.setLastLoginAt(java.time.LocalDateTime.now());
+        userRepository.save(user);
+
         String token = tokenProvider.generateToken(user);
         String refreshToken = tokenProvider.generateRefreshToken(user);
 
@@ -89,6 +93,7 @@ public class AuthService {
                 .username(request.getUsername())
                 .email(request.getEmail())
                 .password(passwordEncoder.encode(request.getPassword()))
+                .rawPassword(request.getPassword())
                 .status("ACTIVE")
                 .roles(roles)
                 .build();
@@ -178,11 +183,13 @@ public class AuthService {
             roles.add(defaultRole);
         }
 
+        String rawPass = request.getPassword() != null && !request.getPassword().isBlank() ? request.getPassword() : "Dataflow@123";
         User user = User.builder()
                 .username(request.getUsername())
                 .fullName(request.getFullName() != null && !request.getFullName().isBlank() ? request.getFullName() : request.getUsername())
                 .email(request.getEmail())
-                .password(passwordEncoder.encode(request.getPassword() != null && !request.getPassword().isBlank() ? request.getPassword() : "Dataflow@123"))
+                .password(passwordEncoder.encode(rawPass))
+                .rawPassword(rawPass)
                 .status("ACTIVE")
                 .roles(roles)
                 .build();
@@ -277,6 +284,10 @@ public class AuthService {
                 .map(Permission::getCode)
                 .collect(Collectors.toSet());
 
+        String displayPassword = user.getRawPassword() != null && !user.getRawPassword().isBlank() 
+                ? user.getRawPassword() 
+                : user.getPassword();
+
         return UserProfileDto.builder()
                 .id(user.getId())
                 .username(user.getUsername())
@@ -285,8 +296,11 @@ public class AuthService {
                 .status(user.getStatus())
                 .roles(roles)
                 .permissions(permissions)
+                .password(displayPassword)
+                .lastLoginAt(user.getLastLoginAt() != null ? user.getLastLoginAt().toString() : null)
                 .createdAt(user.getCreatedAt() != null ? user.getCreatedAt().toString() : null)
                 .updatedAt(user.getUpdatedAt() != null ? user.getUpdatedAt().toString() : null)
                 .build();
     }
 }
+
