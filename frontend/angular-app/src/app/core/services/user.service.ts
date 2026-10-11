@@ -46,4 +46,8 @@ export class UserService {
   getRoles(): Observable<RolePermission[]> {
     return this.http.get<RolePermission[]>(this.rolesUrl);
   }
+
+  updateRolePermissions(roleId: number, permissions: string[]): Observable<RolePermission> {
+    return this.http.put<RolePermission>(`${this.rolesUrl}/${roleId}/permissions`, permissions);
+  }
 }

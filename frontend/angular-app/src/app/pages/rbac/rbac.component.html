@@ -45,6 +45,7 @@
             [nzTitle]="'Cấu hình Ma trận Quyền hạn - ' + (selectedRole?.roleName || '')" 
             (nzOnOk)="handleSavePermissions()" 
             (nzOnCancel)="isModalVisible = false"
+            [nzOkLoading]="saveLoading"
             [nzOkText]="'Cập nhật Quyền hạn'"
             [nzCancelText]="'Hủy bỏ'"
             nzWidth="650px">
@@ -56,7 +57,7 @@
             <span class="perm-label">{{ perm.label }}</span>
             <code class="perm-key">{{ perm.key }}</code>
           </div>
-          <label nz-checkbox [ngModel]="hasPermission(perm.key)" (click)="$event.stopPropagation()"></label>
+          <label nz-checkbox [ngModel]="hasPermission(perm.key)" (ngModelChange)="togglePermission(perm.key)" (click)="$event.stopPropagation()"></label>
         </div>
       </div>
     </ng-container>

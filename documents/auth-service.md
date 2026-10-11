@@ -48,6 +48,8 @@ Auth Service chịu trách nhiệm:
 | `GET` | `/api/users` | Danh sách toàn bộ người dùng và vai trò hệ thống | Bearer Token |
 | `POST` | `/api/users` | Tạo mới người dùng (mã hóa mật khẩu BCrypt, gán roles) | Bearer Token |
 | `PUT` | `/api/users/{id}/toggle-status` | Khóa / Mở khóa tài khoản người dùng | Bearer Token |
+| `GET` | `/api/roles` | Lấy danh sách Roles kèm ma trận quyền hạn và số lượng users | Bearer Token |
+| `PUT` | `/api/roles/{id}/permissions` | Cập nhật ma trận quyền hạn (RBAC granular permissions) cho Role | Bearer Token |
 
 ---
 

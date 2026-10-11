@@ -32,6 +32,7 @@ export class RbacComponent implements OnInit {
   isModalVisible = false;
   selectedRole?: RolePermission;
   editedPermissions: string[] = [];
+  saveLoading = false;
 
   constructor(
     private userService: UserService,
@@ -49,8 +50,9 @@ export class RbacComponent implements OnInit {
         this.roles = data;
         this.loading = false;
       },
-      error: () => {
+      error: (err) => {
         this.loading = false;
+        this.message.error('Không thể tải danh sách vai trò: ' + (err.error?.message || err.message));
       }
     });
   }
@@ -74,10 +76,23 @@ export class RbacComponent implements OnInit {
   }
 
   handleSavePermissions(): void {
-    if (this.selectedRole) {
-      this.selectedRole.permissions = [...this.editedPermissions];
-      this.message.success(`Đã cập nhật danh sách quyền hạn cho vai trò [${this.selectedRole.roleName}]!`);
-      this.isModalVisible = false;
-    }
+    if (!this.selectedRole) return;
+
+    const roleId = this.selectedRole.id;
+    const roleName = this.selectedRole.roleName;
+    this.saveLoading = true;
+
+    this.userService.updateRolePermissions(roleId, this.editedPermissions).subscribe({
+      next: (updatedRole) => {
+        this.saveLoading = false;
+        this.isModalVisible = false;
+        this.message.success(`Đã lưu cấu hình quyền hạn cho vai trò [${roleName}] vào hệ thống!`);
+        this.loadRoles();
+      },
+      error: (err) => {
+        this.saveLoading = false;
+        this.message.error(`Cập nhật quyền thất bại: ${err.error?.message || err.message}`);
+      }
+    });
   }
 }

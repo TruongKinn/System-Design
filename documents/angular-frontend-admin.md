@@ -77,8 +77,8 @@ frontend/angular-app/
 - **Tiến Độ Batch Ingestion**: Bảng danh sách các lô nạp dữ liệu với thống kê chi tiết `Số dòng thành công`, `Số dòng lỗi`, `Tiến độ parse %`.
 
 ### 3.6 Users & RBAC Matrix (`/users`, `/rbac`)
-- **Quản lý Tài Khoản**: Bảng thông tin người dùng với Avatar, gán Roles, trạng thái Khóa/Mở khóa.
-- **Fine-Grained Permission Matrix**: Modal tích chọn ma trận quyền thao tác granular (JOB_CREATE, JOB_TRIGGER, EXPORT_EXECUTE, USER_MANAGE) áp dụng tức thì cho nhóm vai trò.
+- **Quản lý Tài Khoản**: Bảng thông tin người dùng với Avatar, gán Roles, trạng thái Khóa/Mở khóa thông qua API `/api/users`.
+- **Fine-Grained Permission Matrix**: Modal tích chọn ma trận quyền thao tác granular (`JOB_CREATE`, `JOB_EDIT`, `JOB_TRIGGER`, `JOB_PAUSE`, `USER_MANAGE`, `EXPORT_EXECUTE`, `IMPORT_EXECUTE`, `SYSTEM_CONFIG`) kết nối trực tiếp với backend qua API `PUT /api/roles/{id}/permissions`, tự động lưu bền vững vào cơ sở dữ liệu PostgreSQL.
 
 ---
 

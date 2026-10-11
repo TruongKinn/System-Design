@@ -4,6 +4,7 @@ import com.dataflow.auth.domain.Permission;
 import com.dataflow.auth.domain.Role;
 import com.dataflow.auth.domain.User;
 import com.dataflow.auth.dto.*;
+import com.dataflow.auth.repository.PermissionRepository;
 import com.dataflow.auth.repository.RoleRepository;
 import com.dataflow.auth.repository.UserRepository;
 import com.dataflow.auth.security.JwtTokenProvider;
@@ -27,6 +28,7 @@ public class AuthService {
     private final AuthenticationManager authenticationManager;
     private final UserRepository userRepository;
     private final RoleRepository roleRepository;
+    private final PermissionRepository permissionRepository;
     private final PasswordEncoder passwordEncoder;
     private final JwtTokenProvider tokenProvider;
 
@@ -224,6 +226,45 @@ public class AuthService {
                             .build();
                 })
                 .collect(Collectors.toList());
+    }
+
+    @Transactional
+    public RolePermissionDto updateRolePermissions(Long roleId, List<String> permissionCodes) {
+        Role role = roleRepository.findById(roleId)
+                .orElseThrow(() -> new RuntimeException("Role not found with id: " + roleId));
+
+        Set<Permission> updatedPermissions = new HashSet<>();
+        if (permissionCodes != null) {
+            for (String code : permissionCodes) {
+                if (code == null || code.isBlank()) continue;
+                String permCode = code.trim();
+                Permission perm = permissionRepository.findByCode(permCode)
+                        .orElseGet(() -> permissionRepository.save(Permission.builder()
+                                .code(permCode)
+                                .description("Permission " + permCode)
+                                .build()));
+                updatedPermissions.add(perm);
+            }
+        }
+
+        role.setPermissions(updatedPermissions);
+        Role savedRole = roleRepository.save(role);
+
+        List<String> perms = savedRole.getPermissions().stream()
+                .map(Permission::getCode)
+                .sorted()
+                .collect(Collectors.toList());
+        int count = (int) userRepository.findAll().stream()
+                .filter(u -> u.getRoles().stream().anyMatch(r -> r.getId().equals(savedRole.getId())))
+                .count();
+
+        return RolePermissionDto.builder()
+                .id(savedRole.getId())
+                .roleName(savedRole.getName())
+                .description(savedRole.getDescription())
+                .permissions(perms)
+                .userCount(count)
+                .build();
     }
 
     private UserProfileDto getUserProfile(User user) {
