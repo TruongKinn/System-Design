@@ -181,5 +181,37 @@ Toàn bộ các Angular Services (`AuthService`, `JobService`, `ExportService`, 
   - **Hàng Mật Khẩu Co Giãn 1 Cột ↔ 2 Cột**: Cột `Confirm Password` sử dụng `transform: scaleX(...)` và `max-width: 50%` mở rộng ngang trơn tru bên cạnh cột `Password`.
   - **Morphing Chữ Tiêu Đề & Nút Bấm**: Tiêu đề (*Welcome Back* ↔ *Create Account*) và nút CTA (*Sign In →* ↔ *Create Account →*) chuyển đổi trạng thái bằng hiệu ứng cross-fade trượt nhẹ vị trí.
 
+## 9. Tái Thiết Kế Sidebar Menu MetisMenu & Tương Tác Hover-To-Expand (Update v1.4)
+
+### 9.1. Chuẩn Thiết Kế Phân Cấp MetisMenu
+- **Phân nhóm chuyên nghiệp theo domain nghiệp vụ**:
+  - `TỔNG QUAN & GIÁM SÁT`: Bảng Điều Khiển (Dashboard), Trực quan hóa dữ liệu thời gian thực.
+  - `TÁC VỤ & LẬP LỊCH`: Quản Lý Cron Jobs (Danh Sách Jobs, Lập Lịch Cron, Lịch Sử Thực Thi).
+  - `XỬ LÝ DỮ LIỆU LỚN`: Xuất / Nhập Dữ Liệu (Xuất Excel 1M Dòng, Nhập Excel 1M Dòng).
+  - `QUẢN TRỊ & BẢO MẬT`: Người Dùng & Phân Quyền (Tài Khoản Người Dùng, Vai Trò & Quyền Hạn RBAC).
+- **Hệ thống Visual Indicators hiện đại**:
+  - **Group Label & Separator**: Nhãn nhóm uppercase tinh tế với đường line mờ phân tách khu vực.
+  - **Active Indicator**: Thanh viền phát sáng xanh Neon Blue (`#1890ff` / `#38bdf8`) bám dọc mép trái khi mục menu được kích hoạt.
+  - **Tree Bullet Dot Submenu**: Các menu cấp con được biểu thị bằng chấm tròn bullet tinh tế kèm đường nối cây phân cấp.
+  - **Status Badges**: Badge đếm số lượng và trạng thái trực tiếp trên từng mục menu (ví dụ: `1M ROWS`, `RBAC`, `CRON`).
+
+### 9.2. Tương Tác Hover-to-Expand / Leave-to-Collapse
+- **Trạng thái thu gọn mặc định (Mini Sidebar - 72px)**:
+  - Không gian làm việc của trang nội dung được tối đa hóa. Các icon chức năng hiển thị trung tâm, rõ ràng với hiệu ứng tooltip chuẩn.
+- **Tự động mở rộng khi Hover chuột (Expand to 260px)**:
+  - Khi người dùng rê chuột (`mouseenter`) vào bất kỳ vị trí nào trên Sidebar, menu tự động trượt mở rộng ra 260px với curve gia tốc `cubic-bezier(0.16, 1, 0.3, 1)`.
+  - Toàn bộ tên nhóm, tiêu đề submenu, nhãn text và badge bung ra mượt mà không có độ trễ giật lag.
+  - Menu hiển thị ở dạng **Floating Overlay Sider** với lớp đổ bóng đa tầng (`box-shadow: 12px 0 35px rgba(0, 0, 0, 0.45)`) và hiệu ứng kính mờ `backdrop-filter: blur(20px)`.
+- **Tự động gập lại khi Rời chuột (Collapse to 72px)**:
+  - Khi người dùng đưa chuột ra ngoài (`mouseleave`), Sidebar tự động thu gọn về 72px.
+  - Áp dụng kỹ thuật debounce 120ms để chống hiện tượng giật rung khi chuột vô tình lướt qua mép Sidebar.
+- **Ổn Định Layout Nội Dung Chính (No Layout Shifting)**:
+  - `main-layout` luôn duy trì `margin-left: 72px` cố định khi ở chế độ hover. Nhờ vậy, bảng dữ liệu, biểu đồ và các thẻ số liệu bên phải không bị co giãn liên tục gây khó chịu cho mắt người dùng.
+- **Tùy Chọn Ghim Cố Định (Pin / Unpin Sidebar)**:
+  - Nút ghim tiện lợi trên logo header và thanh chuyển đổi ở chân Sidebar cho phép người dùng tùy ý chọn:
+    - **Chế độ Ghim (Pinned - 260px)**: Menu cố định mở rộng, nội dung chính đẩy sang 260px.
+    - **Chế độ Tự Động (Auto Hover)**: Menu tự động bung ra khi hover và đóng lại khi ra ngoài.
+
+
 
 

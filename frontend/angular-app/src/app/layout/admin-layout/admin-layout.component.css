@@ -24,14 +24,24 @@
   min-width: 260px !important;
   max-width: 260px !important;
   overflow: hidden;
-  transition: all 0.3s ease !important;
+  transition: width 0.3s cubic-bezier(0.16, 1, 0.3, 1), box-shadow 0.3s ease !important;
 }
 
-/* Collapsed state - ng-zorro adds .ant-layout-sider-collapsed class automatically */
+/* Collapsed state - mini sidebar (72px) */
 .admin-sider.ant-layout-sider-collapsed {
   width: 72px !important;
   min-width: 72px !important;
   max-width: 72px !important;
+}
+
+/* Hover-expanded overlay state (When user hovers into collapsed sider) */
+.admin-sider.is-hover-expanded {
+  width: 260px !important;
+  min-width: 260px !important;
+  max-width: 260px !important;
+  z-index: 1050 !important;
+  box-shadow: 12px 0 35px rgba(0, 0, 0, 0.45) !important;
+  backdrop-filter: blur(20px);
 }
 
 .admin-sider :deep(.ant-layout-sider-children) {
@@ -44,10 +54,11 @@
   display: flex;
   align-items: center;
   gap: 12px;
-  padding: 16px 20px;
+  padding: 16px 18px;
   border-bottom: 1px solid var(--border-color);
   min-height: 64px;
   flex-shrink: 0;
+  transition: padding 0.3s ease;
 }
 
 .sider-logo.collapsed {
@@ -86,7 +97,21 @@
   letter-spacing: 1.5px;
 }
 
-/* Hide default ng-zorro sider trigger (causes gap at top-right of sider) */
+.sider-pin-btn {
+  margin-left: auto;
+  padding: 4px 6px !important;
+  height: 28px !important;
+  border-radius: 6px !important;
+  color: var(--text-muted) !important;
+  transition: all 0.2s ease !important;
+}
+
+.sider-pin-btn:hover {
+  background: rgba(99, 102, 241, 0.15) !important;
+  color: #6366f1 !important;
+}
+
+/* Hide default ng-zorro sider trigger */
 .admin-sider :deep(.ant-layout-sider-trigger),
 .admin-sider :deep(.ant-layout-sider-zero-width-trigger) {
   display: none !important;
@@ -100,87 +125,140 @@
   padding: 12px 0;
 }
 
-.admin-menu {
+.admin-menu.metis-menu {
   background: transparent !important;
   border-right: none !important;
 }
 
 /* MetisMenu Group Title */
 .menu-group-title {
-  padding: 14px 20px 6px 20px;
-  font-size: 0.68rem;
-  font-weight: 700;
-  color: var(--text-sub);
-  text-transform: uppercase;
-  letter-spacing: 1.2px;
+  padding: 16px 18px 6px 18px;
+  display: flex;
+  align-items: center;
+  gap: 8px;
   pointer-events: none;
   white-space: nowrap;
+}
+
+.group-title-text {
+  font-size: 0.65rem;
+  font-weight: 700;
+  color: #64748b;
+  text-transform: uppercase;
+  letter-spacing: 1.2px;
+}
+
+.group-title-line {
+  flex: 1;
+  height: 1px;
+  background: rgba(255, 255, 255, 0.06);
 }
 
 .menu-item-icon {
   font-size: 1.1rem !important;
   color: var(--primary) !important;
+  flex-shrink: 0;
 }
 
 .menu-item-text {
   font-weight: 500;
+  font-size: 0.88rem;
 }
 
+.metis-badge {
+  margin-left: auto;
+  flex-shrink: 0;
+}
+
+/* MetisMenu Single Items */
 .admin-menu :deep(.ant-menu-item) {
   margin: 4px 10px !important;
   border-radius: 10px !important;
   color: var(--text-muted) !important;
-  height: 44px !important;
-  line-height: 44px !important;
+  height: 42px !important;
+  line-height: 42px !important;
   display: flex !important;
   align-items: center !important;
-  gap: 10px !important;
+  gap: 12px !important;
   transition: all 0.2s ease !important;
 }
 
 .admin-menu :deep(.ant-menu-item:hover) {
   background: rgba(99, 102, 241, 0.12) !important;
-  color: var(--text-main) !important;
+  color: #ffffff !important;
 }
 
 .admin-menu :deep(.ant-menu-item-selected) {
-  background: linear-gradient(135deg, rgba(99, 102, 241, 0.25), rgba(6, 182, 212, 0.15)) !important;
-  color: var(--text-main) !important;
+  background: linear-gradient(90deg, rgba(99, 102, 241, 0.22) 0%, rgba(6, 182, 212, 0.1) 100%) !important;
+  color: #ffffff !important;
   border-left: 3px solid #6366f1 !important;
+  box-shadow: 0 4px 14px rgba(99, 102, 241, 0.2);
 }
 
 .admin-menu :deep(.ant-menu-item-selected::after) {
   display: none !important;
 }
 
+/* MetisMenu Submenus */
 .admin-menu :deep(.ant-menu-submenu-title) {
   margin: 4px 10px !important;
   border-radius: 10px !important;
   color: var(--text-muted) !important;
-  height: 44px !important;
-  line-height: 44px !important;
+  height: 42px !important;
+  line-height: 42px !important;
   display: flex !important;
   align-items: center !important;
-  gap: 10px !important;
+  gap: 12px !important;
   transition: all 0.2s ease !important;
 }
 
 .admin-menu :deep(.ant-menu-submenu-title:hover) {
   background: rgba(99, 102, 241, 0.12) !important;
-  color: var(--text-main) !important;
+  color: #ffffff !important;
 }
 
 .admin-menu :deep(.ant-menu-sub) {
   background: transparent !important;
-  padding-left: 8px !important;
+  padding-left: 12px !important;
 }
 
-/* Sider Toggle Collapse / Expand Bar (MetisMenu Footer Toggle) */
+/* Submenu Children Items */
+.metis-sub-item {
+  height: 38px !important;
+  line-height: 38px !important;
+  margin: 2px 8px !important;
+}
+
+.tree-bullet-dot {
+  width: 5px;
+  height: 5px;
+  border-radius: 50%;
+  background: #64748b;
+  flex-shrink: 0;
+  transition: all 0.2s ease;
+}
+
+.admin-menu :deep(.ant-menu-item:hover .tree-bullet-dot),
+.admin-menu :deep(.ant-menu-item-selected .tree-bullet-dot) {
+  background: #6366f1;
+  box-shadow: 0 0 8px rgba(99, 102, 241, 0.8);
+}
+
+.sub-item-icon {
+  font-size: 0.95rem !important;
+  color: var(--text-sub) !important;
+}
+
+.sub-item-text {
+  font-size: 0.84rem;
+}
+
+/* Sider Toggle Collapse / Hover Status Bar */
 .sider-toggle-bar {
   display: flex;
   align-items: center;
   gap: 12px;
-  padding: 14px 20px;
+  padding: 12px 18px;
   background: rgba(99, 102, 241, 0.08);
   border-top: 1px solid var(--border-color);
   border-bottom: 1px solid var(--border-color);
@@ -197,48 +275,56 @@
 }
 
 .toggle-bar-icon {
-  font-size: 1.1rem;
+  font-size: 1.05rem;
   color: var(--primary);
   flex-shrink: 0;
 }
 
 .toggle-bar-text {
-  font-size: 0.85rem;
+  font-size: 0.82rem;
   font-weight: 600;
   white-space: nowrap;
   overflow: hidden;
 }
 
-/* Collapsed toggle bar - center icon */
 .sider-toggle-bar.collapsed {
   justify-content: center;
-  padding: 14px 12px;
+  padding: 12px;
 }
 
-/* Sider bottom service health */
+/* Sider Bottom Health */
 .sider-bottom {
-  padding: 16px;
+  padding: 14px 18px;
   border-top: 1px solid var(--border-color);
   flex-shrink: 0;
+}
+
+.health-header {
+  font-size: 0.65rem;
+  text-transform: uppercase;
+  color: var(--text-muted);
+  letter-spacing: 0.8px;
+  margin-bottom: 6px;
+  font-weight: 600;
 }
 
 .service-health {
   display: flex;
   flex-direction: column;
-  gap: 6px;
+  gap: 5px;
 }
 
 .health-item {
   display: flex;
   align-items: center;
   gap: 8px;
-  font-size: 0.73rem;
+  font-size: 0.72rem;
   color: var(--text-muted);
 }
 
 .health-dot {
-  width: 7px;
-  height: 7px;
+  width: 6px;
+  height: 6px;
   border-radius: 50%;
   flex-shrink: 0;
 }
@@ -248,21 +334,16 @@
   box-shadow: 0 0 6px rgba(16, 185, 129, 0.5);
 }
 
-.health-dot.warning {
-  background: #f59e0b;
-  box-shadow: 0 0 6px rgba(245, 158, 11, 0.5);
-}
-
-/* ---- HEADER ---- */
+/* ---- MAIN LAYOUT ---- */
 .main-layout {
-  margin-left: 260px;
-  transition: margin-left 0.3s ease;
+  margin-left: 72px; /* Default margin for mini sidebar mode (No layout jump on hover!) */
+  transition: margin-left 0.3s cubic-bezier(0.16, 1, 0.3, 1);
   background: var(--bg-main) !important;
 }
 
-/* Sidebar collapsed state - adjust main content margin */
-.main-layout.sidebar-collapsed {
-  margin-left: 72px !important;
+/* When pinned, push main content to 260px */
+.main-layout.sidebar-pinned {
+  margin-left: 260px !important;
 }
 
 .admin-header {

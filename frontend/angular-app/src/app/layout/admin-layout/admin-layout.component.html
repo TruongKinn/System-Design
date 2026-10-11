@@ -1,12 +1,16 @@
 <nz-layout class="admin-layout">
-  <!-- SIDEBAR -->
+  <!-- SIDEBAR (Hover to expand / Leave to collapse) -->
   <nz-sider
     nzCollapsible
     [(nzCollapsed)]="isCollapsed"
     [nzTrigger]="null"
     nzWidth="260"
     [nzCollapsedWidth]="72"
-    class="admin-sider">
+    class="admin-sider"
+    [class.is-pinned]="isPinned"
+    [class.is-hover-expanded]="!isCollapsed && !isPinned"
+    (mouseenter)="onSidebarHover(true)"
+    (mouseleave)="onSidebarHover(false)">
 
     <!-- Logo Area -->
     <div class="sider-logo" [class.collapsed]="isCollapsed">
@@ -17,13 +21,27 @@
         <div class="logo-title">DataFlow</div>
         <div class="logo-subtitle">Enterprise Platform</div>
       </div>
+      <!-- Pin / Unpin Button when expanded -->
+      <button 
+        *ngIf="!isCollapsed" 
+        nz-button 
+        nzType="text" 
+        class="sider-pin-btn" 
+        (click)="togglePin()"
+        nz-tooltip
+        [nzTooltipTitle]="isPinned ? 'Bỏ ghim (Chuyển sang chế độ rê chuột tự động mở/đóng)' : 'Ghim cố định Sidebar'">
+        <span nz-icon [nzType]="'pushpin'" [nzTheme]="isPinned ? 'fill' : 'outline'" [style.color]="isPinned ? '#6366f1' : 'var(--text-muted)'"></span>
+      </button>
     </div>
 
     <!-- Navigation MetisMenu -->
     <div class="menu-container">
-      <ul nz-menu nzMode="inline" [nzTheme]="isDarkMode ? 'dark' : 'light'" class="admin-menu" [nzInlineCollapsed]="isCollapsed">
+      <ul nz-menu nzMode="inline" [nzTheme]="isDarkMode ? 'dark' : 'light'" class="admin-menu metis-menu" [nzInlineCollapsed]="isCollapsed">
         <ng-container *ngFor="let group of menuGroups">
-          <li class="menu-group-title" *ngIf="!isCollapsed && group.title">{{ group.title }}</li>
+          <li class="menu-group-title" *ngIf="!isCollapsed && group.title">
+            <span class="group-title-text">{{ group.title }}</span>
+            <span class="group-title-line"></span>
+          </li>
 
           <ng-container *ngFor="let item of group.items">
             <!-- Single Menu Item (No Children) -->
@@ -35,14 +53,15 @@
               (click)="navigateTo(item.route!, item.label)"
               nz-tooltip
               [nzTooltipTitle]="isCollapsed ? item.label : ''"
-              nzTooltipPlacement="right">
+              nzTooltipPlacement="right"
+              class="metis-item">
               <span nz-icon [nzType]="item.icon" nzTheme="outline" class="menu-item-icon"></span>
               <span class="menu-item-text" *ngIf="!isCollapsed">{{ item.label }}</span>
               <nz-badge
-                *ngIf="item.badge && !isCollapsed"
+                *ngIf="item.badge && item.badge!.count > 0 && !isCollapsed"
                 [nzCount]="item.badge!.count"
                 [nzStyle]="{ backgroundColor: item.badge!.color }"
-                style="margin-left: auto;">
+                class="metis-badge">
               </nz-badge>
             </li>
 
@@ -52,21 +71,24 @@
               nz-submenu
               [nzTitle]="item.label"
               [nzIcon]="item.icon"
-              nzOpen>
+              nzOpen
+              class="metis-submenu">
               <ul>
                 <li
                   *ngFor="let child of item.children"
                   nz-menu-item
                   [routerLink]="child.route"
                   routerLinkActive="ant-menu-item-selected"
-                  (click)="navigateTo(child.route!, child.label)">
-                  <span nz-icon [nzType]="child.icon" nzTheme="outline" class="menu-item-icon"></span>
-                  <span>{{ child.label }}</span>
+                  (click)="navigateTo(child.route!, child.label)"
+                  class="metis-sub-item">
+                  <span class="tree-bullet-dot"></span>
+                  <span nz-icon [nzType]="child.icon" nzTheme="outline" class="sub-item-icon"></span>
+                  <span class="sub-item-text">{{ child.label }}</span>
                   <nz-badge
-                    *ngIf="child.badge"
+                    *ngIf="child.badge && !isCollapsed"
                     [nzCount]="child.badge!.count"
                     [nzStyle]="{ backgroundColor: child.badge!.color }"
-                    style="margin-left: auto;">
+                    class="metis-badge">
                   </nz-badge>
                 </li>
               </ul>
@@ -76,37 +98,36 @@
       </ul>
     </div>
 
-    <!-- MetisMenu Style Collapse / Expand Toggle Bar -->
-    <div class="sider-toggle-bar" [class.collapsed]="isCollapsed" (click)="toggleCollapse()" nz-tooltip [nzTooltipTitle]="isCollapsed ? 'Mở rộng Sidebar' : 'Thu gọn Sidebar'">
-      <span nz-icon [nzType]="isCollapsed ? 'menu-unfold' : 'menu-fold'" nzTheme="outline" class="toggle-bar-icon"></span>
-      <span class="toggle-bar-text" *ngIf="!isCollapsed">Thu gọn Sidebar</span>
+    <!-- MetisMenu Style Collapse / Hover Status Bar -->
+    <div class="sider-toggle-bar" [class.collapsed]="isCollapsed" (click)="togglePin()" nz-tooltip [nzTooltipTitle]="isPinned ? 'Đang ghim cố định. Click để chuyển sang tự động mở khi rê chuột' : 'Đang tự động ẩn. Rê chuột vào để mở, click để ghim cố định'">
+      <span nz-icon [nzType]="isPinned ? 'pushpin' : (isCollapsed ? 'menu-unfold' : 'menu-fold')" [nzTheme]="isPinned ? 'fill' : 'outline'" class="toggle-bar-icon"></span>
+      <span class="toggle-bar-text" *ngIf="!isCollapsed">
+        {{ isPinned ? 'Ghim Cố Định' : 'Tự Động Thu Gọn (Hover)' }}
+      </span>
     </div>
 
-    <!-- Sider Bottom Info -->
+    <!-- Sider Bottom Microservices Health Status -->
     <div class="sider-bottom" *ngIf="!isCollapsed">
       <div class="service-health">
+        <div class="health-header">Trạng thái Microservices</div>
         <div class="health-item">
           <span class="health-dot online"></span>
           <span>API Gateway (:8080)</span>
         </div>
         <div class="health-item">
           <span class="health-dot online"></span>
-          <span>Auth Service (:8081)</span>
+          <span>Auth & Job (:8081/:8082)</span>
         </div>
         <div class="health-item">
           <span class="health-dot online"></span>
-          <span>Job Service (:8082)</span>
-        </div>
-        <div class="health-item">
-          <span class="health-dot warning"></span>
-          <span>Kafka (:9092)</span>
+          <span>Export & Import (:8083/:8084)</span>
         </div>
       </div>
     </div>
   </nz-sider>
 
   <!-- MAIN LAYOUT -->
-  <nz-layout class="main-layout" [class.sidebar-collapsed]="isCollapsed">
+  <nz-layout class="main-layout" [class.sidebar-collapsed]="isCollapsed" [class.sidebar-pinned]="isPinned">
 
     <!-- HEADER -->
     <nz-header class="admin-header">

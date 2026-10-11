@@ -29,7 +29,11 @@ export interface MenuGroup {
 })
 export class AdminLayoutComponent implements OnInit {
 
-  isCollapsed = false;
+  // Sidebar hover & collapse state (Default collapsed for hover-to-open interaction)
+  isCollapsed = true;
+  isPinned = false;
+  hoverTimeout: any;
+
   isDarkMode = true;
   currentUser: AuthUser | null = null;
   notificationCount = 3;
@@ -47,7 +51,8 @@ export class AdminLayoutComponent implements OnInit {
 
   @HostListener('window:resize')
   onResize(): void {
-    if (window.innerWidth < 1024 && !this.isCollapsed) {
+    if (window.innerWidth < 1024) {
+      this.isPinned = false;
       this.isCollapsed = true;
     }
   }
@@ -55,14 +60,14 @@ export class AdminLayoutComponent implements OnInit {
   // MetisMenu Style Accordion Items
   menuGroups: MenuGroup[] = [
     {
-      title: 'CHÍNH',
+      title: 'TỔNG QUAN & GIÁM SÁT',
       items: [
         {
           key: 'dashboard',
           icon: 'dashboard',
           label: 'Bảng Điều Khiển',
           route: '/admin/dashboard',
-          badge: null
+          badge: { count: 0, color: '#10b981' }
         }
       ]
     },
@@ -74,7 +79,7 @@ export class AdminLayoutComponent implements OnInit {
           icon: 'schedule',
           label: 'Quản Lý Cron Jobs',
           children: [
-            { key: 'jobs', icon: 'schedule', label: 'Danh Sách Cron Jobs', route: '/admin/jobs', badge: { count: 3, color: '#6366f1' } }
+            { key: 'jobs', icon: 'schedule', label: 'Danh Sách Cron Jobs', route: '/admin/jobs', badge: { count: 4, color: '#6366f1' } }
           ]
         }
       ]
@@ -94,7 +99,7 @@ export class AdminLayoutComponent implements OnInit {
       ]
     },
     {
-      title: 'QUẢN TRỊ HỆ THỐNG',
+      title: 'QUẢN TRỊ & BẢO MẬT',
       items: [
         {
           key: 'system-group',
@@ -118,9 +123,10 @@ export class AdminLayoutComponent implements OnInit {
   ) {}
 
   ngOnInit(): void {
-    if (typeof window !== 'undefined' && window.innerWidth < 1200) {
-      this.isCollapsed = true;
-    }
+    // Mặc định thu gọn menu để rê chuột vào thì mở ra, không thì đóng lại luôn
+    this.isCollapsed = true;
+    this.isPinned = false;
+
     this.currentUser = this.authService.currentUser;
     const savedTheme = localStorage.getItem('dataflow_theme');
     if (savedTheme) {
@@ -209,8 +215,36 @@ export class AdminLayoutComponent implements OnInit {
     this.authService.logout();
   }
 
+  // Hover to expand / leave to collapse
+  onSidebarHover(hovering: boolean): void {
+    if (this.isPinned) return;
+
+    if (hovering) {
+      if (this.hoverTimeout) clearTimeout(this.hoverTimeout);
+      this.isCollapsed = false;
+    } else {
+      // Delay nhẹ 120ms khi rê chuột ra ngoài để trải nghiệm cực kỳ êm ái
+      this.hoverTimeout = setTimeout(() => {
+        if (!this.isPinned) {
+          this.isCollapsed = true;
+        }
+      }, 120);
+    }
+  }
+
+  togglePin(): void {
+    this.isPinned = !this.isPinned;
+    if (this.isPinned) {
+      this.isCollapsed = false;
+      this.message.success('Đã ghim cố định Sidebar');
+    } else {
+      this.isCollapsed = true;
+      this.message.info('Đã bật chế độ tự động mở khi rê chuột (Hover to expand)');
+    }
+  }
+
   toggleCollapse(): void {
-    this.isCollapsed = !this.isCollapsed;
+    this.togglePin();
   }
 
   navigateTo(route: string, breadcrumb: string): void {
