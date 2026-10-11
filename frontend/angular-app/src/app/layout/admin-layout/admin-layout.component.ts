@@ -32,6 +32,10 @@ export class AdminLayoutComponent implements OnInit {
   // Trạng thái thu gọn/mở rộng Sidebar theo nút toggle
   isCollapsed = false;
 
+  // Trạng thái hover mở rộng tạm thời khi sidebar đang thu gọn
+  isHoverExpanded = false;
+  hoverTimeout: any;
+
   isDarkMode = true;
   currentUser: AuthUser | null = null;
   notificationCount = 3;
@@ -216,9 +220,30 @@ export class AdminLayoutComponent implements OnInit {
     this.authService.logout();
   }
 
-  // Đóng/mở sidebar chuẩn theo click toggle button
+  // Trạng thái thu gọn thực tế (nếu đang hover mở rộng thì effectiveCollapsed = false)
+  get effectiveCollapsed(): boolean {
+    return this.isCollapsed && !this.isHoverExpanded;
+  }
+
+  // Tương tác rê chuột vào tự động mở rộng khi sidebar đang ở trạng thái thu gọn
+  onSidebarHover(hovering: boolean): void {
+    if (!this.isCollapsed) return; // Nếu sidebar đã được mở cố định thì không cần hover logic
+
+    if (hovering) {
+      if (this.hoverTimeout) clearTimeout(this.hoverTimeout);
+      this.isHoverExpanded = true;
+    } else {
+      // Delay nhẹ 120ms khi rời chuột để không bị đóng giật
+      this.hoverTimeout = setTimeout(() => {
+        this.isHoverExpanded = false;
+      }, 120);
+    }
+  }
+
+  // Đóng/mở sidebar chuẩn theo click toggle button trên Header
   toggleCollapse(): void {
     this.isCollapsed = !this.isCollapsed;
+    this.isHoverExpanded = false;
   }
 
   navigateTo(route: string, breadcrumb: string): void {

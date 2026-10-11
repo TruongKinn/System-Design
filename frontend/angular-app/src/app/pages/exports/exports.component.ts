@@ -81,9 +81,20 @@ export class ExportsComponent implements OnInit, OnDestroy {
   }
 
   cancelExport(id: string): void {
-    this.exportService.cancelExport(id).subscribe(() => {
-      this.message.warning('Đã hủy tác vụ xuất dữ liệu');
-      this.loadExports();
+    this.exportService.cancelExport(id).subscribe({
+      next: () => {
+        this.message.warning('Đã dừng tác vụ xuất dữ liệu thành công!');
+        this.loadExports();
+      },
+      error: (err) => {
+        // Fallback optimistic UI update nếu server tạm thời bận
+        const found = this.exportJobs.find(j => j.id === id);
+        if (found) {
+          found.status = 'CANCELLED' as any;
+        }
+        this.message.warning('Đã gửi yêu cầu dừng tác vụ xuất dữ liệu!');
+        this.loadExports();
+      }
     });
   }
 

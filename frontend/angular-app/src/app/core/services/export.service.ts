@@ -10,7 +10,7 @@ export interface ExportJob {
   totalRecords: number;
   processedRecords: number;
   progressPercentage: number;
-  status: 'PENDING' | 'PROCESSING' | 'COMPLETED' | 'FAILED';
+  status: 'PENDING' | 'PROCESSING' | 'COMPLETED' | 'FAILED' | 'CANCELLED';
   createdAt: string;
   completedAt?: string;
   fileSizeMb?: number;

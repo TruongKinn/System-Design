@@ -103,6 +103,21 @@ public class ExportService {
         return storageService.generatePresignedUrl(job.getFilePath());
     }
 
+    @Transactional
+    public boolean cancelExportJob(String jobId) {
+        ExportJob job = exportJobRepository.findByJobId(jobId).orElse(null);
+        if (job != null) {
+            job.setStatus("CANCELLED");
+            job.setCompletedAt(java.time.LocalDateTime.now());
+            exportJobRepository.save(job);
+            try {
+                progressService.updateProgress(jobId, job.getFileName(), "CANCELLED", job.getTotalRecords(), job.getProcessedRecords(), job.getSuccessRecords(), job.getErrorRecords());
+            } catch (Exception ignored) {}
+            return true;
+        }
+        return false;
+    }
+
     public java.util.List<ExportJobDto> getAllExportJobs() {
         return exportJobRepository.findAll().stream()
                 .sorted((a, b) -> b.getCreatedAt() != null && a.getCreatedAt() != null ? b.getCreatedAt().compareTo(a.getCreatedAt()) : 0)

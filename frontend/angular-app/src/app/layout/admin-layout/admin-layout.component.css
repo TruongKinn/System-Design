@@ -34,6 +34,16 @@
   max-width: 72px !important;
 }
 
+/* Hover-expanded overlay state (Khi sidebar đang thu gọn mà người dùng rê chuột vào) */
+.admin-sider.is-hover-expanded {
+  width: 260px !important;
+  min-width: 260px !important;
+  max-width: 260px !important;
+  z-index: 1050 !important;
+  box-shadow: 12px 0 35px rgba(0, 0, 0, 0.45) !important;
+  backdrop-filter: blur(20px);
+}
+
 .admin-sider :deep(.ant-layout-sider-children) {
   display: flex;
   flex-direction: column;

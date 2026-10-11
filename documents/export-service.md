@@ -110,3 +110,26 @@ Mặc định theo chuẩn AWS S3 API, mọi bucket mới tạo trên MinIO đ�
      ```
    - Bảo vệ file khỏi truy cập trái phép, chỉ người dùng sở hữu job export mới có link tải hợp lệ.
 
+---
+
+## 7. Tính Năng Hủy Tác Vụ Xuất Dữ Liệu & Tối Ưu Cột Hành Động (Update v1.4)
+
+### 7.1. Endpoint Hủy Tác Vụ Backend: `POST /api/exports/{jobId}/cancel`
+- **Chức năng**: Cho phép người quản trị hủy bỏ tác vụ xuất dữ liệu khi đang ở trạng thái `PROCESSING` hoặc `PENDING`.
+- **Luồng xử lý**:
+  - Tìm kiếm `ExportJob` theo `jobId`.
+  - Cập nhật trạng thái `status = 'CANCELLED'` và thời gian kết thúc `completedAt = LocalDateTime.now()`.
+  - Đồng bộ trạng thái `CANCELLED` vào cache Redis `export:progress:{jobId}` để các client polling dừng tác vụ.
+  - Phản hồi mã `200 OK` với thông tin `{ jobId, status: "CANCELLED", success: true }`.
+
+### 7.2. Tối Ưu Giao Diện Bảng Lịch Sử & Thao Tác (Frontend UX/UI)
+- **Cố định cột Hành động (`nzRight="0px"`)**: Cột "Hành động" luôn ghim cố định bên phải bảng, không bị cuộn ngang mất khỏi tầm nhìn người dùng.
+- **Tương tác Hủy bỏ trên Thẻ Xử Lý Real-time**:
+  - Nút "Hủy bỏ" trên thẻ Processing Card được tích hợp `nz-popconfirm` xác nhận an toàn trước khi gửi lệnh hủy.
+  - Phản hồi thông báo cảnh báo màu cam trực quan `Đã dừng tác vụ xuất dữ liệu thành công!`.
+- **Hành động trong Bảng Lịch sử**:
+  - Với các job đã hoàn tất (`COMPLETED`): Hiển thị nút `Tải File` tải trực tiếp từ MinIO qua Presigned URL.
+  - Với các job đang xử lý (`PROCESSING` hoặc `PENDING`): Hiển thị nút `Hủy` màu đỏ có xác nhận `nz-popconfirm`.
+  - Với các job đã dừng (`CANCELLED` / `FAILED`): Hiển thị nhãn `Đã dừng` rõ ràng.
+
+

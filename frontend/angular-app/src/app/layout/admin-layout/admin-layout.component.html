@@ -1,19 +1,22 @@
 <nz-layout class="admin-layout">
-  <!-- SIDEBAR (Cố định, không tự động expand khi hover, đóng mở chuẩn theo toggle button) -->
+  <!-- SIDEBAR (Hỗ trợ Hover to expand khi đang thu gọn, đóng mở cố định qua nút toggle trên header) -->
   <nz-sider
     nzCollapsible
-    [(nzCollapsed)]="isCollapsed"
+    [nzCollapsed]="effectiveCollapsed"
     [nzTrigger]="null"
     nzWidth="260"
     [nzCollapsedWidth]="72"
-    class="admin-sider">
+    class="admin-sider"
+    [class.is-hover-expanded]="isHoverExpanded"
+    (mouseenter)="onSidebarHover(true)"
+    (mouseleave)="onSidebarHover(false)">
 
     <!-- Logo Area -->
-    <div class="sider-logo" [class.collapsed]="isCollapsed">
+    <div class="sider-logo" [class.collapsed]="effectiveCollapsed">
       <div class="logo-mark">
         <span>DF</span>
       </div>
-      <div class="logo-text" *ngIf="!isCollapsed">
+      <div class="logo-text" *ngIf="!effectiveCollapsed">
         <div class="logo-title">DataFlow</div>
         <div class="logo-subtitle">Enterprise Platform</div>
       </div>
@@ -21,7 +24,7 @@
 
     <!-- Navigation Menu (Hỗ trợ Menu Đơn & Menu Cha Đa Cấp, Sạch Sẽ Không Nhóm Thừa) -->
     <div class="menu-container">
-      <ul nz-menu nzMode="inline" [nzTheme]="isDarkMode ? 'dark' : 'light'" class="admin-menu metis-menu" [nzInlineCollapsed]="isCollapsed">
+      <ul nz-menu nzMode="inline" [nzTheme]="isDarkMode ? 'dark' : 'light'" class="admin-menu metis-menu" [nzInlineCollapsed]="effectiveCollapsed">
         <ng-container *ngFor="let item of menuItems">
           <!-- 1. Menu Đơn (Single Menu Item) -->
           <li
@@ -31,13 +34,13 @@
             routerLinkActive="ant-menu-item-selected"
             (click)="navigateTo(item.route!, item.label)"
             nz-tooltip
-            [nzTooltipTitle]="isCollapsed ? item.label : ''"
+            [nzTooltipTitle]="effectiveCollapsed ? item.label : ''"
             nzTooltipPlacement="right"
             class="metis-item">
             <span nz-icon [nzType]="item.icon" nzTheme="outline" class="menu-item-icon"></span>
-            <span class="menu-item-text" *ngIf="!isCollapsed">{{ item.label }}</span>
+            <span class="menu-item-text" *ngIf="!effectiveCollapsed">{{ item.label }}</span>
             <nz-badge
-              *ngIf="item.badge && item.badge!.count > 0 && !isCollapsed"
+              *ngIf="item.badge && item.badge!.count > 0 && !effectiveCollapsed"
               [nzCount]="item.badge!.count"
               [nzStyle]="{ backgroundColor: item.badge!.color }"
               class="metis-badge">
@@ -64,7 +67,7 @@
                 <span nz-icon [nzType]="child.icon" nzTheme="outline" class="sub-item-icon"></span>
                 <span class="sub-item-text">{{ child.label }}</span>
                 <nz-badge
-                  *ngIf="child.badge && !isCollapsed"
+                  *ngIf="child.badge && !effectiveCollapsed"
                   [nzCount]="child.badge!.count"
                   [nzStyle]="{ backgroundColor: child.badge!.color }"
                   class="metis-badge">
@@ -77,7 +80,7 @@
     </div>
 
     <!-- Sider Bottom Microservices Health Status -->
-    <div class="sider-bottom" *ngIf="!isCollapsed">
+    <div class="sider-bottom" *ngIf="!effectiveCollapsed">
       <div class="service-health">
         <div class="health-header">Trạng thái Microservices</div>
         <div class="health-item">

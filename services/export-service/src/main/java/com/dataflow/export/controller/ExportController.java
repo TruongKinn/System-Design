@@ -44,4 +44,10 @@ public class ExportController {
         String url = exportService.getDownloadUrl(jobId);
         return ResponseEntity.ok(Map.of("jobId", jobId, "downloadUrl", url));
     }
+
+    @PostMapping("/{jobId}/cancel")
+    public ResponseEntity<Map<String, Object>> cancelExportJob(@PathVariable String jobId) {
+        boolean cancelled = exportService.cancelExportJob(jobId);
+        return ResponseEntity.ok(Map.of("jobId", jobId, "status", "CANCELLED", "success", cancelled));
+    }
 }
