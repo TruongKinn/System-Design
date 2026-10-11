@@ -57,60 +57,44 @@ export class AdminLayoutComponent implements OnInit {
     }
   }
 
-  // MetisMenu Style Accordion Items
-  menuGroups: MenuGroup[] = [
+  // Danh sách menu chính phẳng, trực quan, nâng cao UX/UI (Loại bỏ các tiêu đề nhóm thừa)
+  menuItems: MenuItem[] = [
     {
-      title: 'TỔNG QUAN & GIÁM SÁT',
-      items: [
-        {
-          key: 'dashboard',
-          icon: 'dashboard',
-          label: 'Bảng Điều Khiển',
-          route: '/admin/dashboard',
-          badge: { count: 0, color: '#10b981' }
-        }
-      ]
+      key: 'dashboard',
+      icon: 'dashboard',
+      label: 'Bảng Điều Khiển',
+      route: '/admin/dashboard'
     },
     {
-      title: 'TÁC VỤ & LẬP LỊCH',
-      items: [
-        {
-          key: 'job-group',
-          icon: 'schedule',
-          label: 'Quản Lý Cron Jobs',
-          children: [
-            { key: 'jobs', icon: 'schedule', label: 'Danh Sách Cron Jobs', route: '/admin/jobs', badge: { count: 4, color: '#6366f1' } }
-          ]
-        }
-      ]
+      key: 'jobs',
+      icon: 'schedule',
+      label: 'Quản Lý Cron Jobs',
+      route: '/admin/jobs',
+      badge: { count: 4, color: '#38bdf8' }
     },
     {
-      title: 'XỬ LÝ DỮ LIỆU LỚN',
-      items: [
-        {
-          key: 'data-group',
-          icon: 'cloud-server',
-          label: 'Xuất / Nhập Dữ Liệu',
-          children: [
-            { key: 'exports', icon: 'export', label: 'Xuất Dữ Liệu Lớn (Async)', route: '/admin/exports' },
-            { key: 'imports', icon: 'import', label: 'Nhập Excel Streaming', route: '/admin/imports' }
-          ]
-        }
-      ]
+      key: 'exports',
+      icon: 'export',
+      label: 'Xuất Dữ Liệu (1M Rows)',
+      route: '/admin/exports'
     },
     {
-      title: 'QUẢN TRỊ & BẢO MẬT',
-      items: [
-        {
-          key: 'system-group',
-          icon: 'team',
-          label: 'Người Dùng & Phân Quyền',
-          children: [
-            { key: 'users', icon: 'user', label: 'Quản Lý Người Dùng', route: '/admin/users' },
-            { key: 'rbac', icon: 'safety', label: 'Phân Quyền RBAC', route: '/admin/rbac' }
-          ]
-        }
-      ]
+      key: 'imports',
+      icon: 'import',
+      label: 'Nhập Dữ Liệu (Streaming)',
+      route: '/admin/imports'
+    },
+    {
+      key: 'users',
+      icon: 'team',
+      label: 'Quản Lý Người Dùng',
+      route: '/admin/users'
+    },
+    {
+      key: 'rbac',
+      icon: 'safety-certificate',
+      label: 'Phân Quyền RBAC',
+      route: '/admin/rbac'
     }
   ];
 

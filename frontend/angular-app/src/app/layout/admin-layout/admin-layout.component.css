@@ -170,29 +170,47 @@
   flex-shrink: 0;
 }
 
-/* MetisMenu Single Items */
+/* MetisMenu Items UX/UI Cao Cấp */
+.admin-menu :deep(.ant-menu-item.metis-item),
 .admin-menu :deep(.ant-menu-item) {
-  margin: 4px 10px !important;
-  border-radius: 10px !important;
-  color: var(--text-muted) !important;
-  height: 42px !important;
-  line-height: 42px !important;
+  margin: 6px 12px !important;
+  border-radius: 12px !important;
+  color: #94a3b8 !important;
+  height: 44px !important;
+  line-height: 44px !important;
   display: flex !important;
   align-items: center !important;
-  gap: 12px !important;
-  transition: all 0.2s ease !important;
+  gap: 14px !important;
+  padding: 0 16px !important;
+  font-weight: 500 !important;
+  font-size: 0.9rem !important;
+  transition: all 0.25s cubic-bezier(0.16, 1, 0.3, 1) !important;
+  position: relative !important;
+  border-left: 3px solid transparent !important;
 }
 
 .admin-menu :deep(.ant-menu-item:hover) {
-  background: rgba(99, 102, 241, 0.12) !important;
+  background: rgba(56, 189, 248, 0.08) !important;
   color: #ffffff !important;
+  transform: translateX(4px);
+}
+
+.admin-menu :deep(.ant-menu-item:hover .menu-item-icon) {
+  color: #38bdf8 !important;
+  filter: drop-shadow(0 0 8px rgba(56, 189, 248, 0.5));
 }
 
 .admin-menu :deep(.ant-menu-item-selected) {
-  background: linear-gradient(90deg, rgba(99, 102, 241, 0.22) 0%, rgba(6, 182, 212, 0.1) 100%) !important;
+  background: linear-gradient(90deg, rgba(56, 189, 248, 0.18) 0%, rgba(99, 102, 241, 0.12) 100%) !important;
   color: #ffffff !important;
-  border-left: 3px solid #6366f1 !important;
-  box-shadow: 0 4px 14px rgba(99, 102, 241, 0.2);
+  border-left: 3.5px solid #38bdf8 !important;
+  box-shadow: 0 4px 18px rgba(56, 189, 248, 0.15);
+  font-weight: 600 !important;
+}
+
+.admin-menu :deep(.ant-menu-item-selected .menu-item-icon) {
+  color: #38bdf8 !important;
+  filter: drop-shadow(0 0 10px rgba(56, 189, 248, 0.8));
 }
 
 .admin-menu :deep(.ant-menu-item-selected::after) {
