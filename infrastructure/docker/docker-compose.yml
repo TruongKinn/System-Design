@@ -1,8 +1,14 @@
 version: '3.8'
 
+# ================================================================
+# DataFlow Platform — Full Stack Docker Compose
+# Khởi chạy TOÀN BỘ hệ thống (Infrastructure + Microservices)
+# Lệnh: docker-compose up --build -d
+# ================================================================
+
 services:
   # -------------------------------------------------------------------
-  # PostgreSQL Database Instance
+  # Infrastructure Layer: PostgreSQL, Redis, Kafka, MinIO
   # -------------------------------------------------------------------
   postgres:
     image: postgres:16-alpine
@@ -23,9 +29,6 @@ services:
       timeout: 5s
       retries: 5
 
-  # -------------------------------------------------------------------
-  # Redis Cache & Distributed Lock
-  # -------------------------------------------------------------------
   redis:
     image: redis:7-alpine
     container_name: dataflow-redis
@@ -42,9 +45,6 @@ services:
       timeout: 5s
       retries: 5
 
-  # -------------------------------------------------------------------
-  # Apache Kafka & Zookeeper
-  # -------------------------------------------------------------------
   zookeeper:
     image: confluentinc/cp-zookeeper:7.5.0
     container_name: dataflow-zookeeper
@@ -53,12 +53,18 @@ services:
       ZOOKEEPER_TICK_TIME: 2000
     networks:
       - dataflow-net
+    healthcheck:
+      test: ["CMD-SHELL", "echo srvr | nc localhost 2181 | grep Mode"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
 
   kafka:
     image: confluentinc/cp-kafka:7.5.0
     container_name: dataflow-kafka
     depends_on:
-      - zookeeper
+      zookeeper:
+        condition: service_healthy
     ports:
       - "9092:9092"
       - "29092:29092"
@@ -69,12 +75,16 @@ services:
       KAFKA_LISTENER_SECURITY_PROTOCOL_MAP: PLAINTEXT:PLAINTEXT,PLAINTEXT_HOST:PLAINTEXT
       KAFKA_INTER_BROKER_LISTENER_NAME: PLAINTEXT
       KAFKA_OFFSETS_TOPIC_REPLICATION_FACTOR: 1
+      KAFKA_AUTO_CREATE_TOPICS_ENABLE: "true"
     networks:
       - dataflow-net
+    healthcheck:
+      test: ["CMD-SHELL", "kafka-broker-api-versions --bootstrap-server localhost:9092 > /dev/null 2>&1"]
+      interval: 15s
+      timeout: 10s
+      retries: 10
+      start_period: 30s
 
-  # -------------------------------------------------------------------
-  # MinIO Object Storage
-  # -------------------------------------------------------------------
   minio:
     image: minio/minio:RELEASE.2023-09-04T19-57-37Z
     container_name: dataflow-minio
@@ -89,12 +99,18 @@ services:
       - minio_data:/data
     networks:
       - dataflow-net
+    healthcheck:
+      test: ["CMD", "curl", "-f", "http://localhost:9000/minio/health/live"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
 
   minio-init:
     image: minio/mc:RELEASE.2023-09-02T03-24-48Z
     container_name: dataflow-minio-init
     depends_on:
-      - minio
+      minio:
+        condition: service_healthy
     entrypoint: >
       /bin/sh -c "
       echo 'Waiting for MinIO...';
@@ -103,17 +119,162 @@ services:
       done;
       /usr/bin/mc mb myminio/exports --ignore-existing;
       /usr/bin/mc anonymous set download myminio/exports;
-      echo 'id,transaction_id,amount,status,created_at
-      1,TXN-1001,1500000,SUCCESS,2026-09-01 10:00:00
-      2,TXN-1002,2300000,SUCCESS,2026-09-01 11:30:00
-      3,TXN-1003,500000,PENDING,2026-09-02 08:15:00
-      4,TXN-1004,8900000,SUCCESS,2026-09-02 14:20:00' > /tmp/transactions_q3_2026.csv;
-      /usr/bin/mc cp /tmp/transactions_q3_2026.csv myminio/exports/transactions_q3_2026.csv;
-      echo 'MinIO initialized successfully with public exports bucket and sample data.';
+      echo 'MinIO initialized: bucket exports created with public download policy.';
       exit 0;
       "
     networks:
       - dataflow-net
+
+  # -------------------------------------------------------------------
+  # Application Layer: Microservices
+  # NOTE: Cần build JAR trước khi chạy: mvn clean package -DskipTests
+  # -------------------------------------------------------------------
+  auth-service:
+    build:
+      context: ../../services/auth-service
+      dockerfile: Dockerfile
+    image: dataflow/auth-service:1.0.0
+    container_name: dataflow-auth-service
+    ports:
+      - "8081:8081"
+    environment:
+      SPRING_DATASOURCE_URL: jdbc:postgresql://postgres:5432/dataflow_db
+      SPRING_DATASOURCE_USERNAME: postgres
+      SPRING_DATASOURCE_PASSWORD: postgres
+      JWT_SECRET: DataFlowPlatformSuperSecretKeyForJWTAuthTokenGeneration2026!
+    depends_on:
+      postgres:
+        condition: service_healthy
+    networks:
+      - dataflow-net
+    healthcheck:
+      test: ["CMD", "wget", "--no-verbose", "--tries=1", "--spider", "http://localhost:8081/actuator/health"]
+      interval: 30s
+      timeout: 10s
+      retries: 5
+      start_period: 60s
+
+  job-service:
+    build:
+      context: ../../services/job-service
+      dockerfile: Dockerfile
+    image: dataflow/job-service:1.0.0
+    container_name: dataflow-job-service
+    ports:
+      - "8082:8082"
+    environment:
+      SPRING_DATASOURCE_URL: jdbc:postgresql://postgres:5432/dataflow_db
+      SPRING_DATASOURCE_USERNAME: postgres
+      SPRING_DATASOURCE_PASSWORD: postgres
+      SPRING_REDIS_HOST: redis
+      SPRING_REDIS_PORT: 6379
+      SPRING_KAFKA_BOOTSTRAP_SERVERS: kafka:29092
+    depends_on:
+      postgres:
+        condition: service_healthy
+      redis:
+        condition: service_healthy
+      kafka:
+        condition: service_healthy
+    networks:
+      - dataflow-net
+    healthcheck:
+      test: ["CMD", "wget", "--no-verbose", "--tries=1", "--spider", "http://localhost:8082/actuator/health"]
+      interval: 30s
+      timeout: 10s
+      retries: 5
+      start_period: 60s
+
+  export-service:
+    build:
+      context: ../../services/export-service
+      dockerfile: Dockerfile
+    image: dataflow/export-service:1.0.0
+    container_name: dataflow-export-service
+    ports:
+      - "8083:8083"
+    environment:
+      SPRING_DATASOURCE_URL: jdbc:postgresql://postgres:5432/dataflow_db
+      SPRING_DATASOURCE_USERNAME: postgres
+      SPRING_DATASOURCE_PASSWORD: postgres
+      SPRING_REDIS_HOST: redis
+      SPRING_REDIS_PORT: 6379
+      SPRING_KAFKA_BOOTSTRAP_SERVERS: kafka:29092
+      MINIO_ENDPOINT: http://minio:9000
+      MINIO_ACCESS_KEY: minioadmin
+      MINIO_SECRET_KEY: minioadmin
+      MINIO_BUCKET: exports
+    depends_on:
+      postgres:
+        condition: service_healthy
+      redis:
+        condition: service_healthy
+      kafka:
+        condition: service_healthy
+      minio:
+        condition: service_healthy
+    networks:
+      - dataflow-net
+    healthcheck:
+      test: ["CMD", "wget", "--no-verbose", "--tries=1", "--spider", "http://localhost:8083/actuator/health"]
+      interval: 30s
+      timeout: 10s
+      retries: 5
+      start_period: 60s
+
+  import-service:
+    build:
+      context: ../../services/import-service
+      dockerfile: Dockerfile
+    image: dataflow/import-service:1.0.0
+    container_name: dataflow-import-service
+    ports:
+      - "8084:8084"
+    environment:
+      SPRING_DATASOURCE_URL: jdbc:postgresql://postgres:5432/dataflow_db
+      SPRING_DATASOURCE_USERNAME: postgres
+      SPRING_DATASOURCE_PASSWORD: postgres
+      SPRING_REDIS_HOST: redis
+      SPRING_REDIS_PORT: 6379
+    depends_on:
+      postgres:
+        condition: service_healthy
+      redis:
+        condition: service_healthy
+    networks:
+      - dataflow-net
+    healthcheck:
+      test: ["CMD", "wget", "--no-verbose", "--tries=1", "--spider", "http://localhost:8084/actuator/health"]
+      interval: 30s
+      timeout: 10s
+      retries: 5
+      start_period: 60s
+
+  api-gateway:
+    build:
+      context: ../../services/api-gateway
+      dockerfile: Dockerfile
+    image: dataflow/api-gateway:1.0.0
+    container_name: dataflow-api-gateway
+    ports:
+      - "8080:8080"
+    environment:
+      AUTH_SERVICE_URI: http://auth-service:8081
+      JOB_SERVICE_URI: http://job-service:8082
+      EXPORT_SERVICE_URI: http://export-service:8083
+      IMPORT_SERVICE_URI: http://import-service:8084
+      JWT_SECRET: DataFlowPlatformSuperSecretKeyForJWTAuthTokenGeneration2026!
+    depends_on:
+      auth-service:
+        condition: service_healthy
+    networks:
+      - dataflow-net
+    healthcheck:
+      test: ["CMD", "wget", "--no-verbose", "--tries=1", "--spider", "http://localhost:8080/actuator/health"]
+      interval: 30s
+      timeout: 10s
+      retries: 5
+      start_period: 60s
 
 networks:
   dataflow-net:

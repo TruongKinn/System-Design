@@ -13,11 +13,11 @@ spring:
           predicates:
             - Path=/api/auth/login, /api/auth/register, /api/auth/refresh
 
-        # Auth Service Secured User Info
+        # Auth Service Secured User Info & Roles
         - id: auth-service-secured
           uri: ${AUTH_SERVICE_URI:http://localhost:8081}
           predicates:
-            - Path=/api/auth/me, /api/users, /api/users/**
+            - Path=/api/auth/me, /api/users, /api/users/**, /api/roles, /api/roles/**, /api/v1/roles, /api/v1/roles/**
           filters:
             - JwtAuthenticationFilter
 

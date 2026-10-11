@@ -10,5 +10,6 @@ import java.util.Optional;
 @Repository
 public interface JobExecutionRepository extends JpaRepository<JobExecution, Long> {
     List<JobExecution> findByJobIdOrderByStartTimeDesc(Long jobId);
+    List<JobExecution> findAllByOrderByStartTimeDesc();
     Optional<JobExecution> findByExecutionId(String executionId);
 }

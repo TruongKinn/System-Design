@@ -9,10 +9,25 @@ spring:
     driver-class-name: ${SPRING_DATASOURCE_DRIVER:org.postgresql.Driver}
     username: ${SPRING_DATASOURCE_USERNAME:postgres}
     password: ${SPRING_DATASOURCE_PASSWORD:postgres}
+    hikari:
+      maximum-pool-size: 10
+      minimum-idle: 3
   data:
     redis:
       host: ${SPRING_REDIS_HOST:localhost}
       port: ${SPRING_REDIS_PORT:6379}
+  kafka:
+    bootstrap-servers: ${SPRING_KAFKA_BOOTSTRAP_SERVERS:localhost:9092}
+    producer:
+      key-serializer: org.apache.kafka.common.serialization.StringSerializer
+      value-serializer: org.apache.kafka.common.serialization.StringSerializer
+      retries: 3
+      acks: all
+    consumer:
+      group-id: job-consumer-group
+      auto-offset-reset: earliest
+      key-deserializer: org.apache.kafka.common.serialization.StringDeserializer
+      value-deserializer: org.apache.kafka.common.serialization.StringDeserializer
   jpa:
     hibernate:
       ddl-auto: update
@@ -21,3 +36,8 @@ spring:
       hibernate:
         format_sql: true
         dialect: org.hibernate.dialect.PostgreSQLDialect
+
+app:
+  job:
+    lock-timeout-minutes: 5
+    default-max-retries: 3

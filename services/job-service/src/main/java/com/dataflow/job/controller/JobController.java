@@ -56,6 +56,11 @@ public class JobController {
         return ResponseEntity.ok(jobService.setJobActive(id, true));
     }
 
+    @GetMapping("/executions")
+    public ResponseEntity<List<JobExecutionDto>> getAllExecutions() {
+        return ResponseEntity.ok(jobService.getAllExecutions());
+    }
+
     @GetMapping("/{id}/executions")
     public ResponseEntity<List<JobExecutionDto>> getJobExecutions(@PathVariable Long id) {
         return ResponseEntity.ok(jobService.getJobExecutions(id));

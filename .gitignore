@@ -23,3 +23,9 @@ tmp/
 # OS generated files
 .DS_Store
 Thumbs.db
+
+# Test outputs
+test_downloaded_export.xlsx
+test_customers_upload.csv
+sample_customers_*.csv
+sample_customers_*.xlsx

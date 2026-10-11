@@ -204,6 +204,28 @@ public class AuthService {
         return getUserProfile(updatedUser);
     }
 
+    @Transactional(readOnly = true)
+    public List<RolePermissionDto> getAllRoles() {
+        return roleRepository.findAll().stream()
+                .map(role -> {
+                    List<String> perms = role.getPermissions().stream()
+                            .map(Permission::getCode)
+                            .sorted()
+                            .collect(Collectors.toList());
+                    int count = (int) userRepository.findAll().stream()
+                            .filter(u -> u.getRoles().stream().anyMatch(r -> r.getId().equals(role.getId())))
+                            .count();
+                    return RolePermissionDto.builder()
+                            .id(role.getId())
+                            .roleName(role.getName())
+                            .description(role.getDescription())
+                            .permissions(perms)
+                            .userCount(count)
+                            .build();
+                })
+                .collect(Collectors.toList());
+    }
+
     private UserProfileDto getUserProfile(User user) {
         Set<String> roles = user.getRoles().stream()
                 .map(Role::getName)

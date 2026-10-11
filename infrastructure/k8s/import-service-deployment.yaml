@@ -1,0 +1,62 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: import-service
+  namespace: dataflow-platform
+  labels:
+    app: import-service
+spec:
+  replicas: 2
+  selector:
+    matchLabels:
+      app: import-service
+  template:
+    metadata:
+      labels:
+        app: import-service
+    spec:
+      containers:
+        - name: import-service
+          image: dataflow/import-service:1.0.0
+          imagePullPolicy: IfNotPresent
+          ports:
+            - containerPort: 8084
+          envFrom:
+            - configMapRef:
+                name: dataflow-config
+            - secretRef:
+                name: dataflow-secret
+          resources:
+            requests:
+              memory: "512Mi"
+              cpu: "250m"
+            limits:
+              memory: "1024Mi"
+              cpu: "1000m"
+          livenessProbe:
+            httpGet:
+              path: /actuator/health/liveness
+              port: 8084
+            initialDelaySeconds: 60
+            periodSeconds: 30
+            failureThreshold: 3
+          readinessProbe:
+            httpGet:
+              path: /actuator/health/readiness
+              port: 8084
+            initialDelaySeconds: 30
+            periodSeconds: 10
+            failureThreshold: 5
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: import-service
+  namespace: dataflow-platform
+spec:
+  selector:
+    app: import-service
+  ports:
+    - port: 8084
+      targetPort: 8084
+  type: ClusterIP

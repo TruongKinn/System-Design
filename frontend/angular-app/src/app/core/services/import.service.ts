@@ -21,29 +21,14 @@ export interface ImportBatch {
   providedIn: 'root'
 })
 export class ImportService {
-  private apiUrl = 'http://localhost:8084/api/imports';
-
-  private mockImports: ImportBatch[] = [
-    {
-      id: 'imp-701',
-      filename: 'customers_template.csv',
-      fileSizeMb: 1.2,
-      totalRows: 5000,
-      successRows: 5000,
-      errorRows: 0,
-      status: 'COMPLETED',
-      progressPercentage: 100,
-      uploadedAt: '2026-09-13 14:00:00',
-      completedAt: '2026-09-13 14:00:03'
-    }
-  ];
+  private apiUrl = 'http://localhost:8080/api/imports';
 
   constructor(private http: HttpClient) {}
 
   getImportBatches(): Observable<ImportBatch[]> {
     return this.http.get<any[]>(this.apiUrl).pipe(
       map(list => {
-        if (!Array.isArray(list)) return this.mockImports;
+        if (!Array.isArray(list)) return [];
         return list.map(item => ({
           id: item.jobId || String(item.id),
           filename: item.fileName,
@@ -58,8 +43,7 @@ export class ImportService {
           uploadedAt: item.createdAt ? String(item.createdAt).replace('T', ' ').substring(0, 19) : '',
           completedAt: item.completedAt ? String(item.completedAt).replace('T', ' ').substring(0, 19) : undefined
         }));
-      }),
-      catchError(() => of(this.mockImports))
+      })
     );
   }
 
@@ -78,22 +62,7 @@ export class ImportService {
         status: item.status || 'PROCESSING',
         progressPercentage: 10,
         uploadedAt: item.createdAt ? String(item.createdAt).replace('T', ' ').substring(0, 19) : new Date().toISOString().replace('T', ' ').substring(0, 19)
-      })),
-      catchError(() => {
-        const fallback: ImportBatch = {
-          id: `imp-${Math.floor(100 + Math.random() * 900)}`,
-          filename: file.name,
-          fileSizeMb: parseFloat((file.size / (1024 * 1024)).toFixed(2)) || 1.5,
-          totalRows: 5000,
-          successRows: 0,
-          errorRows: 0,
-          status: 'PROCESSING',
-          progressPercentage: 15,
-          uploadedAt: new Date().toISOString().replace('T', ' ').substring(0, 19)
-        };
-        this.mockImports.unshift(fallback);
-        return of(fallback);
-      })
+      }))
     );
   }
 

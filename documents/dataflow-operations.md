@@ -10,14 +10,15 @@ Tài liệu này cung cấp quy trình chi tiết cho Đội ngũ Vận hành (D
 ### Bước 1: Khởi chạy Hạ tầng cơ sở (Infrastructure Layer)
 Chạy lệnh bên trong thư mục `infrastructure/docker/`:
 ```bash
-docker-compose up -d
+docker-compose up -d postgres redis zookeeper kafka minio minio-init
 ```
 
 #### Kiểm tra Health Check Hạ tầng:
-- **MySQL 8.0**: `docker exec -it dataflow-mysql mysqladmin -u root -prootpassword ping` -> Trả về `mysqld is alive`.
+- **PostgreSQL 16**: `docker exec -it dataflow-postgres psql -U postgres -c "SELECT version();"` -> Trả về version PostgreSQL.
 - **Redis 7**: `docker exec -it dataflow-redis redis-cli ping` -> Trả về `PONG`.
 - **Apache Kafka**: `docker exec -it dataflow-kafka kafka-topics --bootstrap-server localhost:9092 --list`.
 - **MinIO S3**: Mở trình duyệt tại `http://localhost:9001` (User: `minioadmin` / Pass: `minioadmin`).
+
 
 ---
 
@@ -70,11 +71,18 @@ mvn spring-boot:run -pl services/api-gateway
 kubectl apply -f infrastructure/k8s/namespace.yaml
 kubectl apply -f infrastructure/k8s/configmap.yaml
 
-# 2. Deploy toàn bộ Microservices
+# 2. Deploy toàn bộ Microservices (theo đúng thứ tự)
 kubectl apply -f infrastructure/k8s/auth-service-deployment.yaml
-kubectl apply -f infrastructure/k8s/api-gateway-deployment.yaml
+kubectl apply -f infrastructure/k8s/job-service-deployment.yaml
 kubectl apply -f infrastructure/k8s/export-service-deployment.yaml
+kubectl apply -f infrastructure/k8s/import-service-deployment.yaml
+kubectl apply -f infrastructure/k8s/api-gateway-deployment.yaml
+
+# 3. Cài đặt Ingress
 kubectl apply -f infrastructure/k8s/ingress.yaml
+
+# 4. Cài đặt Auto-scaling (HPA)
+kubectl apply -f infrastructure/k8s/hpa.yaml
 ```
 
 ### 2. Kiểm tra Trạng thái Pods & Scaling:
@@ -82,9 +90,13 @@ kubectl apply -f infrastructure/k8s/ingress.yaml
 # Xem danh sách Pods
 kubectl get pods -n dataflow-platform -o wide
 
+# Xem HPA status
+kubectl get hpa -n dataflow-platform
+
 # Cấu hình Horizontal Pod Autoscaler (HPA) cho Export Workers:
-kubectl autoscale deployment export-service -n dataflow-platform --cpu-percent=80 --min=4 --max=20
+kubectl autoscale deployment export-service -n dataflow-platform --cpu-percent=70 --min=4 --max=20
 ```
+
 
 ---
 
@@ -127,17 +139,18 @@ kubectl autoscale deployment export-service -n dataflow-platform --cpu-percent=8
 
 ## 5. Quy trình Sao lưu & Phục hồi Dữ liệu (Backup & Disaster Recovery)
 
-### 1. Sao lưu CSDL MySQL (Daily Backup):
+### 1. Sao lưu CSDL PostgreSQL (Daily Backup):
 ```bash
-docker exec dataflow-mysql mysqldump -u root -prootpassword --all-databases > backup_dataflow_$(date +%Y%m%d).sql
+docker exec dataflow-postgres pg_dump -U postgres dataflow_db > backup_dataflow_$(date +%Y%m%d).sql
 ```
 
-### 2. Phục hồi CSDL MySQL:
+### 2. Phục hồi CSDL PostgreSQL:
 ```bash
-docker exec -i dataflow-mysql mysql -u root -prootpassword < backup_dataflow_20260911.sql
+docker exec -i dataflow-postgres psql -U postgres dataflow_db < backup_dataflow_20260911.sql
 ```
 
 ### 3. Sao lưu Object Storage MinIO Files:
 ```bash
 mc mirror local/dataflow-exports /backup/minio/dataflow-exports
 ```
+

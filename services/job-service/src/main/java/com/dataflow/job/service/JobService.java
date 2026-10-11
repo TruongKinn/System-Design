@@ -93,6 +93,13 @@ public class JobService {
     }
 
     @Transactional(readOnly = true)
+    public List<JobExecutionDto> getAllExecutions() {
+        return executionRepository.findAllByOrderByStartTimeDesc().stream()
+                .map(this::mapToExecutionDto)
+                .collect(Collectors.toList());
+    }
+
+    @Transactional(readOnly = true)
     public List<JobExecutionDto> getJobExecutions(Long jobId) {
         return executionRepository.findByJobIdOrderByStartTimeDesc(jobId).stream()
                 .map(this::mapToExecutionDto)

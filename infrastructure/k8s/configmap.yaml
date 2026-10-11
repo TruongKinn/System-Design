@@ -4,12 +4,27 @@ metadata:
   name: dataflow-config
   namespace: dataflow-platform
 data:
-  MYSQL_HOST: "dataflow-mysql"
-  MYSQL_PORT: "3306"
-  REDIS_HOST: "dataflow-redis"
-  REDIS_PORT: "6379"
-  KAFKA_BOOTSTRAP_SERVERS: "dataflow-kafka:9092"
+  # PostgreSQL Configuration
+  POSTGRES_HOST: "dataflow-postgres"
+  POSTGRES_PORT: "5432"
+  POSTGRES_DB: "dataflow_db"
+  SPRING_DATASOURCE_URL: "jdbc:postgresql://dataflow-postgres:5432/dataflow_db"
+  SPRING_DATASOURCE_DRIVER: "org.postgresql.Driver"
+  SPRING_DATASOURCE_USERNAME: "postgres"
+  # Redis Configuration
+  SPRING_REDIS_HOST: "dataflow-redis"
+  SPRING_REDIS_PORT: "6379"
+  # Kafka Configuration
+  SPRING_KAFKA_BOOTSTRAP_SERVERS: "dataflow-kafka:29092"
+  # MinIO Configuration
   MINIO_ENDPOINT: "http://dataflow-minio:9000"
+  MINIO_BUCKET: "exports"
+  MINIO_ACCESS_KEY: "minioadmin"
+  # Service URLs (for API Gateway routing)
+  AUTH_SERVICE_URI: "http://auth-service:8081"
+  JOB_SERVICE_URI: "http://job-service:8082"
+  EXPORT_SERVICE_URI: "http://export-service:8083"
+  IMPORT_SERVICE_URI: "http://import-service:8084"
 ---
 apiVersion: v1
 kind: Secret
@@ -18,5 +33,6 @@ metadata:
   namespace: dataflow-platform
 type: Opaque
 stringData:
-  MYSQL_ROOT_PASSWORD: "rootpassword"
+  SPRING_DATASOURCE_PASSWORD: "postgres"
+  MINIO_SECRET_KEY: "minioadmin"
   JWT_SECRET: "DataFlowPlatformSuperSecretKeyForJWTAuthTokenGeneration2026!"

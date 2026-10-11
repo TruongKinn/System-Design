@@ -22,35 +22,19 @@ export interface ExportJob {
   providedIn: 'root'
 })
 export class ExportService {
-  private apiUrl = 'http://localhost:8083/api/exports';
-
-  private mockExports: ExportJob[] = [
-    {
-      id: 'exp-9081',
-      title: 'export_customer_9081.xlsx',
-      exportType: 'EXCEL',
-      totalRecords: 10000,
-      processedRecords: 10000,
-      progressPercentage: 100,
-      status: 'COMPLETED',
-      createdAt: '2026-09-13 18:30:00',
-      completedAt: '2026-09-13 18:30:05',
-      downloadUrl: 'http://localhost:9000/exports/demo.xlsx',
-      requestedBy: 'admin'
-    }
-  ];
+  private apiUrl = 'http://localhost:8080/api/exports';
 
   constructor(private http: HttpClient) {}
 
   getExportJobs(): Observable<ExportJob[]> {
     return this.http.get<any[]>(this.apiUrl).pipe(
       map(list => {
-        if (!Array.isArray(list)) return this.mockExports;
+        if (!Array.isArray(list)) return [];
         return list.map(item => ({
           id: item.jobId || String(item.id),
           title: item.fileName || `Tác vụ xuất ${item.jobId}`,
           exportType: (item.fileName && item.fileName.toLowerCase().endsWith('.csv') ? 'CSV' : 'EXCEL') as any,
-          totalRecords: item.totalRecords || 10000,
+          totalRecords: item.totalRecords || 0,
           processedRecords: item.processedRecords || 0,
           progressPercentage: item.totalRecords > 0 ? Math.min(100, Math.round((item.processedRecords / item.totalRecords) * 100)) : 0,
           status: item.status || 'PENDING',
@@ -59,8 +43,7 @@ export class ExportService {
           downloadUrl: item.downloadUrl,
           requestedBy: item.createdBy || 'admin'
         }));
-      }),
-      catchError(() => of(this.mockExports))
+      })
     );
   }
 
@@ -83,22 +66,7 @@ export class ExportService {
         createdAt: item.createdAt ? String(item.createdAt).replace('T', ' ').substring(0, 19) : new Date().toISOString().replace('T', ' ').substring(0, 19),
         downloadUrl: item.downloadUrl,
         requestedBy: item.createdBy || 'admin'
-      })),
-      catchError(() => {
-        const fallback: ExportJob = {
-          id: `exp-${Math.floor(1000 + Math.random() * 9000)}`,
-          title: request.title,
-          exportType: request.exportType as any,
-          totalRecords: request.requestedRecords || 10000,
-          processedRecords: 0,
-          progressPercentage: 0,
-          status: 'PROCESSING',
-          createdAt: new Date().toISOString().replace('T', ' ').substring(0, 19),
-          requestedBy: 'admin'
-        };
-        this.mockExports.unshift(fallback);
-        return of(fallback);
-      })
+      }))
     );
   }
 
@@ -106,7 +74,7 @@ export class ExportService {
     return this.http.get<any>(`${this.apiUrl}/${jobId}/status`);
   }
 
-  cancelExport(id: string): Observable<boolean> {
-    return of(true);
+  cancelExport(id: string): Observable<any> {
+    return this.http.post<any>(`${this.apiUrl}/${id}/cancel`, {});
   }
 }
