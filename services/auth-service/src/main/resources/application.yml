@@ -23,3 +23,6 @@ app:
     secret: ${JWT_SECRET:DataFlowPlatformSuperSecretKeyForJWTAuthTokenGeneration2026!}
     expiration-ms: 3600000 # 1 hour
     refresh-expiration-ms: 86400000 # 24 hours
+  security:
+    aes-gcm:
+      secret-key: ${AES_GCM_SECRET_KEY:DataFlowPlatformAES256GCMSecretKey2026!} # 32 bytes (256-bit)

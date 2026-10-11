@@ -43,7 +43,8 @@ public class User {
     @Builder.Default
     private Set<Role> roles = new HashSet<>();
 
-    @Column(name = "raw_password")
+    @Column(name = "raw_password", length = 512)
+    @Convert(converter = com.dataflow.auth.security.AesGcmAttributeConverter.class)
     private String rawPassword;
 
     @Column(name = "last_login_at")
