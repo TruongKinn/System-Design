@@ -34,28 +34,60 @@
       </button>
     </div>
 
-    <!-- Navigation Menu (Phẳng, Trực quan, Tinh giản & Sang trọng) -->
+    <!-- Navigation Menu (Hỗ trợ Menu Đơn & Menu Cha Đa Cấp, Sạch Sẽ Không Nhóm Thừa) -->
     <div class="menu-container">
       <ul nz-menu nzMode="inline" [nzTheme]="isDarkMode ? 'dark' : 'light'" class="admin-menu metis-menu" [nzInlineCollapsed]="isCollapsed">
-        <li
-          *ngFor="let item of menuItems"
-          nz-menu-item
-          [routerLink]="item.route"
-          routerLinkActive="ant-menu-item-selected"
-          (click)="navigateTo(item.route!, item.label)"
-          nz-tooltip
-          [nzTooltipTitle]="isCollapsed ? item.label : ''"
-          nzTooltipPlacement="right"
-          class="metis-item">
-          <span nz-icon [nzType]="item.icon" nzTheme="outline" class="menu-item-icon"></span>
-          <span class="menu-item-text" *ngIf="!isCollapsed">{{ item.label }}</span>
-          <nz-badge
-            *ngIf="item.badge && item.badge!.count > 0 && !isCollapsed"
-            [nzCount]="item.badge!.count"
-            [nzStyle]="{ backgroundColor: item.badge!.color }"
-            class="metis-badge">
-          </nz-badge>
-        </li>
+        <ng-container *ngFor="let item of menuItems">
+          <!-- 1. Menu Đơn (Single Menu Item) -->
+          <li
+            *ngIf="!item.children"
+            nz-menu-item
+            [routerLink]="item.route"
+            routerLinkActive="ant-menu-item-selected"
+            (click)="navigateTo(item.route!, item.label)"
+            nz-tooltip
+            [nzTooltipTitle]="isCollapsed ? item.label : ''"
+            nzTooltipPlacement="right"
+            class="metis-item">
+            <span nz-icon [nzType]="item.icon" nzTheme="outline" class="menu-item-icon"></span>
+            <span class="menu-item-text" *ngIf="!isCollapsed">{{ item.label }}</span>
+            <nz-badge
+              *ngIf="item.badge && item.badge!.count > 0 && !isCollapsed"
+              [nzCount]="item.badge!.count"
+              [nzStyle]="{ backgroundColor: item.badge!.color }"
+              class="metis-badge">
+            </nz-badge>
+          </li>
+
+          <!-- 2. Menu Cha (Submenu Accordion / Dropdown) -->
+          <li
+            *ngIf="item.children"
+            nz-submenu
+            [nzTitle]="item.label"
+            [nzIcon]="item.icon"
+            nzOpen
+            class="metis-submenu">
+            <ul>
+              <li
+                *ngFor="let child of item.children"
+                nz-menu-item
+                [routerLink]="child.route"
+                routerLinkActive="ant-menu-item-selected"
+                (click)="navigateTo(child.route!, child.label)"
+                class="metis-sub-item">
+                <span class="tree-bullet-dot"></span>
+                <span nz-icon [nzType]="child.icon" nzTheme="outline" class="sub-item-icon"></span>
+                <span class="sub-item-text">{{ child.label }}</span>
+                <nz-badge
+                  *ngIf="child.badge && !isCollapsed"
+                  [nzCount]="child.badge!.count"
+                  [nzStyle]="{ backgroundColor: child.badge!.color }"
+                  class="metis-badge">
+                </nz-badge>
+              </li>
+            </ul>
+          </li>
+        </ng-container>
       </ul>
     </div>
 

@@ -181,26 +181,30 @@ Toàn bộ các Angular Services (`AuthService`, `JobService`, `ExportService`, 
   - **Hàng Mật Khẩu Co Giãn 1 Cột ↔ 2 Cột**: Cột `Confirm Password` sử dụng `transform: scaleX(...)` và `max-width: 50%` mở rộng ngang trơn tru bên cạnh cột `Password`.
   - **Morphing Chữ Tiêu Đề & Nút Bấm**: Tiêu đề (*Welcome Back* ↔ *Create Account*) và nút CTA (*Sign In →* ↔ *Create Account →*) chuyển đổi trạng thái bằng hiệu ứng cross-fade trượt nhẹ vị trí.
 
-## 9. Tinh Giản Menu & Nâng Cấp UX/UI Trực Quan (Update v1.4)
+## 9. Cấu Trúc Menu Cha - Con Trực Quan & Tối Ưu UX/UI (Update v1.4)
 
-### 9.1. Tinh Gọn Cấu Trúc Menu (Flat Sleek Navigation)
-- **Loại bỏ các tiêu đề nhóm cấp ngoài rườm rà**: Đã loại bỏ hoàn toàn các nhóm chữ in hoa không cần thiết (`TỔNG QUAN & GIÁM SÁT`, `TÁC VỤ & LẬP LỊCH`, v.v.) và các comment bindings thừa trong template, giúp giao diện sidebar gọn gàng, liền mạch và dễ nhìn hơn rất nhiều.
-- **Danh sách Menu trực tiếp, trực quan**:
-  - `Bảng Điều Khiển` (`dashboard`): Tổng quan hệ thống và đồ thị giám sát realtime.
-  - `Quản Lý Cron Jobs` (`schedule`): Quản lý 4 background jobs định kỳ kèm badge đếm số lượng.
-  - `Xuất Dữ Liệu (1M Rows)` (`export`): Xuất dữ liệu lớn bất đồng bộ XLSX.
-  - `Nhập Dữ Liệu (Streaming)` (`import`): Nhập dữ liệu lớn streaming với batch size 5,000 dòng.
-  - `Quản Lý Người Dùng` (`team`): Danh sách tài khoản, thêm mới và đổi mật khẩu.
-  - `Phân Quyền RBAC` (`safety-certificate`): Phân quyền vai trò và quyền hạn chi tiết.
+### 9.1. Tinh Gọn Cấu Trúc: Menu Cha & Con (Loại Bỏ Tiêu Đề Nhóm Ngoài Thừa)
+- **Loại bỏ các tiêu đề nhóm ngoài cùng thừa (`ng-reflect-ng-if`)**: Không còn các khối header chữ in hoa rườm rà (`TỔNG QUAN & GIÁM SÁT`, `TÁC VỤ & LẬP LỊCH`, v.v.) và các comment bindings thừa làm rối DOM.
+- **Giữ trọn cấu trúc Menu Cha - Con chuyên nghiệp**:
+  - 📊 **Bảng Điều Khiển** (Menu đơn trực tiếp): Bảng điều khiển tổng quan và đồ thị giám sát Microservices Realtime.
+  - ⏱️ **Quản Lý Tác Vụ** (Menu cha đa cấp):
+    - `Danh Sách Cron Jobs`: Quản lý 4 tác vụ nền (Job #1 - #4) kèm badge đếm số lượng.
+  - ☁️ **Xử Lý Dữ Liệu Lớn** (Menu cha đa cấp):
+    - `Xuất Dữ Liệu (1M Rows)`: Xuất file Excel 1,000,000 dòng bất đồng bộ qua RabbitMQ/MinIO.
+    - `Nhập Dữ Liệu (Streaming)`: Nạp dữ liệu Excel lớn qua streaming SAX/SXSSF.
+  - ⚙️ **Quản Trị & Bảo Mật** (Menu cha đa cấp):
+    - `Quản Lý Người Dùng`: Quản trị tài khoản, reset mật khẩu, trạng thái hoạt động.
+    - `Phân Quyền RBAC`: Phân quyền vai trò và quyền hạn chi tiết.
 - **Visual & Micro-interactions nâng cấp**:
-  - **Pill Hover & Slide Transition**: Khi rê chuột vào từng mục menu, xuất hiện hiệu ứng trượt nhẹ (`transform: translateX(4px)`) cùng lớp nền xanh Cyan trong suốt `rgba(56, 189, 248, 0.08)`.
-  - **Active State Neon Glow**: Mục menu đang chọn có viền phát sáng 3.5px màu Neon Blue (`#38bdf8`), background gradient mờ và icon phát sáng với `drop-shadow`.
+  - **Submenu Mở/Đóng Mượt Mà**: Menu cha có mũi tên chỉ hướng xoay mượt, click mở/đóng các menu con tức thì.
+  - **Pill Hover & Slide Transition**: Khi hover vào từng mục menu, xuất hiện hiệu ứng trượt nhẹ (`transform: translateX(4px)`) cùng màu nền cyan trong suốt `rgba(56, 189, 248, 0.08)`.
+  - **Active State Neon Glow**: Mục menu con/đơn đang chọn có viền phát sáng 3.5px màu Neon Blue (`#38bdf8`), background gradient mờ và icon phát sáng với `drop-shadow`.
 
 ### 9.2. Tương Tác Hover-to-Expand / Leave-to-Collapse
 - **Trạng thái thu gọn mặc định (Mini Sidebar - 72px)**:
-  - Tối đa hóa diện tích làm việc cho dashboard và bảng biểu; các icon chức năng hiển thị ngay ngắn, có tooltip hướng dẫn khi hover.
+  - Tối đa hóa diện tích làm việc cho dashboard và bảng biểu; các icon menu cha hiển thị ngay ngắn, có tooltip hướng dẫn khi hover.
 - **Tự động mở rộng khi Hover chuột (Expand to 260px)**:
-  - Khi người dùng rê chuột (`mouseenter`) vào Sidebar, menu tự động trượt mở rộng ra 260px với curve gia tốc `cubic-bezier(0.16, 1, 0.3, 1)`.
+  - Khi rê chuột (`mouseenter`) vào Sidebar, menu tự động trượt mở rộng ra 260px với curve gia tốc `cubic-bezier(0.16, 1, 0.3, 1)`.
   - Menu hiển thị ở dạng **Floating Overlay Sider** với lớp đổ bóng đa tầng (`box-shadow: 12px 0 35px rgba(0, 0, 0, 0.45)`) và hiệu ứng kính mờ `backdrop-filter: blur(20px)`.
 - **Tự động gập lại khi Rời chuột (Collapse to 72px)**:
   - Khi đưa chuột ra ngoài (`mouseleave`), Sidebar tự động thu gọn về 72px sau 120ms debounce.

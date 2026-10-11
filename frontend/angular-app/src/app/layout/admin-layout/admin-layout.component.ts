@@ -57,7 +57,7 @@ export class AdminLayoutComponent implements OnInit {
     }
   }
 
-  // Danh sách menu chính phẳng, trực quan, nâng cao UX/UI (Loại bỏ các tiêu đề nhóm thừa)
+  // Cấu trúc Menu chuẩn: Menu Đơn & Menu Cha có Submenu con mở rộng (Đã bỏ group title ngoài cùng)
   menuItems: MenuItem[] = [
     {
       key: 'dashboard',
@@ -66,35 +66,56 @@ export class AdminLayoutComponent implements OnInit {
       route: '/admin/dashboard'
     },
     {
-      key: 'jobs',
+      key: 'jobs-parent',
       icon: 'schedule',
-      label: 'Quản Lý Cron Jobs',
-      route: '/admin/jobs',
-      badge: { count: 4, color: '#38bdf8' }
+      label: 'Quản Lý Tác Vụ',
+      children: [
+        {
+          key: 'jobs',
+          icon: 'clock-circle',
+          label: 'Danh Sách Cron Jobs',
+          route: '/admin/jobs',
+          badge: { count: 4, color: '#38bdf8' }
+        }
+      ]
     },
     {
-      key: 'exports',
-      icon: 'export',
-      label: 'Xuất Dữ Liệu (1M Rows)',
-      route: '/admin/exports'
+      key: 'data-parent',
+      icon: 'cloud-server',
+      label: 'Xử Lý Dữ Liệu Lớn',
+      children: [
+        {
+          key: 'exports',
+          icon: 'export',
+          label: 'Xuất Dữ Liệu (1M Rows)',
+          route: '/admin/exports'
+        },
+        {
+          key: 'imports',
+          icon: 'import',
+          label: 'Nhập Dữ Liệu (Streaming)',
+          route: '/admin/imports'
+        }
+      ]
     },
     {
-      key: 'imports',
-      icon: 'import',
-      label: 'Nhập Dữ Liệu (Streaming)',
-      route: '/admin/imports'
-    },
-    {
-      key: 'users',
-      icon: 'team',
-      label: 'Quản Lý Người Dùng',
-      route: '/admin/users'
-    },
-    {
-      key: 'rbac',
-      icon: 'safety-certificate',
-      label: 'Phân Quyền RBAC',
-      route: '/admin/rbac'
+      key: 'admin-parent',
+      icon: 'setting',
+      label: 'Quản Trị & Bảo Mật',
+      children: [
+        {
+          key: 'users',
+          icon: 'team',
+          label: 'Quản Lý Người Dùng',
+          route: '/admin/users'
+        },
+        {
+          key: 'rbac',
+          icon: 'safety-certificate',
+          label: 'Phân Quyền RBAC',
+          route: '/admin/rbac'
+        }
+      ]
     }
   ];
 
