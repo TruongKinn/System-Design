@@ -174,4 +174,12 @@ Toàn bộ các Angular Services (`AuthService`, `JobService`, `ExportService`, 
 - **Nút Đăng nhập Nhanh Mạng xã hội**:
   - Hỗ trợ nút `Google` (vector SVG chuẩn đa màu) và `Apple` (vector SVG chuẩn trắng).
 
+### 8.3. Hiệu Ứng Animation Co Giãn (Fluid Accordion Interaction)
+- **Cơ chế Co Ra / Đóng Vào Mượt Mà (Smooth Spring Expand & Collapse)**:
+  - Khung Card kính áp dụng curve chuyển động vật lý `cubic-bezier(0.16, 1, 0.3, 1)` giúp thay đổi chiều cao êm ái, không bị khựng hay giật khung hình.
+  - Các trường chỉ có ở Sign Up (`Full Name`, `Email Address`, `Confirm Password`) được cấu hình dạng `collapsible-field` với `max-height`, `opacity` và `transform: translateY(...)` trượt mượt mà từ trên xuống khi mở ra và thu gọn biến mất khi đóng lại.
+  - **Hàng Mật Khẩu Co Giãn 1 Cột ↔ 2 Cột**: Cột `Confirm Password` sử dụng `transform: scaleX(...)` và `max-width: 50%` mở rộng ngang trơn tru bên cạnh cột `Password`.
+  - **Morphing Chữ Tiêu Đề & Nút Bấm**: Tiêu đề (*Welcome Back* ↔ *Create Account*) và nút CTA (*Sign In →* ↔ *Create Account →*) chuyển đổi trạng thái bằng hiệu ứng cross-fade trượt nhẹ vị trí.
+
+
 

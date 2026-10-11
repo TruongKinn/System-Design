@@ -1,5 +1,6 @@
 /* ===================================================
    LOGIN FORM V7 - LUXURY DARK GLASSMORPHISM
+   WITH SMOOTH FLUID ACCORDION EXPAND/COLLAPSE ANIMATION
    =================================================== */
 
 .v7-login-viewport {
@@ -29,7 +30,6 @@
   z-index: 1;
 }
 
-/* Abstract 3D ribbons styled like the reference photo */
 .wave-shape {
   position: absolute;
   border-radius: 50%;
@@ -66,7 +66,6 @@
   filter: blur(40px);
 }
 
-/* Sharp decorative ribbon curves mimicking 3D metallic sweeps */
 .golden-wave-background::before {
   content: '';
   position: absolute;
@@ -135,6 +134,7 @@
   height: 64px;
   pointer-events: none;
   z-index: 15;
+  transition: all 0.4s cubic-bezier(0.16, 1, 0.3, 1);
 }
 
 .corner-accent.top-left {
@@ -175,7 +175,7 @@
   border-bottom-right-radius: 18px;
 }
 
-/* Main Card */
+/* Main Card with Fluid Spring Transition */
 .v7-glass-card {
   background: rgba(14, 14, 18, 0.78);
   backdrop-filter: blur(28px) saturate(180%);
@@ -186,21 +186,44 @@
   box-shadow: 0 30px 60px -12px rgba(0, 0, 0, 0.85),
               inset 0 1px 1px rgba(255, 255, 255, 0.12);
   color: #f8fafc;
-  transition: all 0.3s ease;
+  transform: translateZ(0);
+  transition: padding 0.45s cubic-bezier(0.16, 1, 0.3, 1),
+              box-shadow 0.45s cubic-bezier(0.16, 1, 0.3, 1),
+              border-color 0.4s ease;
 }
 
-/* Header */
+/* Header Text Morphing Transition */
 .card-header-v7 {
   text-align: left;
   margin-bottom: 18px;
 }
 
+.header-text-container {
+  position: relative;
+  height: 34px;
+  overflow: hidden;
+}
+
 .title-v7 {
-  font-size: 25px;
+  font-size: 26px;
   font-weight: 700;
   color: #ffffff;
-  margin: 0 0 4px 0;
+  margin: 0;
   letter-spacing: -0.4px;
+  position: absolute;
+  top: 0;
+  left: 0;
+  opacity: 0;
+  transform: translateY(16px);
+  pointer-events: none;
+  transition: opacity 0.35s cubic-bezier(0.16, 1, 0.3, 1),
+              transform 0.38s cubic-bezier(0.16, 1, 0.3, 1);
+}
+
+.title-v7.active {
+  opacity: 1;
+  transform: translateY(0);
+  pointer-events: auto;
 }
 
 .highlight-yellow {
@@ -208,30 +231,79 @@
   font-weight: 700;
 }
 
+.subtitle-text-container {
+  position: relative;
+  height: 20px;
+  overflow: hidden;
+  margin-top: 4px;
+}
+
 .subtitle-v7 {
   color: #94a3b8;
   font-size: 13px;
   margin: 0;
   line-height: 1.4;
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  opacity: 0;
+  transform: translateY(12px);
+  pointer-events: none;
+  transition: opacity 0.35s cubic-bezier(0.16, 1, 0.3, 1),
+              transform 0.38s cubic-bezier(0.16, 1, 0.3, 1);
+}
+
+.subtitle-v7.active {
+  opacity: 1;
+  transform: translateY(0);
+  pointer-events: auto;
 }
 
 /* Form Layout */
 .v7-form {
   display: flex;
   flex-direction: column;
-  gap: 12px;
+}
+
+/* ================= ACCORDION COLLAPSIBLE FIELDS ================= */
+.collapsible-field {
+  max-height: 0;
+  opacity: 0;
+  transform: translateY(-10px) scale(0.98);
+  overflow: hidden;
+  pointer-events: none;
+  margin-bottom: 0;
+  transition: max-height 0.45s cubic-bezier(0.16, 1, 0.3, 1),
+              opacity 0.35s ease,
+              transform 0.4s cubic-bezier(0.16, 1, 0.3, 1),
+              margin-bottom 0.4s cubic-bezier(0.16, 1, 0.3, 1);
+}
+
+.collapsible-field.expanded {
+  max-height: 80px;
+  opacity: 1;
+  transform: translateY(0) scale(1);
+  pointer-events: auto;
+  margin-bottom: 12px;
+}
+
+.collapsible-content {
+  padding-bottom: 2px;
 }
 
 .form-group-v7 {
   display: flex;
   flex-direction: column;
   gap: 4px;
+  margin-bottom: 12px;
 }
 
 .label-v7 {
   font-size: 12px;
   font-weight: 500;
   color: #cbd5e1;
+  transition: color 0.2s;
 }
 
 .input-wrapper-v7 {
@@ -246,6 +318,7 @@
   color: #64748b;
   font-size: 15px;
   pointer-events: none;
+  transition: color 0.2s;
 }
 
 .custom-input-v7 {
@@ -272,6 +345,10 @@
   box-shadow: 0 0 0 2px rgba(250, 204, 21, 0.2);
 }
 
+.custom-input-v7:focus ~ .input-icon-v7 {
+  color: #facc15;
+}
+
 .eye-toggle-v7 {
   position: absolute;
   right: 14px;
@@ -285,18 +362,72 @@
   color: #f8fafc;
 }
 
-/* 2 Columns Row for Password & Confirm */
-.form-row-2col {
-  display: grid;
-  grid-template-columns: 1fr 1fr;
+/* ================= DYNAMIC PASSWORD ROW (1 Col -> 2 Cols) ================= */
+.password-row-v7 {
+  display: flex;
+  width: 100%;
+  transition: all 0.45s cubic-bezier(0.16, 1, 0.3, 1);
+}
+
+.password-row-v7.two-cols {
   gap: 12px;
 }
 
-/* Checkbox Row */
-.checkbox-row-v7 {
-  display: flex;
-  align-items: center;
-  margin-top: 2px;
+.password-col {
+  flex: 1 1 100%;
+  margin-bottom: 12px;
+  transition: all 0.45s cubic-bezier(0.16, 1, 0.3, 1);
+}
+
+.password-row-v7.two-cols .password-col {
+  flex: 1 1 50%;
+}
+
+.collapsible-col {
+  flex: 0 0 0;
+  max-width: 0;
+  opacity: 0;
+  transform: scaleX(0);
+  transform-origin: right center;
+  overflow: hidden;
+  pointer-events: none;
+  transition: flex 0.45s cubic-bezier(0.16, 1, 0.3, 1),
+              max-width 0.45s cubic-bezier(0.16, 1, 0.3, 1),
+              opacity 0.32s ease,
+              transform 0.4s cubic-bezier(0.16, 1, 0.3, 1);
+}
+
+.collapsible-col.col-expanded {
+  flex: 1 1 50%;
+  max-width: 50%;
+  opacity: 1;
+  transform: scaleX(1);
+  pointer-events: auto;
+}
+
+/* ================= OPTIONS CONTAINER (Remember Me vs Terms) ================= */
+.options-container-v7 {
+  position: relative;
+  height: 24px;
+  margin-bottom: 14px;
+}
+
+.option-item {
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  opacity: 0;
+  transform: translateY(8px);
+  pointer-events: none;
+  transition: opacity 0.35s cubic-bezier(0.16, 1, 0.3, 1),
+              transform 0.38s cubic-bezier(0.16, 1, 0.3, 1);
+}
+
+.option-item.active-option {
+  opacity: 1;
+  transform: translateY(0);
+  pointer-events: auto;
 }
 
 .checkbox-between-row {
@@ -304,7 +435,11 @@
   justify-content: space-between;
   align-items: center;
   font-size: 12.5px;
-  margin-top: 2px;
+}
+
+.checkbox-row-v7 {
+  display: flex;
+  align-items: center;
 }
 
 .custom-checkbox-label {
@@ -334,7 +469,7 @@
   color: #facc15;
 }
 
-/* Primary CTA Button (Yellow V7) */
+/* ================= PRIMARY CTA BUTTON (Yellow V7 with Text Morph) ================= */
 .btn-primary-yellow {
   background: #facc15;
   color: #09090b;
@@ -348,10 +483,9 @@
   display: flex;
   align-items: center;
   justify-content: center;
-  gap: 8px;
-  margin-top: 6px;
-  transition: all 0.2s ease;
+  transition: background 0.2s ease, transform 0.2s ease, box-shadow 0.2s ease;
   box-shadow: 0 4px 18px rgba(250, 204, 21, 0.35);
+  overflow: hidden;
 }
 
 .btn-primary-yellow:hover:not(:disabled) {
@@ -369,12 +503,40 @@
   cursor: not-allowed;
 }
 
-/* Divider */
+.btn-text-morph {
+  position: relative;
+  width: 100%;
+  height: 22px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.btn-text {
+  position: absolute;
+  opacity: 0;
+  transform: translateY(12px);
+  pointer-events: none;
+  transition: opacity 0.32s cubic-bezier(0.16, 1, 0.3, 1),
+              transform 0.36s cubic-bezier(0.16, 1, 0.3, 1);
+  display: flex;
+  align-items: center;
+  gap: 6px;
+}
+
+.btn-text.active-btn {
+  opacity: 1;
+  transform: translateY(0);
+  pointer-events: auto;
+}
+
+/* ================= DIVIDER ================= */
 .v7-divider {
   display: flex;
   align-items: center;
   gap: 12px;
-  margin: 20px 0 16px 0;
+  margin: 18px 0 14px 0;
+  transition: margin 0.35s ease;
 }
 
 .divider-line {
@@ -390,11 +552,12 @@
   letter-spacing: 0.6px;
 }
 
-/* Social Buttons */
+/* ================= SOCIAL BUTTONS ================= */
 .social-buttons-grid {
   display: grid;
   grid-template-columns: 1fr 1fr;
   gap: 12px;
+  transition: all 0.35s ease;
 }
 
 .btn-social-v7 {
@@ -422,16 +585,13 @@
   flex-shrink: 0;
 }
 
-/* Card Footer */
+/* ================= FOOTER MODE SWITCH ================= */
 .card-footer-v7 {
-  margin-top: 22px;
+  margin-top: 18px;
   text-align: center;
   font-size: 13px;
   color: #94a3b8;
-}
-
-.card-footer-v7 p {
-  margin: 0;
+  transition: margin 0.35s ease;
 }
 
 .switch-link-v7 {
@@ -450,10 +610,15 @@
 /* Responsive */
 @media (max-width: 480px) {
   .v7-glass-card {
-    padding: 28px 20px;
+    padding: 24px 18px;
     border-radius: 20px;
   }
-  .form-row-2col {
-    grid-template-columns: 1fr;
+  .password-row-v7.two-cols {
+    flex-direction: column;
+    gap: 0;
+  }
+  .collapsible-col.col-expanded {
+    max-width: 100%;
+    flex: 1 1 100%;
   }
 }

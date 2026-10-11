@@ -18,56 +18,79 @@
       <div class="corner-inner"></div>
     </div>
 
-    <div class="v7-glass-card">
-      <!-- Card Header -->
+    <!-- Main Glass Card with Dynamic Expand/Collapse Class -->
+    <div class="v7-glass-card" [class.signup-mode]="isSignUpMode" [class.signin-mode]="!isSignUpMode">
+      
+      <!-- Card Header with Smooth Text Transition -->
       <div class="card-header-v7">
-        <h2 class="title-v7" *ngIf="isSignUpMode">
-          Create <span class="highlight-yellow">Account</span>
-        </h2>
-        <h2 class="title-v7" *ngIf="!isSignUpMode">
-          Welcome <span class="highlight-yellow">Back</span>
-        </h2>
+        <div class="header-text-container">
+          <h2 class="title-v7 signin-title" [class.active]="!isSignUpMode">
+            Welcome <span class="highlight-yellow">Back</span>
+          </h2>
+          <h2 class="title-v7 signup-title" [class.active]="isSignUpMode">
+            Create <span class="highlight-yellow">Account</span>
+          </h2>
+        </div>
 
-        <p class="subtitle-v7" *ngIf="isSignUpMode">
-          Join us today to access your secure workspace
-        </p>
-        <p class="subtitle-v7" *ngIf="!isSignUpMode">
-          Enter your credentials to access your secure workspace
-        </p>
+        <div class="subtitle-text-container">
+          <p class="subtitle-v7 signin-sub" [class.active]="!isSignUpMode">
+            Enter your credentials to access your secure workspace
+          </p>
+          <p class="subtitle-v7 signup-sub" [class.active]="isSignUpMode">
+            Join us today to access your secure workspace
+          </p>
+        </div>
       </div>
 
-      <!-- ================= SIGN UP / REGISTER FORM ================= -->
-      <form *ngIf="isSignUpMode" [formGroup]="registerForm" (ngSubmit)="onRegister()" class="v7-form">
-        <!-- Full Name -->
-        <div class="form-group-v7">
-          <label class="label-v7">Full Name</label>
-          <div class="input-wrapper-v7">
-            <span nz-icon nzType="user" class="input-icon-v7"></span>
-            <input type="text" formControlName="fullName" placeholder="Alex Johnson" class="custom-input-v7" />
+      <!-- Unified Form with Collapsible Accordion Fields -->
+      <form [formGroup]="authForm" (ngSubmit)="onSubmit()" class="v7-form">
+
+        <!-- 1. Collapsible Field: Full Name (Only in Sign Up Mode) -->
+        <div class="collapsible-field" [class.expanded]="isSignUpMode">
+          <div class="collapsible-content">
+            <div class="form-group-v7">
+              <label class="label-v7">Full Name</label>
+              <div class="input-wrapper-v7">
+                <span nz-icon nzType="user" class="input-icon-v7"></span>
+                <input type="text" formControlName="fullName" placeholder="Alex Johnson" class="custom-input-v7" />
+              </div>
+            </div>
           </div>
         </div>
 
-        <!-- Email Address -->
-        <div class="form-group-v7">
-          <label class="label-v7">Email Address</label>
-          <div class="input-wrapper-v7">
-            <span nz-icon nzType="mail" class="input-icon-v7"></span>
-            <input type="email" formControlName="email" placeholder="name@domain.com" class="custom-input-v7" />
+        <!-- 2. Collapsible Field: Email Address (Only in Sign Up Mode) -->
+        <div class="collapsible-field" [class.expanded]="isSignUpMode">
+          <div class="collapsible-content">
+            <div class="form-group-v7">
+              <label class="label-v7">Email Address</label>
+              <div class="input-wrapper-v7">
+                <span nz-icon nzType="mail" class="input-icon-v7"></span>
+                <input type="email" formControlName="email" placeholder="name@domain.com" class="custom-input-v7" />
+              </div>
+            </div>
           </div>
         </div>
 
-        <!-- Username -->
+        <!-- 3. Dynamic Field: Username / Email -->
         <div class="form-group-v7">
-          <label class="label-v7">Username</label>
+          <label class="label-v7">
+            <span *ngIf="!isSignUpMode">Username or Email</span>
+            <span *ngIf="isSignUpMode">Username</span>
+          </label>
           <div class="input-wrapper-v7">
-            <span nz-icon nzType="idcard" class="input-icon-v7"></span>
-            <input type="text" formControlName="username" placeholder="alexjohnson" class="custom-input-v7" />
+            <span nz-icon [nzType]="isSignUpMode ? 'idcard' : 'user'" class="input-icon-v7"></span>
+            <input 
+              type="text" 
+              formControlName="username" 
+              [placeholder]="isSignUpMode ? 'alexjohnson' : 'name@domain.com or admin'" 
+              class="custom-input-v7" />
           </div>
         </div>
 
-        <!-- Password & Confirm Password (2 Columns Row like image) -->
-        <div class="form-row-2col">
-          <div class="form-group-v7">
+        <!-- 4. Dynamic Password Row (1 Column in Sign In, 2 Columns in Sign Up) -->
+        <div class="password-row-v7" [class.two-cols]="isSignUpMode">
+          <!-- Password Column -->
+          <div class="form-group-v7 password-col">
             <label class="label-v7">Password</label>
             <div class="input-wrapper-v7">
               <span nz-icon nzType="lock" class="input-icon-v7"></span>
@@ -85,97 +108,76 @@
             </div>
           </div>
 
-          <div class="form-group-v7">
-            <label class="label-v7">Confirm Password</label>
-            <div class="input-wrapper-v7">
-              <span nz-icon nzType="lock" class="input-icon-v7"></span>
-              <input 
-                [type]="confirmPasswordVisible ? 'text' : 'password'" 
-                formControlName="confirmPassword" 
-                placeholder="••••••••" 
-                class="custom-input-v7" />
-              <span 
-                nz-icon 
-                [nzType]="confirmPasswordVisible ? 'eye-invisible' : 'eye'" 
-                class="eye-toggle-v7" 
-                (click)="confirmPasswordVisible = !confirmPasswordVisible">
-              </span>
+          <!-- Confirm Password Column (Collapsible in 2-cols layout) -->
+          <div class="collapsible-col" [class.col-expanded]="isSignUpMode">
+            <div class="form-group-v7">
+              <label class="label-v7">Confirm Password</label>
+              <div class="input-wrapper-v7">
+                <span nz-icon nzType="lock" class="input-icon-v7"></span>
+                <input 
+                  [type]="confirmPasswordVisible ? 'text' : 'password'" 
+                  formControlName="confirmPassword" 
+                  placeholder="••••••••" 
+                  class="custom-input-v7" />
+                <span 
+                  nz-icon 
+                  [nzType]="confirmPasswordVisible ? 'eye-invisible' : 'eye'" 
+                  class="eye-toggle-v7" 
+                  (click)="confirmPasswordVisible = !confirmPasswordVisible">
+                </span>
+              </div>
             </div>
           </div>
         </div>
 
-        <!-- Checkbox Terms -->
-        <div class="checkbox-row-v7">
-          <label class="custom-checkbox-label">
-            <input type="checkbox" formControlName="agreeTerms" class="v7-checkbox" />
-            <span>I agree to the <a class="terms-link">Terms & Privacy Policy</a></span>
-          </label>
-        </div>
+        <!-- 5. Options Area (Switch between Remember Me vs Terms Policy) -->
+        <div class="options-container-v7">
+          <!-- Sign In: Remember Me & Forgot Password -->
+          <div class="checkbox-between-row option-item" [class.active-option]="!isSignUpMode">
+            <label class="custom-checkbox-label">
+              <input type="checkbox" formControlName="rememberMe" class="v7-checkbox" />
+              <span>Remember me</span>
+            </label>
+            <a class="forgot-link">Forgot password?</a>
+          </div>
 
-        <!-- Submit Button -->
-        <button type="submit" class="btn-primary-yellow" [disabled]="isLoading">
-          <span *ngIf="!isLoading">Create Account &rarr;</span>
-          <span *ngIf="isLoading"><span nz-icon nzType="loading"></span> Processing...</span>
-        </button>
-      </form>
-
-      <!-- ================= SIGN IN / LOGIN FORM ================= -->
-      <form *ngIf="!isSignUpMode" [formGroup]="loginForm" (ngSubmit)="onLogin()" class="v7-form">
-        <!-- Username / Email -->
-        <div class="form-group-v7">
-          <label class="label-v7">Username or Email</label>
-          <div class="input-wrapper-v7">
-            <span nz-icon nzType="user" class="input-icon-v7"></span>
-            <input type="text" formControlName="username" placeholder="name@domain.com or admin" class="custom-input-v7" />
+          <!-- Sign Up: Terms & Privacy Policy Checkbox -->
+          <div class="checkbox-row-v7 option-item" [class.active-option]="isSignUpMode">
+            <label class="custom-checkbox-label">
+              <input type="checkbox" formControlName="agreeTerms" class="v7-checkbox" />
+              <span>I agree to the <a class="terms-link">Terms & Privacy Policy</a></span>
+            </label>
           </div>
         </div>
 
-        <!-- Password -->
-        <div class="form-group-v7">
-          <label class="label-v7">Password</label>
-          <div class="input-wrapper-v7">
-            <span nz-icon nzType="lock" class="input-icon-v7"></span>
-            <input 
-              [type]="passwordVisible ? 'text' : 'password'" 
-              formControlName="password" 
-              placeholder="••••••••" 
-              class="custom-input-v7" />
-            <span 
-              nz-icon 
-              [nzType]="passwordVisible ? 'eye-invisible' : 'eye'" 
-              class="eye-toggle-v7" 
-              (click)="passwordVisible = !passwordVisible">
+        <!-- 6. Morphing Primary CTA Button -->
+        <button type="submit" class="btn-primary-yellow" [disabled]="isLoading">
+          <div class="btn-text-morph">
+            <span class="btn-text signin-btn-text" [class.active-btn]="!isSignUpMode">
+              <span *ngIf="!isLoading">Sign In &rarr;</span>
+              <span *ngIf="isLoading"><span nz-icon nzType="loading"></span> Signing in...</span>
+            </span>
+            <span class="btn-text signup-btn-text" [class.active-btn]="isSignUpMode">
+              <span *ngIf="!isLoading">Create Account &rarr;</span>
+              <span *ngIf="isLoading"><span nz-icon nzType="loading"></span> Processing...</span>
             </span>
           </div>
-        </div>
-
-        <!-- Remember Me & Forgot Password -->
-        <div class="checkbox-between-row">
-          <label class="custom-checkbox-label">
-            <input type="checkbox" formControlName="rememberMe" class="v7-checkbox" />
-            <span>Remember me</span>
-          </label>
-          <a class="forgot-link">Forgot password?</a>
-        </div>
-
-        <!-- Submit Button -->
-        <button type="submit" class="btn-primary-yellow" [disabled]="isLoading">
-          <span *ngIf="!isLoading">Sign In &rarr;</span>
-          <span *ngIf="isLoading"><span nz-icon nzType="loading"></span> Signing in...</span>
         </button>
       </form>
 
-      <!-- OR SIGN UP / IN WITH Divider -->
+      <!-- OR SIGN IN / SIGN UP WITH Divider -->
       <div class="v7-divider">
         <span class="divider-line"></span>
-        <span class="divider-text">{{ isSignUpMode ? 'OR SIGN UP WITH' : 'OR SIGN IN WITH' }}</span>
+        <span class="divider-text">
+          <span *ngIf="!isSignUpMode">OR SIGN IN WITH</span>
+          <span *ngIf="isSignUpMode">OR SIGN UP WITH</span>
+        </span>
         <span class="divider-line"></span>
       </div>
 
       <!-- Social Logins (Google & Apple) -->
       <div class="social-buttons-grid">
         <button type="button" class="btn-social-v7" (click)="onSocialLogin('Google')">
-          <!-- Google SVG Icon -->
           <svg class="social-icon-svg" viewBox="0 0 24 24" width="18" height="18">
             <path fill="#4285F4" d="M22.56 12.25c0-.78-.07-1.53-.2-2.25H12v4.26h5.92c-.26 1.37-1.04 2.53-2.21 3.31v2.77h3.57c2.08-1.92 3.28-4.74 3.28-8.09z"/>
             <path fill="#34A853" d="M12 23c2.97 0 5.46-.98 7.28-2.66l-3.57-2.77c-.98.66-2.23 1.06-3.71 1.06-2.86 0-5.29-1.93-6.16-4.53H2.18v2.84C3.99 20.53 7.7 23 12 23z"/>
@@ -186,7 +188,6 @@
         </button>
 
         <button type="button" class="btn-social-v7" (click)="onSocialLogin('Apple')">
-          <!-- Apple SVG Icon -->
           <svg class="social-icon-svg" viewBox="0 0 170 170" width="18" height="18" fill="#FFFFFF">
             <path d="M150.37 130.25c-2.45 5.66-5.35 10.87-8.71 15.66-4.58 6.53-8.33 11.05-11.22 13.56-4.48 4.12-9.28 6.23-14.42 6.35-3.69 0-8.14-1.05-13.32-3.18-5.19-2.12-9.97-3.17-14.34-3.17-4.58 0-9.49 1.05-14.75 3.17-5.26 2.13-9.5 3.24-12.74 3.35-4.35.13-9.16-1.9-14.42-6.08-3.69-3.04-7.68-7.85-11.96-14.42-6.19-9.58-11.05-20.2-14.57-31.85-3.52-11.66-5.28-23.01-5.28-34.07 0-14.57 3.52-26.65 10.57-36.25 7.05-9.6 15.93-14.48 26.65-14.65 4.8 0 10.14 1.25 16.03 3.75 5.88 2.5 9.77 3.82 11.66 3.97 1.41-.15 5.48-1.55 12.2-4.19 6.72-2.64 12.29-3.79 16.71-3.45 13.9.77 24.78 5.72 32.65 14.86-12.08 7.39-18.01 17.5-17.79 30.34.22 10.23 4.13 18.72 11.75 25.46 7.61 6.75 16.75 10.68 27.42 11.8-2.39 7.29-5.14 14.54-8.25 21.75zM119.22 33.15c0-7.29 2.58-14.13 7.74-20.52 5.16-6.39 11.66-10.74 19.5-13.06.65 1.52.98 3.1.98 4.73 0 7.29-2.7 14.33-8.09 21.13-5.39 6.8-12.08 11.08-20.08 12.85-.33-1.63-.5-3.35-.5-5.13z"/>
           </svg>
@@ -194,16 +195,18 @@
         </button>
       </div>
 
-      <!-- Footer Mode Switch -->
+      <!-- Footer Mode Switch with Animated Link -->
       <div class="card-footer-v7">
-        <p *ngIf="isSignUpMode">
-          Already have an account? 
-          <a class="switch-link-v7" (click)="toggleMode()">Sign In</a>
-        </p>
-        <p *ngIf="!isSignUpMode">
-          Don't have an account? 
-          <a class="switch-link-v7" (click)="toggleMode()">Create Account</a>
-        </p>
+        <div class="footer-switch-text">
+          <span *ngIf="isSignUpMode">
+            Already have an account? 
+            <a class="switch-link-v7" (click)="toggleMode()">Sign In</a>
+          </span>
+          <span *ngIf="!isSignUpMode">
+            Don't have an account? 
+            <a class="switch-link-v7" (click)="toggleMode()">Create Account</a>
+          </span>
+        </div>
       </div>
     </div>
   </div>
