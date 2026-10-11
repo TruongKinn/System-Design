@@ -34,9 +34,9 @@
         <tr *ngFor="let u of userTable.data">
           <td>
             <div class="user-avatar-cell">
-              <nz-avatar [nzText]="u.fullName.substring(0, 1)" style="background-color: #6366f1;"></nz-avatar>
+              <nz-avatar [nzText]="(u.fullName || u.username || 'U').substring(0, 1)" style="background-color: #6366f1;"></nz-avatar>
               <div class="user-name-box">
-                <span class="user-fullname">{{ u.fullName }}</span>
+                <span class="user-fullname">{{ u.fullName || u.username }}</span>
               </div>
             </div>
           </td>

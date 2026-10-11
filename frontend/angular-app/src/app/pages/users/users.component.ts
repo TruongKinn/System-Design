@@ -82,7 +82,9 @@ export class UsersComponent implements OnInit {
       },
       error: (err) => {
         this.isSubmitting = false;
-        this.message.error(err?.error?.message || 'Có lỗi khi tạo tài khoản. Vui lòng thử lại!');
+        console.error('Error creating user:', err);
+        const errMsg = err?.error?.message || (typeof err?.error === 'string' ? err.error : null) || err?.message || 'Có lỗi khi tạo tài khoản. Vui lòng kiểm tra lại!';
+        this.message.error(errMsg);
       }
     });
   }
