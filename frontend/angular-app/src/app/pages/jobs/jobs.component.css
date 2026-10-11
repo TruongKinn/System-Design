@@ -83,6 +83,11 @@
   color: var(--text-main);
   font-weight: 600;
   font-family: 'JetBrains Mono', monospace;
+  white-space: nowrap;
+  max-width: 190px;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  display: block;
 }
 
 .group-tag {
@@ -93,7 +98,10 @@
 
 .desc-cell {
   color: var(--text-muted);
-  max-width: 250px;
+  max-width: 190px;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
 }
 
 .cron-code {
@@ -103,12 +111,15 @@
   border-radius: 4px;
   font-family: 'JetBrains Mono', monospace;
   font-size: 12px;
+  white-space: nowrap;
+  display: inline-block;
   border: 1px solid var(--border-color);
 }
 
 .action-buttons {
   display: flex;
   gap: 6px;
+  white-space: nowrap;
 }
 
 .btn-create {

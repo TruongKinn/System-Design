@@ -114,6 +114,29 @@ export class AdminLayoutComponent implements OnInit {
       this.isDarkMode = savedTheme === 'dark';
     }
     this.applyTheme();
+
+    this.updateBreadcrumbsByUrl(this.router.url);
+    this.router.events.subscribe(() => {
+      this.updateBreadcrumbsByUrl(this.router.url);
+    });
+  }
+
+  private updateBreadcrumbsByUrl(url: string): void {
+    if (url.includes('/admin/dashboard')) {
+      this.breadcrumbs = ['Admin', 'Bảng Điều Khiển'];
+    } else if (url.includes('/admin/jobs')) {
+      this.breadcrumbs = ['Admin', 'Quản Lý Cron Jobs', 'Danh Sách Cron Jobs'];
+    } else if (url.includes('/admin/exports')) {
+      this.breadcrumbs = ['Admin', 'Xuất / Nhập Dữ Liệu', 'Xuất Dữ Liệu Lớn'];
+    } else if (url.includes('/admin/imports')) {
+      this.breadcrumbs = ['Admin', 'Xuất / Nhập Dữ Liệu', 'Nhập Excel Streaming'];
+    } else if (url.includes('/admin/users')) {
+      this.breadcrumbs = ['Admin', 'Người Dùng & Phân Quyền', 'Quản Lý Người Dùng'];
+    } else if (url.includes('/admin/rbac')) {
+      this.breadcrumbs = ['Admin', 'Người Dùng & Phân Quyền', 'Phân Quyền RBAC'];
+    } else {
+      this.breadcrumbs = ['Admin', 'Hệ Thống'];
+    }
   }
 
   toggleTheme(): void {
@@ -138,7 +161,7 @@ export class AdminLayoutComponent implements OnInit {
 
   navigateTo(route: string, breadcrumb: string): void {
     this.router.navigate([route]);
-    this.breadcrumbs = ['Admin', breadcrumb];
+    this.updateBreadcrumbsByUrl(route);
   }
 
   get avatarUrl(): string {

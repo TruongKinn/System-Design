@@ -26,14 +26,14 @@
               [nzPageSizeOptions]="[10, 20, 50]">
       <thead>
         <tr>
-          <th nzWidth="240px">Người dùng</th>
-          <th nzWidth="150px">Tên Đăng nhập</th>
-          <th nzWidth="220px">Email</th>
-          <th nzWidth="150px">Vai trò (Roles)</th>
-          <th nzWidth="130px">Trạng thái</th>
-          <th nzWidth="170px">Đăng nhập cuối</th>
-          <th nzWidth="160px">Ngày tạo</th>
-          <th nzWidth="120px" nzRight>Hành động</th>
+          <th nzWidth="210px">Người dùng</th>
+          <th nzWidth="160px">Tên Đăng nhập</th>
+          <th nzWidth="210px">Email</th>
+          <th nzWidth="140px">Vai trò (Roles)</th>
+          <th nzWidth="110px">Trạng thái</th>
+          <th nzWidth="140px">Đăng nhập cuối</th>
+          <th nzWidth="140px">Ngày tạo</th>
+          <th nzWidth="130px">Hành động</th>
         </tr>
       </thead>
       <tbody>
@@ -47,7 +47,7 @@
               </div>
             </div>
           </td>
-          <td><code class="username-code">{{ u.username }}</code></td>
+          <td><code class="username-code" [title]="u.username">{{ u.username }}</code></td>
           <td><span class="user-email-text" [title]="u.email">{{ u.email }}</span></td>
           <td>
             <div class="role-tags-wrap">
@@ -64,7 +64,7 @@
           <td class="nowrap-cell">
             <span class="timestamp-text">{{ formatDate(u.createdAt) }}</span>
           </td>
-          <td nzRight class="nowrap-cell">
+          <td class="nowrap-cell">
             <button nz-button 
                     [nzType]="u.status === 'ACTIVE' ? 'dashed' : 'primary'" 
                     nzSize="small" 

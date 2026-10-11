@@ -42,27 +42,29 @@
               [nzData]="importBatches" 
               [nzLoading]="loading" 
               [nzPageSize]="10"
-              [nzScroll]="{ x: '1150px' }"
+              [nzScroll]="{ x: '1170px' }"
               [nzShowSizeChanger]="true"
               [nzPageSizeOptions]="[10, 20, 50]">
       <thead>
         <tr>
-          <th nzWidth="110px">Mã Lô Batch</th>
+          <th nzWidth="130px">Mã Lô Batch</th>
           <th nzWidth="220px">Tên File</th>
-          <th nzWidth="110px">Dung lượng</th>
-          <th nzWidth="130px">Tổng số Dòng</th>
-          <th nzWidth="120px">Thành công</th>
-          <th nzWidth="110px">Dòng Lỗi</th>
-          <th nzWidth="150px">Tiến độ</th>
-          <th nzWidth="130px">Trạng thái</th>
-          <th nzWidth="160px">Thời gian Nhập</th>
+          <th nzWidth="100px">Dung lượng</th>
+          <th nzWidth="120px">Tổng số Dòng</th>
+          <th nzWidth="110px">Thành công</th>
+          <th nzWidth="90px">Dòng Lỗi</th>
+          <th nzWidth="140px">Tiến độ</th>
+          <th nzWidth="120px">Trạng thái</th>
+          <th nzWidth="140px">Thời gian Nhập</th>
         </tr>
       </thead>
       <tbody>
         <tr *ngFor="let batch of importTable.data">
-          <td><code class="batch-id">{{ batch.id }}</code></td>
-          <td class="font-medium text-slate-200" style="white-space: nowrap;">
-            <span nz-icon nzType="file-text" class="text-indigo mr-2"></span> {{ batch.filename }}
+          <td><code class="batch-id" [title]="batch.id">{{ batch.id }}</code></td>
+          <td>
+            <span class="batch-filename-text font-medium text-slate-200" [title]="batch.filename">
+              <span nz-icon nzType="file-text" class="text-indigo mr-2"></span> {{ batch.filename }}
+            </span>
           </td>
           <td style="white-space: nowrap;">{{ batch.fileSizeMb }} MB</td>
           <td style="white-space: nowrap;">{{ batch.totalRows | number }}</td>

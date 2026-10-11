@@ -138,16 +138,36 @@ body, html {
   font-weight: 600;
 }
 
-.ant-input, .ant-select-selector {
+.ant-input, 
+.ant-input-affix-wrapper, 
+.ant-select-selector {
   background-color: var(--input-bg) !important;
   border-color: var(--border-color) !important;
   color: var(--text-main) !important;
   border-radius: 8px !important;
 }
 
-.ant-input:focus, .ant-input-focused {
+.ant-input-affix-wrapper input {
+  background-color: transparent !important;
+  color: var(--text-main) !important;
+}
+
+.ant-input-affix-wrapper .ant-input-prefix,
+.ant-input-affix-wrapper .ant-input-suffix {
+  color: var(--text-muted) !important;
+}
+
+.ant-input:focus, 
+.ant-input-focused,
+.ant-input-affix-wrapper:focus,
+.ant-input-affix-wrapper-focused {
   border-color: var(--primary) !important;
   box-shadow: 0 0 0 2px rgba(99, 102, 241, 0.2) !important;
+}
+
+.ant-table-cell-fix-left,
+.ant-table-cell-fix-right {
+  background-color: var(--bg-card-solid) !important;
 }
 
 .ant-select-dropdown {

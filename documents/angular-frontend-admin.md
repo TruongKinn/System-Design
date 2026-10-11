@@ -115,3 +115,24 @@ Toàn bộ các Angular Services (`AuthService`, `JobService`, `ExportService`, 
    ```bash
    ng build --configuration production
    ```
+
+## 6. Chuẩn Hóa CSS, UI Layout & Dark Mode (Update v1.1)
+
+### 6.1. Header & Navigation
+- **Dynamic Breadcrumbs**: Tự động lắng nghe `RouterNavigation` qua `admin-layout.component.ts` để cập nhật tiêu đề phân cấp phù hợp với từng màn hình (`Admin / Người dùng`, `Admin / Quản lý Job`, `Admin / Lịch sử Export`, `Admin / Nhập liệu Lô`, `Admin / Phân quyền & RBAC`).
+- **Khắc phục vỡ nền Dark Mode ở Header**: Sửa ô tìm kiếm `header-search` tích hợp biến nền màu tối `--input-bg`, loại bỏ tình trạng hộp input bị viền trắng.
+- **Biểu tượng Chuông Thông Báo & Chuyển Theme**: Sửa selector `::ng-deep` áp màu trực tiếp cho SVG/icon NG-ZORRO để hiển thị rõ nét trên nền tối thay vì bị tàng hình.
+
+### 6.2. Chuẩn hóa Bảng Dữ Liệu (Users, Jobs, Exports, Imports)
+- **Loại bỏ lỗi Sticky đè cột (`nzRight`)**: Đã gỡ bỏ thuộc tính `nzRight` đơn phương ở header khiến cột "Hành động" bị trôi nổi đè lên các cột kế bên khi cuộn bảng hoặc thay đổi kích cỡ màn hình.
+- **Xử lý chuỗi dài (UUID / Filename)**: Tích hợp thuộc tính CSS `text-overflow: ellipsis; white-space: nowrap; max-width: ...px;` kèm tooltip `[title]` giúp ngăn chặn chuỗi UUID (36 ký tự) và tên file bị rớt dòng làm kéo giãn chiều cao hàng.
+- **Phân bổ chiều rộng cột (`nzWidth`) & `nzScroll`**:
+  - `Users`: Cột Thao tác 130px, scroll x: 1050px.
+  - `Jobs`: Cột Thao tác 270px chứa đầy đủ bộ 3 nút Chạy ngay / Tạm dừng / Xóa, scroll x: 1300px.
+  - `Exports`: Cột UUID thu gọn 130px, File Name 210px, scroll x: 1180px.
+  - `Imports`: Cột Mã lô thu gọn 120px, Tên tệp 200px, scroll x: 1150px.
+- **Format Thời gian chuẩn**: Đồng bộ định dạng ngày giờ hiển thị theo chuẩn `dd/MM/yyyy HH:mm`.
+
+### 6.3. Màn hình Phân quyền (RBAC Matrix)
+- Cân bằng chiều cao các thẻ vai trò (Roles) với bố cục flexbox `flex-direction: column`.
+- Ghim nút thao tác "Chỉnh sửa Ma trận Phân quyền" xuống chân thẻ với `margin-top: auto` để giao diện luôn thẳng hàng ngay ngắn dù mô tả của mỗi vai trò có độ dài khác nhau.

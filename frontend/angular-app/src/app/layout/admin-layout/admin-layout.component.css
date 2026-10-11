@@ -299,16 +299,16 @@
   color: var(--text-main) !important;
 }
 
-.admin-breadcrumb :deep(.ant-breadcrumb-separator) {
+.admin-breadcrumb ::ng-deep .ant-breadcrumb-separator {
   color: var(--text-sub) !important;
 }
 
-.admin-breadcrumb :deep(.ant-breadcrumb-link) {
+.admin-breadcrumb ::ng-deep .ant-breadcrumb-link {
   color: var(--text-muted) !important;
   font-size: 0.85rem;
 }
 
-.admin-breadcrumb :deep(li:last-child .ant-breadcrumb-link) {
+.admin-breadcrumb ::ng-deep li:last-child .ant-breadcrumb-link {
   color: var(--text-main) !important;
   font-weight: 600;
 }
@@ -321,51 +321,72 @@
   flex-shrink: 0;
 }
 
-.header-search {
-  width: 180px;
-}
-
-.header-search :deep(.ant-input-affix-wrapper) {
+.header-search,
+.header-search.ant-input-affix-wrapper {
+  width: 200px;
   background: var(--input-bg) !important;
-  border-color: var(--border-color) !important;
+  border: 1px solid var(--border-color) !important;
   border-radius: 8px !important;
-  height: 36px !important;
+  height: 38px !important;
+  box-shadow: none !important;
 }
 
-.header-search :deep(.ant-input) {
+.header-search :deep(.ant-input),
+.header-search input {
   background: transparent !important;
   color: var(--text-main) !important;
-  font-size: 0.85rem;
+  font-size: 0.85rem !important;
 }
 
-.search-icon {
-  color: var(--text-muted);
+.header-search :deep(.ant-input::placeholder),
+.header-search input::placeholder {
+  color: var(--text-muted) !important;
+}
+
+.header-search .search-icon,
+.header-search :deep(.search-icon) {
+  color: var(--text-muted) !important;
 }
 
 .theme-toggle-btn, .header-icon-btn {
   width: 38px !important;
   height: 38px !important;
   border-radius: 8px !important;
-  color: var(--text-muted) !important;
+  background: var(--input-bg) !important;
+  border: 1px solid var(--border-color) !important;
+  color: var(--text-main) !important;
   display: flex !important;
   align-items: center !important;
   justify-content: center !important;
+  cursor: pointer;
+  transition: all 0.2s ease !important;
+}
+
+.header-icon-btn ::ng-deep .anticon,
+.header-icon-btn ::ng-deep span[nz-icon] {
+  color: #f8fafc !important;
+  font-size: 18px !important;
+}
+
+.header-icon-btn ::ng-deep svg {
+  fill: #f8fafc !important;
 }
 
 .theme-mode-icon {
-  font-size: 1.25rem;
+  font-size: 1.15rem;
   line-height: 1;
   display: inline-block;
   transition: transform 0.3s ease;
 }
 
-.theme-toggle-btn:hover .theme-mode-icon {
-  transform: rotate(20deg) scale(1.15);
+.theme-toggle-btn:hover, .header-icon-btn:hover {
+  background: rgba(99, 102, 241, 0.15) !important;
+  border-color: var(--primary) !important;
+  color: var(--primary) !important;
 }
 
-.theme-toggle-btn:hover, .header-icon-btn:hover {
-  background: rgba(99, 102, 241, 0.1) !important;
-  color: var(--primary) !important;
+.theme-toggle-btn:hover .theme-mode-icon {
+  transform: rotate(20deg) scale(1.15);
 }
 
 /* User profile wrapper */

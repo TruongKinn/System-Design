@@ -51,26 +51,26 @@
               [nzData]="exportJobs" 
               [nzLoading]="loading" 
               [nzPageSize]="10"
-              [nzScroll]="{ x: '1200px' }"
+              [nzScroll]="{ x: '1180px' }"
               [nzShowSizeChanger]="true"
               [nzPageSizeOptions]="[10, 20, 50]">
       <thead>
         <tr>
-          <th nzWidth="110px">Mã Tác vụ</th>
+          <th nzWidth="140px">Mã Tác vụ</th>
           <th nzWidth="220px">Tên Báo cáo Export</th>
-          <th nzWidth="110px">Định dạng</th>
-          <th nzWidth="140px">Tổng số Dòng</th>
-          <th nzWidth="120px">Dung lượng</th>
-          <th nzWidth="130px">Trạng thái</th>
-          <th nzWidth="140px">Người yêu cầu</th>
-          <th nzWidth="160px">Thời gian Hoàn tất</th>
-          <th nzWidth="120px" nzRight>Hành động</th>
+          <th nzWidth="100px">Định dạng</th>
+          <th nzWidth="130px">Tổng số Dòng</th>
+          <th nzWidth="100px">Dung lượng</th>
+          <th nzWidth="120px">Trạng thái</th>
+          <th nzWidth="120px">Người yêu cầu</th>
+          <th nzWidth="140px">Thời gian Hoàn tất</th>
+          <th nzWidth="100px">Hành động</th>
         </tr>
       </thead>
       <tbody>
         <tr *ngFor="let job of exportTable.data">
-          <td><code class="job-id-code">{{ job.id }}</code></td>
-          <td class="font-medium text-slate-200" style="white-space: nowrap;">{{ job.title }}</td>
+          <td><code class="job-id-code" [title]="job.id">{{ job.id }}</code></td>
+          <td><span class="export-title-text font-medium text-slate-200" [title]="job.title">{{ job.title }}</span></td>
           <td>
             <nz-tag [nzColor]="getTypeTagColor(job.exportType)">{{ job.exportType }}</nz-tag>
           </td>

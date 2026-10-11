@@ -124,6 +124,11 @@
   border-radius: 8px !important;
 }
 
+.card-action {
+  margin-top: auto;
+  padding-top: 16px;
+}
+
 .permission-matrix-box {
   display: flex;
   flex-direction: column;
