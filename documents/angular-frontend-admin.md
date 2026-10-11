@@ -152,3 +152,26 @@ Toàn bộ các Angular Services (`AuthService`, `JobService`, `ExportService`, 
 - Tích hợp tính năng **Đánh dấu tất cả đã đọc**: Reset badge số lượng thông báo về 0 khi người dùng xem xong.
 - Tích hợp **Tìm kiếm nhanh** trên Header: Nhập từ khóa (vd: `job`, `user`, `export`, `import`, `rbac`) và nhấn Enter để điều hướng tức thì tới trang nghiệp vụ tương ứng.
 
+## 8. Thiết Kế Form Đăng Nhập & Đăng Ký V7 (Update v1.3 - Luxury Dark Glassmorphism)
+
+### 8.1. Phong cách Thiết kế (UI/UX)
+- **3D Luxury Golden Waves**: Nền đen sâu thẳm kết hợp dải sóng vàng ánh kim 3D lượn sóng tạo chiều sâu thị giác đẳng cấp.
+- **Futuristic Corner Accents**: Hai góc đối xứng (góc trên bên trái và góc dưới bên phải) sở hữu chi tiết vát góc kính hình học phản quang viền vàng nổi bật.
+- **Glassmorphism Card**: Khung kính mờ `backdrop-filter: blur(28px) saturate(180%)`, đường viền phản sáng vi tế `border: 1px solid rgba(255, 255, 255, 0.12)`.
+- **Màu sắc chủ đạo**: Nền đen Obsidian (`#07070a`), điểm nhấn vàng chanh Neon Gold (`#facc15` / `#fbbf24`), text trắng sáng và xám bạc.
+
+### 8.2. Chức năng Form & Kết nối API Thật
+- **Form Đăng ký (Create Account)**:
+  - Các trường: `Full Name`, `Email Address`, `Username`, `Password` & `Confirm Password` (bố trí 2 cột cân xứng), Checkbox điều khoản "I agree to the Terms & Privacy Policy".
+  - Nút Submit: `Create Account →` màu vàng phát sáng.
+  - Kết nối API backend thật: `POST /api/auth/register`, tự động đăng nhập và điều hướng ngay khi đăng ký thành công.
+- **Form Đăng nhập (Welcome Back)**:
+  - Các trường: `Username or Email`, `Password`, Checkbox `Remember me`, Link `Forgot password?`.
+  - Nút Submit: `Sign In →` màu vàng phát sáng.
+  - Kết nối API backend thật: `POST /api/auth/login`, cấp phát JWT Token.
+- **Chuyển đổi Tab mượt mà**:
+  - Chuyển đổi giữa Đăng nhập và Đăng ký ngay trên 1 màn hình thông qua link ở chân card (`Already have an account? Sign In` / `Don't have an account? Create Account`).
+- **Nút Đăng nhập Nhanh Mạng xã hội**:
+  - Hỗ trợ nút `Google` (vector SVG chuẩn đa màu) và `Apple` (vector SVG chuẩn trắng).
+
+

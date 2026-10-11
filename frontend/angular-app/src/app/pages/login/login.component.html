@@ -1,195 +1,209 @@
-<div class="login-page">
-  <!-- Background Animated Particles -->
-  <div class="particles">
-    <div class="particle" *ngFor="let p of [1,2,3,4,5,6,7,8]"></div>
+<div class="v7-login-viewport">
+  <!-- 3D Luxury Golden Waves Backdrop -->
+  <div class="golden-wave-background">
+    <div class="wave-shape wave-1"></div>
+    <div class="wave-shape wave-2"></div>
+    <div class="wave-shape wave-3"></div>
+    <div class="glow-orb orb-1"></div>
+    <div class="glow-orb orb-2"></div>
   </div>
 
-  <!-- Grid Lines -->
-  <div class="grid-overlay"></div>
-
-  <div class="login-container">
-    <!-- Left Panel: Branding -->
-    <div class="login-branding">
-      <div class="brand-logo">
-        <div class="logo-icon">
-          <span>DF</span>
-        </div>
-        <div class="logo-text">
-          <h1>DataFlow</h1>
-          <span>Enterprise Platform</span>
-        </div>
-      </div>
-
-      <div class="brand-description">
-        <h2>Hệ thống Quản lý Dữ liệu Doanh nghiệp</h2>
-        <p>Enterprise Job Scheduling & Big Data Processing Platform được thiết kế theo kiến trúc Microservices với hiệu suất cao.</p>
-      </div>
-
-      <div class="brand-features">
-        <div class="feature-item">
-          <span class="feature-icon">⚡</span>
-          <div>
-            <strong>1,000,000+ Records</strong>
-            <p>Xuất dữ liệu qua Kafka Async</p>
-          </div>
-        </div>
-        <div class="feature-item">
-          <span class="feature-icon">🔐</span>
-          <div>
-            <strong>JWT + RBAC Security</strong>
-            <p>Phân quyền chi tiết theo Permission</p>
-          </div>
-        </div>
-        <div class="feature-item">
-          <span class="feature-icon">🏗️</span>
-          <div>
-            <strong>5 Microservices</strong>
-            <p>Spring Cloud Gateway, Auth, Job, Export, Import</p>
-          </div>
-        </div>
-        <div class="feature-item">
-          <span class="feature-icon">🔒</span>
-          <div>
-            <strong>Redis Distributed Lock</strong>
-            <p>Redisson Safe Lock Engine</p>
-          </div>
-        </div>
-      </div>
-
-      <div class="tech-badges">
-        <span class="tech-badge">Spring Boot 3</span>
-        <span class="tech-badge">Apache Kafka</span>
-        <span class="tech-badge">Redis 7</span>
-        <span class="tech-badge">MinIO S3</span>
-        <span class="tech-badge">Angular 17</span>
-        <span class="tech-badge">Ant Design</span>
-      </div>
+  <!-- Center Glassmorphism Form Card Wrapper -->
+  <div class="v7-glass-card-wrapper">
+    <!-- Futuristic Corner Accents (Like image V7) -->
+    <div class="corner-accent top-left">
+      <div class="corner-inner"></div>
+    </div>
+    <div class="corner-accent bottom-right">
+      <div class="corner-inner"></div>
     </div>
 
-    <!-- Right Panel: Login Form -->
-    <div class="login-form-panel">
-      <div class="login-card">
-        <div class="login-card-header">
-          <div class="card-logo">
-            <span>BS</span>
-          </div>
-          <h3>BabySystem Admin Portal</h3>
-          <p>Đăng nhập vào hệ thống quản trị</p>
-        </div>
+    <div class="v7-glass-card">
+      <!-- Card Header -->
+      <div class="card-header-v7">
+        <h2 class="title-v7" *ngIf="isSignUpMode">
+          Create <span class="highlight-yellow">Account</span>
+        </h2>
+        <h2 class="title-v7" *ngIf="!isSignUpMode">
+          Welcome <span class="highlight-yellow">Back</span>
+        </h2>
 
-        <nz-alert
-          *ngIf="false"
-          nzType="info"
-          nzMessage="Demo Mode: Nhập bất kỳ tài khoản nào để trải nghiệm"
-          [nzShowIcon]="true"
-          style="margin-bottom: 20px;">
-        </nz-alert>
-
-        <form nz-form [formGroup]="loginForm" (ngSubmit)="onSubmit()">
-          <nz-form-item>
-            <nz-form-label [nzSpan]="24" nzFor="username">
-              <span class="form-label-text">Tên đăng nhập</span>
-            </nz-form-label>
-            <nz-form-control [nzSpan]="24" nzErrorTip="Vui lòng nhập tên đăng nhập (tối thiểu 3 ký tự)">
-              <nz-input-group [nzPrefix]="prefixUser" nzSize="large">
-                <input
-                  type="text"
-                  nz-input
-                  formControlName="username"
-                  id="username"
-                  placeholder="Nhập tên đăng nhập..."
-                  autocomplete="username"/>
-              </nz-input-group>
-              <ng-template #prefixUser>
-                <span nz-icon nzType="user" nzTheme="outline"></span>
-              </ng-template>
-            </nz-form-control>
-          </nz-form-item>
-
-          <nz-form-item>
-            <nz-form-label [nzSpan]="24" nzFor="password">
-              <span class="form-label-text">Mật khẩu</span>
-            </nz-form-label>
-            <nz-form-control [nzSpan]="24" nzErrorTip="Vui lòng nhập mật khẩu (tối thiểu 6 ký tự)">
-              <nz-input-group
-                [nzPrefix]="prefixLock"
-                [nzSuffix]="suffixEye"
-                nzSize="large">
-                <input
-                  [type]="passwordVisible ? 'text' : 'password'"
-                  nz-input
-                  formControlName="password"
-                  id="password"
-                  placeholder="Nhập mật khẩu..."
-                  autocomplete="current-password"/>
-              </nz-input-group>
-              <ng-template #prefixLock>
-                <span nz-icon nzType="lock" nzTheme="outline"></span>
-              </ng-template>
-              <ng-template #suffixEye>
-                <span
-                  nz-icon
-                  [nzType]="passwordVisible ? 'eye-invisible' : 'eye'"
-                  nzTheme="outline"
-                  (click)="passwordVisible = !passwordVisible"
-                  style="cursor: pointer; color: #94a3b8;"></span>
-              </ng-template>
-            </nz-form-control>
-          </nz-form-item>
-
-          <div class="form-options">
-            <label nz-checkbox formControlName="rememberMe">
-              <span style="color: #94a3b8; font-size: 0.875rem;">Ghi nhớ đăng nhập</span>
-            </label>
-            <a href="#" class="forgot-link">Quên mật khẩu?</a>
-          </div>
-
-          <button
-            nz-button
-            nzType="primary"
-            nzSize="large"
-            [nzLoading]="isLoading"
-            type="submit"
-            id="btn-login"
-            class="login-btn">
-            <span nz-icon nzType="login" nzTheme="outline" *ngIf="!isLoading"></span>
-            {{ isLoading ? 'Đang xác thực...' : 'Đăng nhập' }}
-          </button>
-        </form>
-
-        <nz-divider nzText="Hoặc đăng nhập Demo"></nz-divider>
-
-        <div class="demo-credentials">
-          <div class="demo-item" (click)="loginForm.patchValue({username: 'admin', password: 'Admin@123'})">
-            <span nz-icon nzType="crown" nzTheme="outline" style="color: #6366f1;"></span>
-            <div>
-              <strong>Admin</strong>
-              <p>admin / Admin&#64;123 — Toàn quyền hệ thống</p>
-            </div>
-          </div>
-          <div class="demo-item" (click)="loginForm.patchValue({username: 'operator', password: 'Oper@123'})">
-            <span nz-icon nzType="tool" nzTheme="outline" style="color: #06b6d4;"></span>
-            <div>
-              <strong>Operator</strong>
-              <p>operator / Oper&#64;123 — Chạy Jobs</p>
-            </div>
-          </div>
-        </div>
-
-        <div class="login-footer">
-          <div class="service-status">
-            <span class="status-dot active"></span>
-            <span>API Gateway: localhost:8080</span>
-          </div>
-          <div class="service-status">
-            <span class="status-dot active"></span>
-            <span>Auth Service: localhost:8081</span>
-          </div>
-        </div>
+        <p class="subtitle-v7" *ngIf="isSignUpMode">
+          Join us today to access your secure workspace
+        </p>
+        <p class="subtitle-v7" *ngIf="!isSignUpMode">
+          Enter your credentials to access your secure workspace
+        </p>
       </div>
 
-      <div class="login-copyright">
-        © 2026 DataFlow Platform v1.0 — BabySystem Enterprise
+      <!-- ================= SIGN UP / REGISTER FORM ================= -->
+      <form *ngIf="isSignUpMode" [formGroup]="registerForm" (ngSubmit)="onRegister()" class="v7-form">
+        <!-- Full Name -->
+        <div class="form-group-v7">
+          <label class="label-v7">Full Name</label>
+          <div class="input-wrapper-v7">
+            <span nz-icon nzType="user" class="input-icon-v7"></span>
+            <input type="text" formControlName="fullName" placeholder="Alex Johnson" class="custom-input-v7" />
+          </div>
+        </div>
+
+        <!-- Email Address -->
+        <div class="form-group-v7">
+          <label class="label-v7">Email Address</label>
+          <div class="input-wrapper-v7">
+            <span nz-icon nzType="mail" class="input-icon-v7"></span>
+            <input type="email" formControlName="email" placeholder="name@domain.com" class="custom-input-v7" />
+          </div>
+        </div>
+
+        <!-- Username -->
+        <div class="form-group-v7">
+          <label class="label-v7">Username</label>
+          <div class="input-wrapper-v7">
+            <span nz-icon nzType="idcard" class="input-icon-v7"></span>
+            <input type="text" formControlName="username" placeholder="alexjohnson" class="custom-input-v7" />
+          </div>
+        </div>
+
+        <!-- Password & Confirm Password (2 Columns Row like image) -->
+        <div class="form-row-2col">
+          <div class="form-group-v7">
+            <label class="label-v7">Password</label>
+            <div class="input-wrapper-v7">
+              <span nz-icon nzType="lock" class="input-icon-v7"></span>
+              <input 
+                [type]="passwordVisible ? 'text' : 'password'" 
+                formControlName="password" 
+                placeholder="••••••••" 
+                class="custom-input-v7" />
+              <span 
+                nz-icon 
+                [nzType]="passwordVisible ? 'eye-invisible' : 'eye'" 
+                class="eye-toggle-v7" 
+                (click)="passwordVisible = !passwordVisible">
+              </span>
+            </div>
+          </div>
+
+          <div class="form-group-v7">
+            <label class="label-v7">Confirm Password</label>
+            <div class="input-wrapper-v7">
+              <span nz-icon nzType="lock" class="input-icon-v7"></span>
+              <input 
+                [type]="confirmPasswordVisible ? 'text' : 'password'" 
+                formControlName="confirmPassword" 
+                placeholder="••••••••" 
+                class="custom-input-v7" />
+              <span 
+                nz-icon 
+                [nzType]="confirmPasswordVisible ? 'eye-invisible' : 'eye'" 
+                class="eye-toggle-v7" 
+                (click)="confirmPasswordVisible = !confirmPasswordVisible">
+              </span>
+            </div>
+          </div>
+        </div>
+
+        <!-- Checkbox Terms -->
+        <div class="checkbox-row-v7">
+          <label class="custom-checkbox-label">
+            <input type="checkbox" formControlName="agreeTerms" class="v7-checkbox" />
+            <span>I agree to the <a class="terms-link">Terms & Privacy Policy</a></span>
+          </label>
+        </div>
+
+        <!-- Submit Button -->
+        <button type="submit" class="btn-primary-yellow" [disabled]="isLoading">
+          <span *ngIf="!isLoading">Create Account &rarr;</span>
+          <span *ngIf="isLoading"><span nz-icon nzType="loading"></span> Processing...</span>
+        </button>
+      </form>
+
+      <!-- ================= SIGN IN / LOGIN FORM ================= -->
+      <form *ngIf="!isSignUpMode" [formGroup]="loginForm" (ngSubmit)="onLogin()" class="v7-form">
+        <!-- Username / Email -->
+        <div class="form-group-v7">
+          <label class="label-v7">Username or Email</label>
+          <div class="input-wrapper-v7">
+            <span nz-icon nzType="user" class="input-icon-v7"></span>
+            <input type="text" formControlName="username" placeholder="name@domain.com or admin" class="custom-input-v7" />
+          </div>
+        </div>
+
+        <!-- Password -->
+        <div class="form-group-v7">
+          <label class="label-v7">Password</label>
+          <div class="input-wrapper-v7">
+            <span nz-icon nzType="lock" class="input-icon-v7"></span>
+            <input 
+              [type]="passwordVisible ? 'text' : 'password'" 
+              formControlName="password" 
+              placeholder="••••••••" 
+              class="custom-input-v7" />
+            <span 
+              nz-icon 
+              [nzType]="passwordVisible ? 'eye-invisible' : 'eye'" 
+              class="eye-toggle-v7" 
+              (click)="passwordVisible = !passwordVisible">
+            </span>
+          </div>
+        </div>
+
+        <!-- Remember Me & Forgot Password -->
+        <div class="checkbox-between-row">
+          <label class="custom-checkbox-label">
+            <input type="checkbox" formControlName="rememberMe" class="v7-checkbox" />
+            <span>Remember me</span>
+          </label>
+          <a class="forgot-link">Forgot password?</a>
+        </div>
+
+        <!-- Submit Button -->
+        <button type="submit" class="btn-primary-yellow" [disabled]="isLoading">
+          <span *ngIf="!isLoading">Sign In &rarr;</span>
+          <span *ngIf="isLoading"><span nz-icon nzType="loading"></span> Signing in...</span>
+        </button>
+      </form>
+
+      <!-- OR SIGN UP / IN WITH Divider -->
+      <div class="v7-divider">
+        <span class="divider-line"></span>
+        <span class="divider-text">{{ isSignUpMode ? 'OR SIGN UP WITH' : 'OR SIGN IN WITH' }}</span>
+        <span class="divider-line"></span>
+      </div>
+
+      <!-- Social Logins (Google & Apple) -->
+      <div class="social-buttons-grid">
+        <button type="button" class="btn-social-v7" (click)="onSocialLogin('Google')">
+          <!-- Google SVG Icon -->
+          <svg class="social-icon-svg" viewBox="0 0 24 24" width="18" height="18">
+            <path fill="#4285F4" d="M22.56 12.25c0-.78-.07-1.53-.2-2.25H12v4.26h5.92c-.26 1.37-1.04 2.53-2.21 3.31v2.77h3.57c2.08-1.92 3.28-4.74 3.28-8.09z"/>
+            <path fill="#34A853" d="M12 23c2.97 0 5.46-.98 7.28-2.66l-3.57-2.77c-.98.66-2.23 1.06-3.71 1.06-2.86 0-5.29-1.93-6.16-4.53H2.18v2.84C3.99 20.53 7.7 23 12 23z"/>
+            <path fill="#FBBC05" d="M5.84 14.09c-.22-.66-.35-1.36-.35-2.09s.13-1.43.35-2.09V7.06H2.18C1.43 8.55 1 10.22 1 12s.43 3.45 1.18 4.94l2.85-2.22.81-.63z"/>
+            <path fill="#EA4335" d="M12 5.38c1.62 0 3.06.56 4.21 1.64l3.15-3.15C17.45 2.09 14.97 1 12 1 7.7 1 3.99 3.47 2.18 7.06l3.66 2.84c.87-2.6 3.3-4.52 6.16-4.52z"/>
+          </svg>
+          <span>Google</span>
+        </button>
+
+        <button type="button" class="btn-social-v7" (click)="onSocialLogin('Apple')">
+          <!-- Apple SVG Icon -->
+          <svg class="social-icon-svg" viewBox="0 0 170 170" width="18" height="18" fill="#FFFFFF">
+            <path d="M150.37 130.25c-2.45 5.66-5.35 10.87-8.71 15.66-4.58 6.53-8.33 11.05-11.22 13.56-4.48 4.12-9.28 6.23-14.42 6.35-3.69 0-8.14-1.05-13.32-3.18-5.19-2.12-9.97-3.17-14.34-3.17-4.58 0-9.49 1.05-14.75 3.17-5.26 2.13-9.5 3.24-12.74 3.35-4.35.13-9.16-1.9-14.42-6.08-3.69-3.04-7.68-7.85-11.96-14.42-6.19-9.58-11.05-20.2-14.57-31.85-3.52-11.66-5.28-23.01-5.28-34.07 0-14.57 3.52-26.65 10.57-36.25 7.05-9.6 15.93-14.48 26.65-14.65 4.8 0 10.14 1.25 16.03 3.75 5.88 2.5 9.77 3.82 11.66 3.97 1.41-.15 5.48-1.55 12.2-4.19 6.72-2.64 12.29-3.79 16.71-3.45 13.9.77 24.78 5.72 32.65 14.86-12.08 7.39-18.01 17.5-17.79 30.34.22 10.23 4.13 18.72 11.75 25.46 7.61 6.75 16.75 10.68 27.42 11.8-2.39 7.29-5.14 14.54-8.25 21.75zM119.22 33.15c0-7.29 2.58-14.13 7.74-20.52 5.16-6.39 11.66-10.74 19.5-13.06.65 1.52.98 3.1.98 4.73 0 7.29-2.7 14.33-8.09 21.13-5.39 6.8-12.08 11.08-20.08 12.85-.33-1.63-.5-3.35-.5-5.13z"/>
+          </svg>
+          <span>Apple</span>
+        </button>
+      </div>
+
+      <!-- Footer Mode Switch -->
+      <div class="card-footer-v7">
+        <p *ngIf="isSignUpMode">
+          Already have an account? 
+          <a class="switch-link-v7" (click)="toggleMode()">Sign In</a>
+        </p>
+        <p *ngIf="!isSignUpMode">
+          Don't have an account? 
+          <a class="switch-link-v7" (click)="toggleMode()">Create Account</a>
+        </p>
       </div>
     </div>
   </div>
