@@ -1,16 +1,12 @@
 <nz-layout class="admin-layout">
-  <!-- SIDEBAR (Hover to expand / Leave to collapse) -->
+  <!-- SIDEBAR (Cố định, không tự động expand khi hover, đóng mở chuẩn theo toggle button) -->
   <nz-sider
     nzCollapsible
     [(nzCollapsed)]="isCollapsed"
     [nzTrigger]="null"
     nzWidth="260"
     [nzCollapsedWidth]="72"
-    class="admin-sider"
-    [class.is-pinned]="isPinned"
-    [class.is-hover-expanded]="!isCollapsed && !isPinned"
-    (mouseenter)="onSidebarHover(true)"
-    (mouseleave)="onSidebarHover(false)">
+    class="admin-sider">
 
     <!-- Logo Area -->
     <div class="sider-logo" [class.collapsed]="isCollapsed">
@@ -21,17 +17,6 @@
         <div class="logo-title">DataFlow</div>
         <div class="logo-subtitle">Enterprise Platform</div>
       </div>
-      <!-- Pin / Unpin Button when expanded -->
-      <button 
-        *ngIf="!isCollapsed" 
-        nz-button 
-        nzType="text" 
-        class="sider-pin-btn" 
-        (click)="togglePin()"
-        nz-tooltip
-        [nzTooltipTitle]="isPinned ? 'Bỏ ghim (Chuyển sang chế độ rê chuột tự động mở/đóng)' : 'Ghim cố định Sidebar'">
-        <span nz-icon [nzType]="'pushpin'" [nzTheme]="isPinned ? 'fill' : 'outline'" [style.color]="isPinned ? '#6366f1' : 'var(--text-muted)'"></span>
-      </button>
     </div>
 
     <!-- Navigation Menu (Hỗ trợ Menu Đơn & Menu Cha Đa Cấp, Sạch Sẽ Không Nhóm Thừa) -->
@@ -91,14 +76,6 @@
       </ul>
     </div>
 
-    <!-- MetisMenu Style Collapse / Hover Status Bar -->
-    <div class="sider-toggle-bar" [class.collapsed]="isCollapsed" (click)="togglePin()" nz-tooltip [nzTooltipTitle]="isPinned ? 'Đang ghim cố định. Click để chuyển sang tự động mở khi rê chuột' : 'Đang tự động ẩn. Rê chuột vào để mở, click để ghim cố định'">
-      <span nz-icon [nzType]="isPinned ? 'pushpin' : (isCollapsed ? 'menu-unfold' : 'menu-fold')" [nzTheme]="isPinned ? 'fill' : 'outline'" class="toggle-bar-icon"></span>
-      <span class="toggle-bar-text" *ngIf="!isCollapsed">
-        {{ isPinned ? 'Ghim Cố Định' : 'Tự Động Thu Gọn (Hover)' }}
-      </span>
-    </div>
-
     <!-- Sider Bottom Microservices Health Status -->
     <div class="sider-bottom" *ngIf="!isCollapsed">
       <div class="service-health">
@@ -120,7 +97,7 @@
   </nz-sider>
 
   <!-- MAIN LAYOUT -->
-  <nz-layout class="main-layout" [class.sidebar-collapsed]="isCollapsed" [class.sidebar-pinned]="isPinned">
+  <nz-layout class="main-layout" [class.sidebar-collapsed]="isCollapsed">
 
     <!-- HEADER -->
     <nz-header class="admin-header">
@@ -130,7 +107,9 @@
           nz-button
           nzType="text"
           class="toggle-btn"
-          (click)="toggleCollapse()">
+          (click)="toggleCollapse()"
+          nz-tooltip
+          [nzTooltipTitle]="isCollapsed ? 'Mở rộng Menu' : 'Thu gọn Menu'">
           <span nz-icon [nzType]="isCollapsed ? 'menu-unfold' : 'menu-fold'" nzTheme="outline"></span>
         </button>
 
@@ -149,7 +128,7 @@
           <span nz-icon nzType="search" class="search-icon" (click)="onQuickSearch()" style="cursor: pointer;"></span>
         </ng-template>
 
-        <!-- Light / Dark Theme Switcher Button -->
+        <!-- Light / Dark Theme Switcher Button với Ant Design icon chuẩn -->
         <button 
           nz-button 
           nzType="text" 
@@ -158,14 +137,13 @@
           nz-tooltip
           [nzTooltipTitle]="isDarkMode ? 'Chuyển sang Chế độ Sáng' : 'Chuyển sang Chế độ Tối'"
           nzTooltipPlacement="bottom">
-          <span class="theme-mode-icon" *ngIf="isDarkMode">☀️</span>
-          <span class="theme-mode-icon" *ngIf="!isDarkMode">🌙</span>
+          <span nz-icon [nzType]="isDarkMode ? 'bulb' : 'highlight'" nzTheme="outline" class="header-ant-icon"></span>
         </button>
 
-        <!-- Notifications -->
+        <!-- Notifications với Ant Design icon chuông chuẩn -->
         <button nz-button nzType="text" class="header-icon-btn" nz-dropdown [nzDropdownMenu]="notifMenu">
           <nz-badge [nzCount]="notificationCount" [nzStyle]="{ backgroundColor: '#6366f1' }">
-            <span nz-icon nzType="bell" nzTheme="outline"></span>
+            <span nz-icon nzType="bell" nzTheme="outline" class="header-ant-icon"></span>
           </nz-badge>
         </button>
 

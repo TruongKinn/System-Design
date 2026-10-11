@@ -34,16 +34,6 @@
   max-width: 72px !important;
 }
 
-/* Hover-expanded overlay state (When user hovers into collapsed sider) */
-.admin-sider.is-hover-expanded {
-  width: 260px !important;
-  min-width: 260px !important;
-  max-width: 260px !important;
-  z-index: 1050 !important;
-  box-shadow: 12px 0 35px rgba(0, 0, 0, 0.45) !important;
-  backdrop-filter: blur(20px);
-}
-
 .admin-sider :deep(.ant-layout-sider-children) {
   display: flex;
   flex-direction: column;
@@ -354,14 +344,14 @@
 
 /* ---- MAIN LAYOUT ---- */
 .main-layout {
-  margin-left: 72px; /* Default margin for mini sidebar mode (No layout jump on hover!) */
+  margin-left: 260px; /* Sidebar mặc định mở 260px */
   transition: margin-left 0.3s cubic-bezier(0.16, 1, 0.3, 1);
   background: var(--bg-main) !important;
 }
 
-/* When pinned, push main content to 260px */
-.main-layout.sidebar-pinned {
-  margin-left: 260px !important;
+/* Khi sidebar thu gọn thì main-layout lùi về 72px */
+.main-layout.sidebar-collapsed {
+  margin-left: 72px !important;
 }
 
 .admin-header {
@@ -387,14 +377,26 @@
 
 .toggle-btn {
   color: var(--text-muted) !important;
-  font-size: 1.1rem !important;
+  font-size: 1.15rem !important;
   width: 38px !important;
   height: 38px !important;
   border-radius: 8px !important;
+  background: var(--input-bg) !important;
+  border: 1px solid var(--border-color) !important;
+  display: flex !important;
+  align-items: center !important;
+  justify-content: center !important;
+  transition: all 0.2s ease !important;
 }
 
 .toggle-btn:hover {
-  background: rgba(99, 102, 241, 0.1) !important;
+  background: rgba(99, 102, 241, 0.12) !important;
+  color: var(--primary) !important;
+  border-color: var(--primary) !important;
+}
+
+.toggle-btn ::ng-deep .anticon {
+  font-size: 1.15rem !important;
   color: var(--text-main) !important;
 }
 
@@ -422,7 +424,7 @@
 
 .header-search,
 .header-search.ant-input-affix-wrapper {
-  width: 200px;
+  width: 220px;
   background: var(--input-bg) !important;
   border: 1px solid var(--border-color) !important;
   border-radius: 8px !important;
@@ -461,21 +463,23 @@
   transition: all 0.2s ease !important;
 }
 
+.theme-toggle-btn:hover, .header-icon-btn:hover {
+  border-color: var(--primary) !important;
+  background: rgba(99, 102, 241, 0.12) !important;
+}
+
+.header-ant-icon,
 .header-icon-btn ::ng-deep .anticon,
-.header-icon-btn ::ng-deep span[nz-icon] {
-  color: #f8fafc !important;
+.header-icon-btn ::ng-deep span[nz-icon],
+.theme-toggle-btn ::ng-deep .anticon,
+.theme-toggle-btn ::ng-deep span[nz-icon] {
+  color: var(--text-main) !important;
   font-size: 18px !important;
 }
 
-.header-icon-btn ::ng-deep svg {
-  fill: #f8fafc !important;
-}
-
-.theme-mode-icon {
-  font-size: 1.15rem;
-  line-height: 1;
-  display: inline-block;
-  transition: transform 0.3s ease;
+.header-icon-btn ::ng-deep svg,
+.theme-toggle-btn ::ng-deep svg {
+  fill: currentColor !important;
 }
 
 .theme-toggle-btn:hover, .header-icon-btn:hover {

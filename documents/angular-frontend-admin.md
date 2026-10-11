@@ -200,18 +200,18 @@ Toàn bộ các Angular Services (`AuthService`, `JobService`, `ExportService`, 
   - **Pill Hover & Slide Transition**: Khi hover vào từng mục menu, xuất hiện hiệu ứng trượt nhẹ (`transform: translateX(4px)`) cùng màu nền cyan trong suốt `rgba(56, 189, 248, 0.08)`.
   - **Active State Neon Glow**: Mục menu con/đơn đang chọn có viền phát sáng 3.5px màu Neon Blue (`#38bdf8`), background gradient mờ và icon phát sáng với `drop-shadow`.
 
-### 9.2. Tương Tác Hover-to-Expand / Leave-to-Collapse
-- **Trạng thái thu gọn mặc định (Mini Sidebar - 72px)**:
-  - Tối đa hóa diện tích làm việc cho dashboard và bảng biểu; các icon menu cha hiển thị ngay ngắn, có tooltip hướng dẫn khi hover.
-- **Tự động mở rộng khi Hover chuột (Expand to 260px)**:
-  - Khi rê chuột (`mouseenter`) vào Sidebar, menu tự động trượt mở rộng ra 260px với curve gia tốc `cubic-bezier(0.16, 1, 0.3, 1)`.
-  - Menu hiển thị ở dạng **Floating Overlay Sider** với lớp đổ bóng đa tầng (`box-shadow: 12px 0 35px rgba(0, 0, 0, 0.45)`) và hiệu ứng kính mờ `backdrop-filter: blur(20px)`.
-- **Tự động gập lại khi Rời chuột (Collapse to 72px)**:
-  - Khi đưa chuột ra ngoài (`mouseleave`), Sidebar tự động thu gọn về 72px sau 120ms debounce.
-- **Ổn Định Layout Nội Dung Chính (No Layout Shifting)**:
-  - `main-layout` luôn duy trì `margin-left: 72px` cố định khi ở chế độ hover.
-- **Tùy Chọn Ghim Cố Định (Pin / Unpin Sidebar)**:
-  - Hỗ trợ nút ghim cố định 260px ở logo header và thanh toggle dưới chân sidebar.
+### 9.2. Cơ Chế Đóng/Mở Sidebar Chuẩn Qua Nút Bấm Header & Icon Chuẩn Ant Design
+- **Bỏ cơ chế tự động mở rộng khi hover (Remove Hover-to-Expand)**:
+  - Sidebar không còn tự động bung ra khi người dùng rê chuột qua, loại bỏ cảm giác nhấp nháy hoặc vô tình chạm phải menu.
+  - Sidebar mặc định mở rộng cố định ở độ rộng `260px` giúp người dùng bao quát đầy đủ tên các menu cha và menu con.
+  - Thu gọn về `72px` (hoặc mở rộng ra `260px`) chủ động thông qua nút bấm toggle trên Header.
+- **Nút Bấm Toggle Header Chuẩn Ant Design**:
+  - Icon chuyển đổi linh hoạt: `menu-fold` khi đang mở rộng và `menu-unfold` khi đang thu gọn.
+  - Toàn bộ nội dung trang chính (`main-layout`) tự động co giãn đồng bộ (`margin-left: 260px` khi mở, `margin-left: 72px` khi thu gọn) với hiệu ứng trượt êm mượt `0.3s cubic-bezier(0.16, 1, 0.3, 1)`.
+- **Chuẩn Hóa Toàn Diện Bộ Icon Ant Design**:
+  - Nút chuyển đổi Giao diện Tối / Sáng: Sử dụng icon chuẩn Ant Design `bulb` / `highlight`.
+  - Nút Thông báo Hệ thống: Sử dụng icon chuông `bell` chuẩn Ant Design, tự động đổi màu sắc tương thích hoàn hảo giữa nền Sáng (`#0f172a`) và nền Tối (`#f8fafc`).
+  - Menu navigation: Toàn bộ sử dụng icon vector chuẩn của hệ sinh thái Ng-Zorro / Ant Design (`dashboard`, `schedule`, `clock-circle`, `cloud-server`, `export`, `import`, `setting`, `team`, `safety-certificate`).
 
 
 

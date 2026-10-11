@@ -29,10 +29,8 @@ export interface MenuGroup {
 })
 export class AdminLayoutComponent implements OnInit {
 
-  // Sidebar hover & collapse state (Default collapsed for hover-to-open interaction)
-  isCollapsed = true;
-  isPinned = false;
-  hoverTimeout: any;
+  // Trạng thái thu gọn/mở rộng Sidebar theo nút toggle
+  isCollapsed = false;
 
   isDarkMode = true;
   currentUser: AuthUser | null = null;
@@ -52,7 +50,6 @@ export class AdminLayoutComponent implements OnInit {
   @HostListener('window:resize')
   onResize(): void {
     if (window.innerWidth < 1024) {
-      this.isPinned = false;
       this.isCollapsed = true;
     }
   }
@@ -128,9 +125,8 @@ export class AdminLayoutComponent implements OnInit {
   ) {}
 
   ngOnInit(): void {
-    // Mặc định thu gọn menu để rê chuột vào thì mở ra, không thì đóng lại luôn
-    this.isCollapsed = true;
-    this.isPinned = false;
+    // Mặc định mở rộng menu để làm việc thuận tiện
+    this.isCollapsed = false;
 
     this.currentUser = this.authService.currentUser;
     const savedTheme = localStorage.getItem('dataflow_theme');
@@ -149,15 +145,15 @@ export class AdminLayoutComponent implements OnInit {
     if (url.includes('/admin/dashboard')) {
       this.breadcrumbs = ['Admin', 'Bảng Điều Khiển'];
     } else if (url.includes('/admin/jobs')) {
-      this.breadcrumbs = ['Admin', 'Quản Lý Cron Jobs', 'Danh Sách Cron Jobs'];
+      this.breadcrumbs = ['Admin', 'Quản Lý Tác Vụ', 'Danh Sách Cron Jobs'];
     } else if (url.includes('/admin/exports')) {
-      this.breadcrumbs = ['Admin', 'Xuất / Nhập Dữ Liệu', 'Xuất Dữ Liệu Lớn'];
+      this.breadcrumbs = ['Admin', 'Xử Lý Dữ Liệu Lớn', 'Xuất Dữ Liệu (1M Rows)'];
     } else if (url.includes('/admin/imports')) {
-      this.breadcrumbs = ['Admin', 'Xuất / Nhập Dữ Liệu', 'Nhập Excel Streaming'];
+      this.breadcrumbs = ['Admin', 'Xử Lý Dữ Liệu Lớn', 'Nhập Dữ Liệu (Streaming)'];
     } else if (url.includes('/admin/users')) {
-      this.breadcrumbs = ['Admin', 'Người Dùng & Phân Quyền', 'Quản Lý Người Dùng'];
+      this.breadcrumbs = ['Admin', 'Quản Trị & Bảo Mật', 'Quản Lý Người Dùng'];
     } else if (url.includes('/admin/rbac')) {
-      this.breadcrumbs = ['Admin', 'Người Dùng & Phân Quyền', 'Phân Quyền RBAC'];
+      this.breadcrumbs = ['Admin', 'Quản Trị & Bảo Mật', 'Phân Quyền RBAC'];
     } else {
       this.breadcrumbs = ['Admin', 'Hệ Thống'];
     }
@@ -220,36 +216,9 @@ export class AdminLayoutComponent implements OnInit {
     this.authService.logout();
   }
 
-  // Hover to expand / leave to collapse
-  onSidebarHover(hovering: boolean): void {
-    if (this.isPinned) return;
-
-    if (hovering) {
-      if (this.hoverTimeout) clearTimeout(this.hoverTimeout);
-      this.isCollapsed = false;
-    } else {
-      // Delay nhẹ 120ms khi rê chuột ra ngoài để trải nghiệm cực kỳ êm ái
-      this.hoverTimeout = setTimeout(() => {
-        if (!this.isPinned) {
-          this.isCollapsed = true;
-        }
-      }, 120);
-    }
-  }
-
-  togglePin(): void {
-    this.isPinned = !this.isPinned;
-    if (this.isPinned) {
-      this.isCollapsed = false;
-      this.message.success('Đã ghim cố định Sidebar');
-    } else {
-      this.isCollapsed = true;
-      this.message.info('Đã bật chế độ tự động mở khi rê chuột (Hover to expand)');
-    }
-  }
-
+  // Đóng/mở sidebar chuẩn theo click toggle button
   toggleCollapse(): void {
-    this.togglePin();
+    this.isCollapsed = !this.isCollapsed;
   }
 
   navigateTo(route: string, breadcrumb: string): void {
