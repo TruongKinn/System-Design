@@ -140,4 +140,17 @@ export class JobsComponent implements OnInit {
   getFailedCount(): number {
     return this.jobs.filter(j => j.status === 'FAILED').length;
   }
+
+  formatDate(val: string | undefined): string {
+    if (!val) return 'Chưa chạy';
+    try {
+      const cleaned = val.replace(/\.(\d{3})\d+/, '.$1');
+      const d = new Date(cleaned);
+      if (isNaN(d.getTime())) return val;
+      const pad = (n: number) => (n < 10 ? '0' + n : n);
+      return `${pad(d.getDate())}/${pad(d.getMonth() + 1)}/${d.getFullYear()} ${pad(d.getHours())}:${pad(d.getMinutes())}`;
+    } catch {
+      return val;
+    }
+  }
 }

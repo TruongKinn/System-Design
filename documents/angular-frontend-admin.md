@@ -80,6 +80,13 @@ frontend/angular-app/
 - **Quản lý Tài Khoản**: Bảng thông tin người dùng với Avatar, gán Roles, trạng thái Khóa/Mở khóa thông qua API `/api/users`.
 - **Fine-Grained Permission Matrix**: Modal tích chọn ma trận quyền thao tác granular (`JOB_CREATE`, `JOB_EDIT`, `JOB_TRIGGER`, `JOB_PAUSE`, `USER_MANAGE`, `EXPORT_EXECUTE`, `IMPORT_EXECUTE`, `SYSTEM_CONFIG`) kết nối trực tiếp với backend qua API `PUT /api/roles/{id}/permissions`, tự động lưu bền vững vào cơ sở dữ liệu PostgreSQL.
 
+### 3.7 Thiết Kế Đáp Ứng & Chống Méo Giao Diện (Responsive & Anti-distortion Table Design)
+- **Tối ưu bảng dữ liệu lớn (`nz-table`)**: Toàn bộ các bảng danh sách (`/users`, `/jobs`, `/exports`, `/imports`) được cấu hình `[nzScroll]="{ x: '1150px - 1200px' }"` cùng độ rộng cố định theo từng cột (`nzWidth`).
+- **Ngăn tràn & ngắt dòng chữ méo mó**: Áp dụng thuộc tính `white-space: nowrap !important;` cho thẻ họ tên, username, avatar cell, trạng thái và ngày giờ, tránh tình trạng họ tên người dùng bị bẻ đôi hoặc nút bấm bị dồn ép.
+- **Chuẩn hóa hiển thị thời gian**: Dữ liệu ngày giờ ISO được format qua helper chuẩn `dd/MM/yyyy HH:mm`, ngắn gọn, trực quan và tiết kiệm không gian ngang.
+- **Sticky Actions Column**: Cột hành động ("Khóa TK", "Mở khóa", "Chạy ngay", "Tải file") được cố định bên phải (`nzRight`) giúp thao tác thuận tiện trên mọi kích thước màn hình.
+- **Tự động thu gọn Sidebar**: Layout tự động lắng nghe kích thước màn hình qua `HostListener('window:resize')`, tự động chuyển sang chế độ thu gọn (`isCollapsed = true`) khi màn hình < 1024px để ưu tiên tối đa không gian cho bảng dữ liệu.
+
 ---
 
 ## 4. Cơ Chế Fallback & Chế Độ Chạy Demo (Offline Fallback)

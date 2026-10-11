@@ -155,8 +155,26 @@
   border-bottom: 1px solid var(--border-color) !important;
   font-size: 12px;
   text-transform: uppercase;
+  white-space: nowrap !important;
+  letter-spacing: 0.5px;
 }
 
 ::ng-deep .ant-table-tbody > tr > td {
   border-bottom: 1px solid var(--border-color) !important;
+}
+
+::ng-deep .ant-table-cell-fix-right {
+  background: var(--bg-card) !important;
+}
+
+::ng-deep .ant-table-body::-webkit-scrollbar,
+::ng-deep .ant-table-content::-webkit-scrollbar {
+  height: 8px;
+  width: 8px;
+}
+
+::ng-deep .ant-table-body::-webkit-scrollbar-thumb,
+::ng-deep .ant-table-content::-webkit-scrollbar-thumb {
+  background: rgba(148, 163, 184, 0.25);
+  border-radius: 4px;
 }

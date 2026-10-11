@@ -126,4 +126,17 @@ export class ImportsComponent implements OnInit, OnDestroy {
       default: return 'default';
     }
   }
+
+  formatDate(val: string | undefined): string {
+    if (!val) return '-';
+    try {
+      const cleaned = val.replace(/\.(\d{3})\d+/, '.$1');
+      const d = new Date(cleaned);
+      if (isNaN(d.getTime())) return val;
+      const pad = (n: number) => (n < 10 ? '0' + n : n);
+      return `${pad(d.getDate())}/${pad(d.getMonth() + 1)}/${d.getFullYear()} ${pad(d.getHours())}:${pad(d.getMinutes())}`;
+    } catch {
+      return val;
+    }
+  }
 }

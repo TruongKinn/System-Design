@@ -38,37 +38,43 @@
   <!-- History Table Card -->
   <nz-card class="table-card" [nzBordered]="false">
     <h3 class="card-inside-title">Lịch sử và Tiến độ các Lô Nạp Dữ Liệu (Import Batches)</h3>
-    <nz-table #importTable [nzData]="importBatches" [nzLoading]="loading" [nzPageSize]="10">
+    <nz-table #importTable 
+              [nzData]="importBatches" 
+              [nzLoading]="loading" 
+              [nzPageSize]="10"
+              [nzScroll]="{ x: '1150px' }"
+              [nzShowSizeChanger]="true"
+              [nzPageSizeOptions]="[10, 20, 50]">
       <thead>
         <tr>
-          <th>Mã Lô Batch</th>
-          <th>Tên File</th>
-          <th>Dung lượng</th>
-          <th>Tổng số Dòng</th>
-          <th>Thành công</th>
-          <th>Dòng Lỗi</th>
-          <th>Tiến độ</th>
-          <th>Trạng thái</th>
-          <th>Thời gian Nhập</th>
+          <th nzWidth="110px">Mã Lô Batch</th>
+          <th nzWidth="220px">Tên File</th>
+          <th nzWidth="110px">Dung lượng</th>
+          <th nzWidth="130px">Tổng số Dòng</th>
+          <th nzWidth="120px">Thành công</th>
+          <th nzWidth="110px">Dòng Lỗi</th>
+          <th nzWidth="150px">Tiến độ</th>
+          <th nzWidth="130px">Trạng thái</th>
+          <th nzWidth="160px">Thời gian Nhập</th>
         </tr>
       </thead>
       <tbody>
         <tr *ngFor="let batch of importTable.data">
           <td><code class="batch-id">{{ batch.id }}</code></td>
-          <td class="font-medium text-slate-200">
+          <td class="font-medium text-slate-200" style="white-space: nowrap;">
             <span nz-icon nzType="file-text" class="text-indigo mr-2"></span> {{ batch.filename }}
           </td>
-          <td>{{ batch.fileSizeMb }} MB</td>
-          <td>{{ batch.totalRows | number }}</td>
-          <td><span class="text-green font-bold">{{ batch.successRows | number }}</span></td>
-          <td><span class="text-rose font-bold" *ngIf="batch.errorRows > 0">{{ batch.errorRows | number }}</span><span *ngIf="batch.errorRows === 0">0</span></td>
+          <td style="white-space: nowrap;">{{ batch.fileSizeMb }} MB</td>
+          <td style="white-space: nowrap;">{{ batch.totalRows | number }}</td>
+          <td style="white-space: nowrap;"><span class="text-green font-bold">{{ batch.successRows | number }}</span></td>
+          <td style="white-space: nowrap;"><span class="text-rose font-bold" *ngIf="batch.errorRows > 0">{{ batch.errorRows | number }}</span><span *ngIf="batch.errorRows === 0">0</span></td>
           <td>
             <nz-progress [nzPercent]="batch.progressPercentage" nzSize="small" [nzStatus]="batch.status === 'COMPLETED' ? 'success' : (batch.status === 'FAILED' ? 'exception' : 'active')"></nz-progress>
           </td>
-          <td>
+          <td style="white-space: nowrap;">
             <nz-badge [nzStatus]="getStatusBadge(batch.status)" [nzText]="batch.status"></nz-badge>
           </td>
-          <td>{{ batch.uploadedAt }}</td>
+          <td style="white-space: nowrap;">{{ formatDate(batch.uploadedAt) }}</td>
         </tr>
       </tbody>
     </nz-table>

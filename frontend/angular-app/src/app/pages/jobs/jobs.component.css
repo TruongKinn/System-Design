@@ -141,6 +141,8 @@
   border-bottom: 1px solid var(--border-color) !important;
   font-size: 12px;
   text-transform: uppercase;
+  white-space: nowrap !important;
+  letter-spacing: 0.5px;
 }
 
 ::ng-deep .ant-table-tbody > tr > td {
@@ -149,4 +151,32 @@
 
 ::ng-deep .ant-table-tbody > tr:hover > td {
   background: rgba(99, 102, 241, 0.05) !important;
+}
+
+::ng-deep .ant-table-cell-fix-right {
+  background: var(--bg-card) !important;
+}
+
+::ng-deep .ant-table-body::-webkit-scrollbar,
+::ng-deep .ant-table-content::-webkit-scrollbar {
+  height: 8px;
+  width: 8px;
+}
+
+::ng-deep .ant-table-body::-webkit-scrollbar-thumb,
+::ng-deep .ant-table-content::-webkit-scrollbar-thumb {
+  background: rgba(148, 163, 184, 0.25);
+  border-radius: 4px;
+}
+
+@media (max-width: 992px) {
+  .stats-row {
+    grid-template-columns: repeat(2, 1fr);
+  }
+}
+
+@media (max-width: 576px) {
+  .stats-row {
+    grid-template-columns: 1fr;
+  }
 }

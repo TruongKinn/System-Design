@@ -37,17 +37,23 @@
 
   <!-- Main Table Card -->
   <nz-card class="table-card" [nzBordered]="false">
-    <nz-table #jobTable [nzData]="jobs" [nzLoading]="loading" [nzPageSize]="10">
+    <nz-table #jobTable 
+              [nzData]="jobs" 
+              [nzLoading]="loading" 
+              [nzPageSize]="10"
+              [nzScroll]="{ x: '1200px' }"
+              [nzShowSizeChanger]="true"
+              [nzPageSizeOptions]="[10, 20, 50]">
       <thead>
         <tr>
-          <th>Tên Job & Group</th>
-          <th>Mô tả</th>
-          <th>Cron Expression</th>
-          <th>Trạng thái</th>
-          <th>Lần chạy cuối</th>
-          <th>Lần chạy kế tiếp</th>
-          <th>Tỷ lệ Thành công</th>
-          <th>Hành động</th>
+          <th nzWidth="220px">Tên Job & Group</th>
+          <th nzWidth="220px">Mô tả</th>
+          <th nzWidth="150px">Cron Expression</th>
+          <th nzWidth="130px">Trạng thái</th>
+          <th nzWidth="160px">Lần chạy cuối</th>
+          <th nzWidth="160px">Lần chạy kế tiếp</th>
+          <th nzWidth="130px">Tỷ lệ Thành công</th>
+          <th nzWidth="200px" nzRight>Hành động</th>
         </tr>
       </thead>
       <tbody>
@@ -65,8 +71,8 @@
           <td>
             <nz-badge [nzStatus]="getStatusColor(job.status)" [nzText]="job.status"></nz-badge>
           </td>
-          <td>{{ job.lastRunTime || 'Chưa chạy' }}</td>
-          <td>{{ job.nextRunTime || '-' }}</td>
+          <td style="white-space: nowrap;">{{ formatDate(job.lastRunTime) }}</td>
+          <td style="white-space: nowrap;">{{ job.nextRunTime ? formatDate(job.nextRunTime) : '-' }}</td>
           <td>
             <span class="success-rate text-green">{{ job.successCount }}/{{ job.executionCount }}</span>
           </td>

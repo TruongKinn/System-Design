@@ -47,36 +47,42 @@
   <!-- Main History Table Card -->
   <nz-card class="table-card" [nzBordered]="false">
     <h3 class="card-inside-title">Lịch sử và Kho Tải File (MinIO Bucket Storage)</h3>
-    <nz-table #exportTable [nzData]="exportJobs" [nzLoading]="loading" [nzPageSize]="10">
+    <nz-table #exportTable 
+              [nzData]="exportJobs" 
+              [nzLoading]="loading" 
+              [nzPageSize]="10"
+              [nzScroll]="{ x: '1200px' }"
+              [nzShowSizeChanger]="true"
+              [nzPageSizeOptions]="[10, 20, 50]">
       <thead>
         <tr>
-          <th>Mã Tác vụ</th>
-          <th>Tên Báo cáo Export</th>
-          <th>Định dạng</th>
-          <th>Tổng số Dòng</th>
-          <th>Dung lượng</th>
-          <th>Trạng thái</th>
-          <th>Người yêu cầu</th>
-          <th>Thời gian Hoàn tất</th>
-          <th>Hành động</th>
+          <th nzWidth="110px">Mã Tác vụ</th>
+          <th nzWidth="220px">Tên Báo cáo Export</th>
+          <th nzWidth="110px">Định dạng</th>
+          <th nzWidth="140px">Tổng số Dòng</th>
+          <th nzWidth="120px">Dung lượng</th>
+          <th nzWidth="130px">Trạng thái</th>
+          <th nzWidth="140px">Người yêu cầu</th>
+          <th nzWidth="160px">Thời gian Hoàn tất</th>
+          <th nzWidth="120px" nzRight>Hành động</th>
         </tr>
       </thead>
       <tbody>
         <tr *ngFor="let job of exportTable.data">
           <td><code class="job-id-code">{{ job.id }}</code></td>
-          <td class="font-medium text-slate-200">{{ job.title }}</td>
+          <td class="font-medium text-slate-200" style="white-space: nowrap;">{{ job.title }}</td>
           <td>
             <nz-tag [nzColor]="getTypeTagColor(job.exportType)">{{ job.exportType }}</nz-tag>
           </td>
-          <td>{{ job.totalRecords | number }} dòng</td>
-          <td>{{ job.fileSizeMb ? (job.fileSizeMb + ' MB') : '-' }}</td>
+          <td style="white-space: nowrap;">{{ job.totalRecords | number }} dòng</td>
+          <td style="white-space: nowrap;">{{ job.fileSizeMb ? (job.fileSizeMb + ' MB') : '-' }}</td>
           <td>
             <nz-tag [nzColor]="job.status === 'COMPLETED' ? 'success' : (job.status === 'PROCESSING' ? 'processing' : (job.status === 'PENDING' ? 'warning' : 'error'))">
               {{ job.status }}
             </nz-tag>
           </td>
-          <td>{{ job.requestedBy }}</td>
-          <td>{{ job.completedAt || '-' }}</td>
+          <td style="white-space: nowrap;">{{ job.requestedBy }}</td>
+          <td style="white-space: nowrap;">{{ formatDate(job.completedAt) }}</td>
           <td>
             <button *ngIf="job.status === 'COMPLETED'" 
                     nz-button 

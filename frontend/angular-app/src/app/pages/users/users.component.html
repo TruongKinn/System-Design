@@ -17,40 +17,54 @@
 
   <!-- Users Table Card -->
   <nz-card class="table-card" [nzBordered]="false">
-    <nz-table #userTable [nzData]="users" [nzLoading]="loading" [nzPageSize]="10">
+    <nz-table #userTable 
+              [nzData]="users" 
+              [nzLoading]="loading" 
+              [nzPageSize]="10"
+              [nzScroll]="{ x: '1200px' }"
+              [nzShowSizeChanger]="true"
+              [nzPageSizeOptions]="[10, 20, 50]">
       <thead>
         <tr>
-          <th>Người dùng</th>
-          <th>Tên Đăng nhập</th>
-          <th>Email</th>
-          <th>Vai trò (Roles)</th>
-          <th>Trạng thái</th>
-          <th>Đăng nhập cuối</th>
-          <th>Ngày tạo</th>
-          <th>Hành động</th>
+          <th nzWidth="240px">Người dùng</th>
+          <th nzWidth="150px">Tên Đăng nhập</th>
+          <th nzWidth="220px">Email</th>
+          <th nzWidth="150px">Vai trò (Roles)</th>
+          <th nzWidth="130px">Trạng thái</th>
+          <th nzWidth="170px">Đăng nhập cuối</th>
+          <th nzWidth="160px">Ngày tạo</th>
+          <th nzWidth="120px" nzRight>Hành động</th>
         </tr>
       </thead>
       <tbody>
         <tr *ngFor="let u of userTable.data">
           <td>
             <div class="user-avatar-cell">
-              <nz-avatar [nzText]="(u.fullName || u.username || 'U').substring(0, 1)" style="background-color: #6366f1;"></nz-avatar>
+              <nz-avatar [nzText]="(u.fullName || u.username || 'U').substring(0, 1).toUpperCase()" class="user-avatar-circle"></nz-avatar>
               <div class="user-name-box">
-                <span class="user-fullname">{{ u.fullName || u.username }}</span>
+                <span class="user-fullname" [title]="u.fullName || u.username">{{ u.fullName || u.username }}</span>
+                <span class="user-subname text-muted" *ngIf="u.fullName && u.fullName !== u.username">{{ u.username }}</span>
               </div>
             </div>
           </td>
           <td><code class="username-code">{{ u.username }}</code></td>
-          <td>{{ u.email }}</td>
+          <td><span class="user-email-text" [title]="u.email">{{ u.email }}</span></td>
           <td>
-            <nz-tag *ngFor="let role of u.roles" [nzColor]="getRoleTagColor(role)">{{ role }}</nz-tag>
+            <div class="role-tags-wrap">
+              <nz-tag *ngFor="let role of u.roles" [nzColor]="getRoleTagColor(role)">{{ role }}</nz-tag>
+            </div>
           </td>
-          <td>
+          <td class="nowrap-cell">
             <nz-badge [nzStatus]="u.status === 'ACTIVE' ? 'success' : 'error'" [nzText]="u.status"></nz-badge>
           </td>
-          <td>{{ u.lastLoginAt || 'Chưa đăng nhập' }}</td>
-          <td>{{ u.createdAt }}</td>
-          <td>
+          <td class="nowrap-cell">
+            <span *ngIf="u.lastLoginAt" class="timestamp-text">{{ formatDate(u.lastLoginAt) }}</span>
+            <span *ngIf="!u.lastLoginAt" class="text-muted italic">Chưa đăng nhập</span>
+          </td>
+          <td class="nowrap-cell">
+            <span class="timestamp-text">{{ formatDate(u.createdAt) }}</span>
+          </td>
+          <td nzRight class="nowrap-cell">
             <button nz-button 
                     [nzType]="u.status === 'ACTIVE' ? 'dashed' : 'primary'" 
                     nzSize="small" 

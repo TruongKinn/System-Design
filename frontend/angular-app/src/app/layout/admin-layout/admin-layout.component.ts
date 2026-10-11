@@ -1,4 +1,4 @@
-import { Component, OnInit } from '@angular/core';
+import { Component, OnInit, HostListener } from '@angular/core';
 import { Router } from '@angular/router';
 import { AuthService, AuthUser } from '../../core/services/auth.service';
 
@@ -32,6 +32,13 @@ export class AdminLayoutComponent implements OnInit {
   isDarkMode = true;
   currentUser: AuthUser | null = null;
   notificationCount = 3;
+
+  @HostListener('window:resize')
+  onResize(): void {
+    if (window.innerWidth < 1024 && !this.isCollapsed) {
+      this.isCollapsed = true;
+    }
+  }
 
   // MetisMenu Style Accordion Items
   menuGroups: MenuGroup[] = [
@@ -98,6 +105,9 @@ export class AdminLayoutComponent implements OnInit {
   ) {}
 
   ngOnInit(): void {
+    if (typeof window !== 'undefined' && window.innerWidth < 1200) {
+      this.isCollapsed = true;
+    }
     this.currentUser = this.authService.currentUser;
     const savedTheme = localStorage.getItem('dataflow_theme');
     if (savedTheme) {
