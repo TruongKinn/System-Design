@@ -27,7 +27,7 @@ export class ExportsComponent implements OnInit, OnDestroy {
   ngOnInit(): void {
     this.loadExports();
 
-    // Polling active exports every 2 seconds
+    // Polling active exports mỗi 800ms để hiệu ứng thanh tiến độ % tăng liên tục mượt mà
     this.timerInterval = setInterval(() => {
       const hasActive = this.activePollingCountdown > 0 || this.exportJobs.some(j => j.status === 'PROCESSING' || j.status === 'PENDING');
       if (hasActive) {
@@ -38,7 +38,7 @@ export class ExportsComponent implements OnInit, OnDestroy {
           this.exportJobs = data;
         });
       }
-    }, 2000);
+    }, 800);
   }
 
   ngOnDestroy(): void {

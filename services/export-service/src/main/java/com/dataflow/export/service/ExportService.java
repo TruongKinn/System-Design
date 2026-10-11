@@ -126,20 +126,38 @@ public class ExportService {
     }
 
     private ExportJobDto mapToDto(ExportJob job) {
+        long processed = job.getProcessedRecords();
+        String status = job.getStatus();
+
+        // Nếu job đang chạy (PROCESSING hoặc PENDING), đồng bộ tiến độ thời gian thực trực tiếp từ Redis
+        if ("PROCESSING".equalsIgnoreCase(status) || "PENDING".equalsIgnoreCase(status)) {
+            try {
+                ExportProgressDto progress = progressService.getProgress(job.getJobId());
+                if (progress != null) {
+                    if (progress.getProcessedRecords() > 0) {
+                        processed = progress.getProcessedRecords();
+                    }
+                    if (progress.getStatus() != null && !progress.getStatus().isBlank()) {
+                        status = progress.getStatus();
+                    }
+                }
+            } catch (Exception ignored) {}
+        }
+
         return ExportJobDto.builder()
                 .id(job.getId())
                 .jobId(job.getJobId())
                 .fileName(job.getFileName())
                 .filePath(job.getFilePath())
-                .status(job.getStatus())
+                .status(status)
                 .totalRecords(job.getTotalRecords())
-                .processedRecords(job.getProcessedRecords())
+                .processedRecords(processed)
                 .successRecords(job.getSuccessRecords())
                 .errorRecords(job.getErrorRecords())
                 .createdBy(job.getCreatedBy())
                 .createdAt(job.getCreatedAt())
                 .completedAt(job.getCompletedAt())
-                .downloadUrl("COMPLETED".equalsIgnoreCase(job.getStatus()) ? storageService.generatePresignedUrl(job.getFilePath()) : null)
+                .downloadUrl("COMPLETED".equalsIgnoreCase(status) ? storageService.generatePresignedUrl(job.getFilePath()) : null)
                 .build();
     }
 }

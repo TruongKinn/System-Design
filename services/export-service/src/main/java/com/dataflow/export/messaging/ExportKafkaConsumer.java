@@ -117,6 +117,13 @@ public class ExportKafkaConsumer {
             String now = LocalDateTime.now().format(dtf);
 
             while (processed < total) {
+                // Kiểm tra nếu người dùng đã bấm hủy bỏ thì dừng xuất ngay lập tức
+                ExportJob currentCheck = exportJobRepository.findByJobId(jobId).orElse(null);
+                if (currentCheck != null && "CANCELLED".equalsIgnoreCase(currentCheck.getStatus())) {
+                    log.info("Export Job [{}] was CANCELLED by user. Stopping CSV generation early.", jobId);
+                    return;
+                }
+
                 long currentChunk = Math.min(batchSize, total - processed);
                 for (int i = 0; i < currentChunk; i++) {
                     long idx = processed + i + 1;
@@ -134,6 +141,11 @@ public class ExportKafkaConsumer {
                 processed += currentChunk;
 
                 progressService.updateProgress(jobId, fileName, "PROCESSING", total, processed, processed, 0);
+
+                // Điều tiết nhịp ghi 60ms mỗi batch để tiến độ hiển thị trực quan mượt mà trên UI
+                try {
+                    Thread.sleep(60);
+                } catch (InterruptedException ignored) {}
             }
         }
     }
@@ -166,6 +178,13 @@ public class ExportKafkaConsumer {
             String now = LocalDateTime.now().format(dtf);
 
             while (processed < total) {
+                // Kiểm tra nếu người dùng đã bấm hủy bỏ thì dừng xuất ngay lập tức
+                ExportJob currentCheck = exportJobRepository.findByJobId(jobId).orElse(null);
+                if (currentCheck != null && "CANCELLED".equalsIgnoreCase(currentCheck.getStatus())) {
+                    log.info("Export Job [{}] was CANCELLED by user. Stopping Excel generation early.", jobId);
+                    return;
+                }
+
                 long currentChunk = Math.min(batchSize, total - processed);
                 for (int i = 0; i < currentChunk; i++) {
                     long idx = processed + i + 1;
@@ -181,6 +200,11 @@ public class ExportKafkaConsumer {
 
                 processed += currentChunk;
                 progressService.updateProgress(jobId, fileName, "PROCESSING", total, processed, processed, 0);
+
+                // Điều tiết nhịp ghi 60ms mỗi batch để tiến độ hiển thị trực quan mượt mà trên UI
+                try {
+                    Thread.sleep(60);
+                } catch (InterruptedException ignored) {}
             }
 
             try (FileOutputStream fos = new FileOutputStream(targetFile)) {

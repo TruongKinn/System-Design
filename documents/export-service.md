@@ -132,4 +132,36 @@ Mặc định theo chuẩn AWS S3 API, mọi bucket mới tạo trên MinIO đ�
   - Với các job đang xử lý (`PROCESSING` hoặc `PENDING`): Hiển thị nút `Hủy` màu đỏ có xác nhận `nz-popconfirm`.
   - Với các job đã dừng (`CANCELLED` / `FAILED`): Hiển thị nhãn `Đã dừng` rõ ràng.
 
+---
+
+## 8. Cơ Chế Đồng Bộ Tiến Độ Thời Gian Thực (Real-time Progress & Stream Pacing - Update v1.5)
+
+### 8.1. Vấn Đề % Tiến Độ Không Chạy (Root Cause Analysis)
+Trước phiên bản v1.5, giao diện người dùng gặp hiện tượng thanh tiến độ % không chạy tăng dần từ 0% lên 100% mà đứng yên rồi nhảy vọt hoàn tất ngay:
+1. **API List không đọc từ Redis Progress Cache**: API `GET /api/exports` chỉ truy vấn trực tiếp từ bảng MySQL `export_jobs`. Khi Worker đang ghi file, số `processedRecords` chỉ được cập nhật định kỳ vào Redis Hash `export:progress:{jobId}`, còn database MySQL chỉ ghi khi khởi tạo (`PENDING`) và khi hoàn tất (`COMPLETED`). Do đó danh sách trả về client luôn có `processedRecords = 0`.
+2. **Tốc độ sinh dữ liệu trong Memory quá nhanh**: Vòng lặp stream xuất dữ liệu (`generateRealCsv` / `generateRealExcel`) chạy quá nhanh trong memory không có độ trễ nghỉ (pace), kết hợp polling frontend chậm (2000ms), khiến 1,000,000 dòng hoàn thành trước khi client kịp nhận các mốc tiến độ trung gian (10%, 25%, 50%...).
+
+### 8.2. Giải Pháp Đồng Bộ & Điều Tiết (Solution)
+1. **Đồng bộ tiến độ Redis vào API `getAllExportJobs()`**:
+   - Trong `ExportService.mapToDto()`, nếu job đang ở trạng thái `PROCESSING` hoặc `PENDING`, hệ thống tự động đọc thông tin tiến độ mới nhất từ Redis:
+     ```java
+     if ("PROCESSING".equalsIgnoreCase(job.getStatus()) || "PENDING".equalsIgnoreCase(job.getStatus())) {
+         Map<Object, Object> progress = redisProgressService.getProgress(job.getJobId());
+         if (progress != null && !progress.isEmpty()) {
+             if (progress.containsKey("processedRecords")) {
+                 dto.setProcessedRecords(Long.parseLong(progress.get("processedRecords").toString()));
+             }
+             if (progress.containsKey("status")) {
+                 dto.setStatus(progress.get("status").toString());
+             }
+         }
+     }
+     ```
+2. **Pacing Streaming Generation**:
+   - Thêm nhịp nghỉ điều tiết trong `ExportKafkaConsumer` khi xuất dữ liệu: sau mỗi batch 1,000 bản ghi, worker tạm nghỉ ngắn 60ms và kiểm tra cờ hủy `CANCELLED`.
+   - Giúp thanh tiến độ % hiển thị tăng dần mượt mà và trực quan, đồng thời cho phép người dùng dừng tác vụ ngay lập tức khi bấm nút "Hủy".
+3. **Tối ưu tần suất Polling Frontend**:
+   - `exports.component.ts` tự động điều chỉnh chu kỳ polling xuống `800ms` khi có ít nhất một tác vụ đang chạy (`PROCESSING`), và giảm xuống khi tất cả các job đã hoàn thành hoặc bị dừng.
+
+
 
