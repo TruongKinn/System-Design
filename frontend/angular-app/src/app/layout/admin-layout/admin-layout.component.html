@@ -129,10 +129,10 @@
       <div class="header-right">
         <!-- Search -->
         <nz-input-group [nzPrefix]="searchIcon" class="header-search">
-          <input nz-input placeholder="Tìm kiếm..." />
+          <input nz-input [(ngModel)]="searchKeyword" (keyup.enter)="onQuickSearch()" placeholder="Tìm kiếm trang (jobs, users, exports...)" />
         </nz-input-group>
         <ng-template #searchIcon>
-          <span nz-icon nzType="search" class="search-icon"></span>
+          <span nz-icon nzType="search" class="search-icon" (click)="onQuickSearch()" style="cursor: pointer;"></span>
         </ng-template>
 
         <!-- Light / Dark Theme Switcher Button -->
@@ -159,27 +159,27 @@
           <div class="notif-panel">
             <div class="notif-header">
               <strong>Thông báo Hệ thống</strong>
-              <a class="mark-all-link">Đánh dấu tất cả</a>
+              <a class="mark-all-link" (click)="clearNotifications()">Đánh dấu tất cả</a>
             </div>
             <ul nz-menu>
               <li nz-menu-item class="notif-item">
                 <span nz-icon nzType="check-circle" style="color: #10b981;"></span>
                 <div>
-                  <p>Export job #234 hoàn thành</p>
+                  <p>Export job hoàn thành</p>
                   <span>1 phút trước</span>
                 </div>
               </li>
               <li nz-menu-item class="notif-item">
                 <span nz-icon nzType="warning" style="color: #f59e0b;"></span>
                 <div>
-                  <p>Kafka consumer lag > 10,000</p>
+                  <p>Kafka topic latency bình thường</p>
                   <span>5 phút trước</span>
                 </div>
               </li>
               <li nz-menu-item class="notif-item">
                 <span nz-icon nzType="info-circle" style="color: #6366f1;"></span>
                 <div>
-                  <p>Job SYNC_CUSTOMER_DATA đã chạy</p>
+                  <p>Scheduler kích hoạt tác vụ</p>
                   <span>15 phút trước</span>
                 </div>
               </li>
@@ -199,11 +199,11 @@
 
         <nz-dropdown-menu #userMenu="nzDropdownMenu">
           <ul nz-menu class="user-menu-panel">
-            <li nz-menu-item>
+            <li nz-menu-item (click)="openProfileModal()">
               <span nz-icon nzType="user" nzTheme="outline"></span>
               Hồ sơ cá nhân
             </li>
-            <li nz-menu-item>
+            <li nz-menu-item (click)="openSettingsModal()">
               <span nz-icon nzType="setting" nzTheme="outline"></span>
               Cài đặt hệ thống
             </li>
@@ -237,4 +237,95 @@
       </div>
     </nz-footer>
   </nz-layout>
+
+  <!-- Modal Hồ Sơ Cá Nhân -->
+  <nz-modal [(nzVisible)]="isProfileModalVisible" 
+            nzTitle="👤 Hồ Sơ Tài Khoản Quản Trị" 
+            (nzOnCancel)="isProfileModalVisible = false"
+            [nzFooter]="profileFooter">
+    <ng-container *nzModalContent>
+      <div class="profile-modal-body">
+        <div class="profile-header-center">
+          <img [src]="avatarUrl" class="profile-modal-avatar" alt="Avatar" />
+          <h3 class="profile-modal-username">{{ currentUser?.username || 'admin' }}</h3>
+          <span class="profile-modal-badge">Tài khoản Xác thực Hệ thống</span>
+        </div>
+
+        <div class="profile-info-grid">
+          <div class="profile-info-row">
+            <span class="label">Tên đăng nhập:</span>
+            <span class="val font-mono"><strong>{{ currentUser?.username || 'admin' }}</strong></span>
+          </div>
+          <div class="profile-info-row">
+            <span class="label">Họ và tên:</span>
+            <span class="val">{{ currentUser?.username === 'admin' ? 'Quản trị viên Hệ thống' : currentUser?.username }}</span>
+          </div>
+          <div class="profile-info-row">
+            <span class="label">Vai trò phân quyền:</span>
+            <div class="val">
+              <nz-tag *ngFor="let r of currentUser?.roles" nzColor="magenta">{{ r }}</nz-tag>
+            </div>
+          </div>
+          <div class="profile-info-row">
+            <span class="label">Trạng thái tài khoản:</span>
+            <div class="val">
+              <nz-badge nzStatus="success" nzText="Đang hoạt động (ACTIVE)"></nz-badge>
+            </div>
+          </div>
+          <div class="profile-info-row">
+            <span class="label">Loại phiên đăng nhập:</span>
+            <span class="val font-mono text-cyan">JSON Web Token (JWT Bearer)</span>
+          </div>
+        </div>
+      </div>
+    </ng-container>
+    <ng-template #profileFooter>
+      <button nz-button nzType="primary" (click)="isProfileModalVisible = false">Đóng</button>
+    </ng-template>
+  </nz-modal>
+
+  <!-- Modal Cài Đặt Hệ Thống -->
+  <nz-modal [(nzVisible)]="isSettingsModalVisible" 
+            nzTitle="⚙️ Cài Đặt Hệ Thống & Tùy Chọn" 
+            (nzOnOk)="saveSettings()" 
+            (nzOnCancel)="isSettingsModalVisible = false"
+            [nzOkText]="'Lưu Cấu Hình'"
+            [nzCancelText]="'Hủy bỏ'">
+    <ng-container *nzModalContent>
+      <div class="settings-modal-body">
+        <div class="setting-item">
+          <div class="setting-desc">
+            <strong>Giao diện Dark / Light Mode</strong>
+            <p>Bật hoặc tắt giao diện tối cho toàn bộ màn hình làm việc</p>
+          </div>
+          <nz-switch [ngModel]="isDarkMode" (ngModelChange)="toggleTheme()"></nz-switch>
+        </div>
+
+        <nz-divider style="margin: 12px 0;"></nz-divider>
+
+        <div class="setting-item">
+          <div class="setting-desc">
+            <strong>Tần suất làm mới dữ liệu Realtime</strong>
+            <p>Khoảng thời gian polling cập nhật số liệu Dashboard</p>
+          </div>
+          <nz-select [(ngModel)]="refreshInterval" style="width: 140px;">
+            <nz-option nzValue="3" nzLabel="Mỗi 3 giây"></nz-option>
+            <nz-option nzValue="5" nzLabel="Mỗi 5 giây"></nz-option>
+            <nz-option nzValue="10" nzLabel="Mỗi 10 giây"></nz-option>
+            <nz-option nzValue="30" nzLabel="Mỗi 30 giây"></nz-option>
+          </nz-select>
+        </div>
+
+        <nz-divider style="margin: 12px 0;"></nz-divider>
+
+        <div class="setting-item">
+          <div class="setting-desc">
+            <strong>Âm thanh thông báo sự kiện</strong>
+            <p>Phát âm thanh khi có Job thất bại hoặc Batch hoàn thành</p>
+          </div>
+          <nz-switch [(ngModel)]="enableNotificationSound"></nz-switch>
+        </div>
+      </div>
+    </ng-container>
+  </nz-modal>
 </nz-layout>

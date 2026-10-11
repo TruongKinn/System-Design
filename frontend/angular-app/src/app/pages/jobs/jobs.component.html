@@ -41,19 +41,19 @@
               [nzData]="jobs" 
               [nzLoading]="loading" 
               [nzPageSize]="10"
-              [nzScroll]="{ x: '1300px' }"
+              [nzScroll]="{ x: '1160px' }"
               [nzShowSizeChanger]="true"
               [nzPageSizeOptions]="[10, 20, 50]">
       <thead>
         <tr>
-          <th nzWidth="200px">Tên Job & Group</th>
-          <th nzWidth="200px">Mô tả</th>
-          <th nzWidth="130px">Cron Expression</th>
-          <th nzWidth="110px">Trạng thái</th>
-          <th nzWidth="140px">Lần chạy cuối</th>
-          <th nzWidth="140px">Lần chạy kế tiếp</th>
-          <th nzWidth="110px">Tỷ lệ Thành công</th>
-          <th nzWidth="270px">Hành động</th>
+          <th nzWidth="180px">Tên Job & Group</th>
+          <th nzWidth="160px">Mô tả</th>
+          <th nzWidth="115px">Cron Expression</th>
+          <th nzWidth="95px">Trạng thái</th>
+          <th nzWidth="125px">Lần chạy cuối</th>
+          <th nzWidth="115px">Lần chạy kế tiếp</th>
+          <th nzWidth="85px">Thành công</th>
+          <th nzWidth="285px">Hành động</th>
         </tr>
       </thead>
       <tbody>
@@ -78,20 +78,36 @@
           </td>
           <td>
             <div class="action-buttons">
-              <button nz-button nzType="primary" nzSize="small" (click)="triggerJob(job)" nzTooltipTitle="Kích hoạt chạy ngay">
-                <span nz-icon nzType="play-circle"></span> Chạy ngay
+              <button nz-button nzType="primary" nzSize="small" (click)="triggerJob(job)" nz-tooltip nzTooltipTitle="Kích hoạt chạy ngay">
+                <span nz-icon nzType="play-circle"></span> Chạy
               </button>
               
               <button nz-button 
                       [nzType]="job.status === 'PAUSED' ? 'default' : 'dashed'" 
                       nzSize="small" 
-                      (click)="togglePauseResume(job)">
+                      (click)="togglePauseResume(job)"
+                      nz-tooltip
+                      [nzTooltipTitle]="job.status === 'PAUSED' ? 'Kích hoạt lại Job' : 'Tạm dừng Job'">
                 <span nz-icon [nzType]="job.status === 'PAUSED' ? 'caret-right' : 'pause'"></span>
-                {{ job.status === 'PAUSED' ? 'Kích hoạt' : 'Tạm dừng' }}
+                {{ job.status === 'PAUSED' ? 'Bật' : 'Dừng' }}
               </button>
 
-              <button nz-button nzType="text" nzSize="small" (click)="viewHistory(job)" class="btn-history">
+              <button nz-button nzType="text" nzSize="small" (click)="viewHistory(job)" class="btn-history" nz-tooltip nzTooltipTitle="Xem lịch sử chạy">
                 <span nz-icon nzType="history"></span> Lịch sử
+              </button>
+
+              <button nz-button 
+                      nzType="text" 
+                      nzDanger 
+                      nzSize="small" 
+                      nz-popconfirm
+                      nzPopconfirmTitle="Bạn có chắc muốn xóa Job này?"
+                      nzOkText="Xóa"
+                      nzCancelText="Hủy"
+                      (nzOnConfirm)="deleteJob(job)"
+                      nz-tooltip
+                      nzTooltipTitle="Xóa Job">
+                <span nz-icon nzType="delete"></span> Xóa
               </button>
             </div>
           </td>

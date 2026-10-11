@@ -75,6 +75,18 @@ export class JobsComponent implements OnInit {
     }
   }
 
+  deleteJob(job: Job): void {
+    this.jobService.deleteJob(job.id).subscribe({
+      next: () => {
+        this.message.success(`Đã xóa hoàn toàn Cron Job [${job.name}]`);
+        this.loadJobs();
+      },
+      error: (err) => {
+        this.message.error(`Xóa Job thất bại: ${err?.error?.message || err?.message || 'Có lỗi xảy ra'}`);
+      }
+    });
+  }
+
   openCreateModal(): void {
     this.isCreateModalVisible = true;
   }

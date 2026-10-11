@@ -136,3 +136,19 @@ Toàn bộ các Angular Services (`AuthService`, `JobService`, `ExportService`, 
 ### 6.3. Màn hình Phân quyền (RBAC Matrix)
 - Cân bằng chiều cao các thẻ vai trò (Roles) với bố cục flexbox `flex-direction: column`.
 - Ghim nút thao tác "Chỉnh sửa Ma trận Phân quyền" xuống chân thẻ với `margin-top: auto` để giao diện luôn thẳng hàng ngay ngắn dù mô tả của mỗi vai trò có độ dài khác nhau.
+
+## 7. Triển Khai Tính Năng Nâng Cao (Update v1.2)
+
+### 7.1. Chức năng Xóa Cron Job (`DELETE /api/jobs/{id}`)
+- Bổ sung phương thức `deleteJob(id: string)` vào `JobService`.
+- Tích hợp nút **Xóa** màu đỏ kèm hộp thoại xác nhận an toàn `nz-popconfirm` trực tiếp trên bảng Jobs.
+- Tối ưu kích thước và nhãn nút hành động (Chạy, Dừng/Bật, Lịch sử, Xóa) giúp hiển thị trọn vẹn 1 hàng mà không bị cắt hoặc ép cuộn ngang.
+
+### 7.2. Modal Hồ Sơ Cá Nhân & Cài Đặt Hệ Thống
+- **Hồ Sơ Cá Nhân**: Click vào menu người dùng góc phải trên Header hiển thị modal gồm avatar, Username, Tên hiển thị, Vai trò phân quyền, Trạng thái tài khoản (ACTIVE) và cơ chế xác thực JWT Bearer.
+- **Cài Đặt Hệ Thống**: Cho phép người dùng chuyển đổi theme Sáng/Tối, cấu hình tần suất làm mới dữ liệu realtime (3s, 5s, 10s, 30s) và âm thanh thông báo.
+
+### 7.3. Xử Lý Thông Báo & Tìm Kiếm Nhanh
+- Tích hợp tính năng **Đánh dấu tất cả đã đọc**: Reset badge số lượng thông báo về 0 khi người dùng xem xong.
+- Tích hợp **Tìm kiếm nhanh** trên Header: Nhập từ khóa (vd: `job`, `user`, `export`, `import`, `rbac`) và nhấn Enter để điều hướng tức thì tới trang nghiệp vụ tương ứng.
+

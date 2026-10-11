@@ -96,6 +96,10 @@ export class JobService {
     return this.http.post<any>(`${this.apiUrl}/${id}/resume`, {});
   }
 
+  deleteJob(id: string): Observable<any> {
+    return this.http.delete<any>(`${this.apiUrl}/${id}`);
+  }
+
   getExecutions(jobId?: string): Observable<JobExecution[]> {
     const url = jobId ? `${this.apiUrl}/${jobId}/executions` : `${this.apiUrl}/executions`;
     return this.http.get<any[]>(url).pipe(

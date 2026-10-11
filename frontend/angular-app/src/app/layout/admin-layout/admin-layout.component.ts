@@ -1,6 +1,7 @@
 import { Component, OnInit, HostListener } from '@angular/core';
 import { Router } from '@angular/router';
 import { AuthService, AuthUser } from '../../core/services/auth.service';
+import { NzMessageService } from 'ng-zorro-antd/message';
 
 export interface MenuBadge {
   count: number;
@@ -32,6 +33,17 @@ export class AdminLayoutComponent implements OnInit {
   isDarkMode = true;
   currentUser: AuthUser | null = null;
   notificationCount = 3;
+
+  // Profile Modal State
+  isProfileModalVisible = false;
+
+  // Settings Modal State
+  isSettingsModalVisible = false;
+  refreshInterval = '5';
+  enableNotificationSound = true;
+
+  // Quick Search
+  searchKeyword = '';
 
   @HostListener('window:resize')
   onResize(): void {
@@ -101,7 +113,8 @@ export class AdminLayoutComponent implements OnInit {
 
   constructor(
     private authService: AuthService,
-    private router: Router
+    private router: Router,
+    private message: NzMessageService
   ) {}
 
   ngOnInit(): void {
@@ -151,6 +164,47 @@ export class AdminLayoutComponent implements OnInit {
     document.body.setAttribute('data-theme', theme);
   }
 
+  clearNotifications(): void {
+    this.notificationCount = 0;
+    this.message.success('Đã đánh dấu đọc toàn bộ thông báo hệ thống!');
+  }
+
+  openProfileModal(): void {
+    this.currentUser = this.authService.currentUser;
+    this.isProfileModalVisible = true;
+  }
+
+  openSettingsModal(): void {
+    this.isSettingsModalVisible = true;
+  }
+
+  saveSettings(): void {
+    this.isSettingsModalVisible = false;
+    this.message.success('Đã lưu cấu hình tùy chọn hệ thống!');
+  }
+
+  onQuickSearch(): void {
+    const q = (this.searchKeyword || '').trim().toLowerCase();
+    if (!q) return;
+
+    if (q.includes('user') || q.includes('nguoi') || q.includes('tai khoan')) {
+      this.router.navigate(['/admin/users']);
+    } else if (q.includes('job') || q.includes('cron') || q.includes('tac vu')) {
+      this.router.navigate(['/admin/jobs']);
+    } else if (q.includes('exp') || q.includes('xuat')) {
+      this.router.navigate(['/admin/exports']);
+    } else if (q.includes('imp') || q.includes('nhap') || q.includes('excel')) {
+      this.router.navigate(['/admin/imports']);
+    } else if (q.includes('rbac') || q.includes('quyen') || q.includes('role')) {
+      this.router.navigate(['/admin/rbac']);
+    } else if (q.includes('dash') || q.includes('tong quan')) {
+      this.router.navigate(['/admin/dashboard']);
+    } else {
+      this.message.info(`Không tìm thấy trang khớp với từ khóa "${this.searchKeyword}"`);
+    }
+    this.searchKeyword = '';
+  }
+
   logout(): void {
     this.authService.logout();
   }
@@ -169,3 +223,4 @@ export class AdminLayoutComponent implements OnInit {
     return `https://api.dicebear.com/7.x/avataaars/svg?seed=${username}`;
   }
 }
+
