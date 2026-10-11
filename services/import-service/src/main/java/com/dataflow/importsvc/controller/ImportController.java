@@ -16,7 +16,6 @@ import java.util.List;
 @RestController
 @RequestMapping({"/api/imports", "/api/v1/imports"})
 @RequiredArgsConstructor
-@CrossOrigin(origins = "*")
 public class ImportController {
 
     private final ImportService importService;
